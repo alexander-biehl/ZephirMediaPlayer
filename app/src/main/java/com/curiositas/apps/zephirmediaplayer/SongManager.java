@@ -1,5 +1,7 @@
 package com.curiositas.apps.zephirmediaplayer;
 
+import android.os.Environment;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
@@ -8,12 +10,19 @@ import java.util.HashMap;
 public class SongManager {
 
     //SDCard path
-    final String MEDIA_PATH = new String("/sdcard");
+    private String MEDIA_PATH;
     private ArrayList<HashMap<String, String>> songList = new ArrayList<HashMap<String,String>>();
+    private StorageUtilities storageUtilities;
 
     // Constructor
     public SongManager() {
 
+        storageUtilities = new StorageUtilities();
+        if (storageUtilities.isExternalStorageAvailable()) {
+            MEDIA_PATH = new String(Environment.getExternalStorageDirectory().getParent());
+        } else {
+            MEDIA_PATH = new String(Environment.getDataDirectory().getPath());
+        }
     }
 
     /**
@@ -23,7 +32,8 @@ public class SongManager {
     public ArrayList<HashMap<String,String>> getPlayList() {
         File home = new File(MEDIA_PATH);
 
-        if (home.listFiles(new FileExtensionFilter()).length > 0) {
+        File[] paths = home.listFiles(new FileExtensionFilter());
+        if (paths != null && paths.length > 0) {
             for (File file : home.listFiles(new FileExtensionFilter())) {
                 HashMap<String,String> song = new HashMap<String,String>();
                 song.put("songTitle", file.getName().substring(0, (file.getName().length() - 4)));
