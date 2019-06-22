@@ -1,4 +1,4 @@
-package com.curiositas.apps.zephirmediaplayer;
+package com.curiositas.apps.zephirmediaplayer.activities;
 
 import android.app.ListActivity;
 import android.content.Intent;
@@ -8,6 +8,9 @@ import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+
+import com.curiositas.apps.zephirmediaplayer.R;
+import com.curiositas.apps.zephirmediaplayer.SongManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;

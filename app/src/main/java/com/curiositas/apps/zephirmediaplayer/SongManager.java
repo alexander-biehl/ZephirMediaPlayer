@@ -2,6 +2,8 @@ package com.curiositas.apps.zephirmediaplayer;
 
 import android.os.Environment;
 
+import com.curiositas.apps.zephirmediaplayer.utilities.StorageUtilities;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;

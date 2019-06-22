@@ -1,4 +1,4 @@
-package com.curiositas.apps.zephirmediaplayer;
+package com.curiositas.apps.zephirmediaplayer.utilities;
 
 import android.os.Environment;
 

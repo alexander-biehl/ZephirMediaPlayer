@@ -1,4 +1,4 @@
-package com.curiositas.apps.zephirmediaplayer;
+package com.curiositas.apps.zephirmediaplayer.activities;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -11,6 +11,10 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.curiositas.apps.zephirmediaplayer.R;
+import com.curiositas.apps.zephirmediaplayer.SongManager;
+import com.curiositas.apps.zephirmediaplayer.utilities.Utilities;
 
 import java.io.IOException;
 import java.util.ArrayList;
