@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.annotation.Nullable;
@@ -60,5 +61,23 @@ public class MusicService extends Service implements
     @Override
     public void onPrepared(MediaPlayer mp) {
 
+    }
+
+    /**
+     * Setter method to pass in a list of songs
+     * @param songList
+     */
+    public void setList(ArrayList<Song> songList) {
+        this.songList = songList;
+    }
+
+    /**
+     * This will be part of the interaction between our Activity
+     * and this Service.
+     */
+    public class MusicBinder extends Binder {
+        MusicService getService() {
+            return MusicService.this;
+        }
     }
 }
