@@ -1,5 +1,7 @@
 package com.curiositas.apps.zephirmediaplayer;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentUris;
 import android.content.Intent;
@@ -13,6 +15,7 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.curiositas.apps.zephirmediaplayer.activities.MainActivity;
 import com.curiositas.apps.zephirmediaplayer.models.Song;
 
 import java.util.ArrayList;
@@ -26,6 +29,9 @@ public class MusicService extends Service implements
     private ArrayList<Song> songList;
     private int songPosition;
     private final IBinder musicBind = new MusicBinder();
+
+    private String songTitle = "";
+    private static final int NOTIFY_ID = 1;
 
     @Override
     public void onCreate() {
@@ -72,16 +78,46 @@ public class MusicService extends Service implements
 
     /**
      * Once the MediaPlayer is prepared, the onPrepared method with be automatically called
+     *
      * @param mp
      */
     @Override
     public void onPrepared(MediaPlayer mp) {
         // start playback
         mp.start();
+
+        Intent notIntent = new Intent(this, MainActivity.class);
+        notIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                this,
+                0,
+                notIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+
+        Notification.Builder builder = new Notification.Builder(this);
+        builder.setContentIntent(pendingIntent)
+                .setSmallIcon(R.drawable.btn_play)
+                .setTicker(songTitle)
+                .setOngoing(true)
+                .setContentTitle("Playing")
+                .setContentText(songTitle);
+        Notification not = builder.build();
+
+        startForeground(NOTIFY_ID, not);
+    }
+
+
+    @Override
+    public void onDestroy() {
+        // since we started a foreground process in the onPrepared method, we need to stop it
+        // if this process is destroyed
+        stopForeground(true);
     }
 
     /**
      * Setter method to pass in a list of songs
+     *
      * @param songList
      */
     public void setList(ArrayList<Song> songList) {
@@ -103,6 +139,7 @@ public class MusicService extends Service implements
         // Next, get the song from the list, extract the ID for it using its Song object
         // and model it as a URI
         Song playSong = songList.get(songPosition);
+        songTitle = playSong.getTitle();
         // get the songs ID
         long currSong = playSong.getID();
         // set the URI
@@ -120,6 +157,7 @@ public class MusicService extends Service implements
 
     /**
      * This will be called when the user selects a song from the list
+     *
      * @param songIndex
      */
     public void setSong(int songIndex) {
