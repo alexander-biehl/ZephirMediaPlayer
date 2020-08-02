@@ -21,6 +21,7 @@ public class MusicService extends Service implements
     private MediaPlayer player;
     private ArrayList<Song> songList;
     private int songPosition;
+    private final IBinder musicBind = new MusicBinder();
 
     @Override
     public void onCreate() {
@@ -45,7 +46,14 @@ public class MusicService extends Service implements
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return musicBind;
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        player.stop();
+        player.release();
+        return false;
     }
 
     @Override

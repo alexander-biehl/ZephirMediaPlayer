@@ -2,6 +2,7 @@ package com.curiositas.apps.zephirmediaplayer.activities;
 
 import android.content.ComponentName;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
@@ -67,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
         /**
          * This callback defines what happens when the Activity instance has successfully connected
-         * to the Service Instance. 
+         * to the Service Instance.
          * @param name
          * @param service
          */
@@ -86,6 +87,20 @@ public class MainActivity extends AppCompatActivity {
 
         }
     };
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (playIntent == null) {
+            // when the Activity instance starts, we want to create our Intent object if it doesn't
+            // exist yet
+            playIntent = new Intent(this, MusicService.class);
+            // then we bind the ServiceConnection that we created to the Intent
+            bindService(playIntent, musicConnection, Context.BIND_AUTO_CREATE);
+            // and start it up
+            startService(playIntent);
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
