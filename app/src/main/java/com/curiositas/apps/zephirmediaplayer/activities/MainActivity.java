@@ -26,6 +26,7 @@ import com.curiositas.apps.zephirmediaplayer.models.Song;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -57,7 +58,12 @@ public class MainActivity extends AppCompatActivity {
         songList = new ArrayList<>();
         getSongList();
 
-        Collections.sort(songList, (a, b) -> { return  a.getTitle().compareTo(b.getTitle())});
+        Collections.sort(songList, new Comparator<Song>() {
+            @Override
+            public int compare(Song o1, Song o2) {
+                return o1.getTitle().compareTo(o2.getTitle());
+            }
+        });
 
         SongAdapter songAdapter = new SongAdapter(this, songList);
         songView.setAdapter(songAdapter);
