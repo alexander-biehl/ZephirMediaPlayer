@@ -23,6 +23,8 @@
             </intent-filter>
         </activity>
 
+        <service android:name="com.curiositas.apps.zephirmediaplayer.MusicService" />
+
         <!--        <activity android:name=".activities.PlayListActivity"-->
         <!--            android:label="Zephir Media Player"-->
         <!--            android:theme="@style/AppTheme.NoActionBar"-->
