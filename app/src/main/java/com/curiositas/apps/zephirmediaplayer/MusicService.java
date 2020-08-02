@@ -19,6 +19,7 @@ import com.curiositas.apps.zephirmediaplayer.activities.MainActivity;
 import com.curiositas.apps.zephirmediaplayer.models.Song;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class MusicService extends Service implements
         MediaPlayer.OnPreparedListener,
@@ -33,6 +34,9 @@ public class MusicService extends Service implements
     private String songTitle = "";
     private static final int NOTIFY_ID = 1;
 
+    private boolean shuffle = false;
+    private Random rand;
+
     @Override
     public void onCreate() {
         // create the service
@@ -41,6 +45,8 @@ public class MusicService extends Service implements
         this.songPosition = 0;
         // create player
         this.player = new MediaPlayer();
+        this.rand = new Random();
+
         initMusicPlayer();
     }
 
@@ -203,10 +209,26 @@ public class MusicService extends Service implements
      * Play the next song in the list
      */
     public void playNext() {
-        songPosition++;
-        if (songPosition >= songList.size()) {
-            songPosition = 0;
+        if (shuffle) {
+            int newSong = songPosition;
+            while (newSong == songPosition) {
+                newSong = this.rand.nextInt(songList.size());
+            }
+            songPosition = newSong;
+        } else {
+            songPosition++;
+            if (songPosition >= songList.size()) {
+                songPosition = 0;
+            }
         }
         playSong();
+    }
+
+    public void setShuffle() {
+        if (shuffle) {
+            shuffle = false;
+        } else {
+            shuffle = true;
+        }
     }
 }
