@@ -149,4 +149,26 @@ public class MusicService extends Service implements
     public void go() {
         player.start();
     }
+
+    /**
+     * Goes back to play the previous song
+     */
+    public void playPrev() {
+        songPosition--;
+        if (songPosition <= 0) {
+            songPosition = songList.size() - 1;
+        }
+        playSong();
+    }
+
+    /**
+     * Play the next song in the list
+     */
+    public void playNext() {
+        songPosition++;
+        if (songPosition >= songList.size()) {
+            songPosition = 0;
+        }
+        playSong();
+    }
 }
