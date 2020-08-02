@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.widget.ListView;
 
 import com.curiositas.apps.zephirmediaplayer.R;
+import com.curiositas.apps.zephirmediaplayer.SongAdapter;
 import com.curiositas.apps.zephirmediaplayer.models.Song;
 
 import java.util.ArrayList;
@@ -47,6 +48,9 @@ public class MainActivity extends AppCompatActivity {
         getSongList();
 
         Collections.sort(songList, (a, b) -> { return  a.getTitle().compareTo(b.getTitle())});
+
+        SongAdapter songAdapter = new SongAdapter(this, songList);
+        songView.setAdapter(songAdapter);
     }
 
     @Override
