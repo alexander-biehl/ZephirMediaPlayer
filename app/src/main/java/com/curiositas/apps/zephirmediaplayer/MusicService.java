@@ -125,4 +125,28 @@ public class MusicService extends Service implements
     public void setSong(int songIndex) {
         songPosition = songIndex;
     }
+
+    public int getPosition() {
+        return player.getCurrentPosition();
+    }
+
+    public int getDuration() {
+        return player.getDuration();
+    }
+
+    public boolean isPlaying() {
+        return player.isPlaying();
+    }
+
+    public void pausePlayer() {
+        player.pause();
+    }
+
+    public void seek(int position) {
+        player.seekTo(position);
+    }
+
+    public void go() {
+        player.start();
+    }
 }
