@@ -70,9 +70,14 @@ public class MusicService extends Service implements
         return false;
     }
 
+    /**
+     * Once the MediaPlayer is prepared, the onPrepared method with be automatically called
+     * @param mp
+     */
     @Override
     public void onPrepared(MediaPlayer mp) {
-
+        // start playback
+        mp.start();
     }
 
     /**
@@ -111,5 +116,13 @@ public class MusicService extends Service implements
             Log.e("MusicService", "Error setting the data source", e);
         }
         player.prepareAsync();
+    }
+
+    /**
+     * This will be called when the user selects a song from the list
+     * @param songIndex
+     */
+    public void setSong(int songIndex) {
+        songPosition = songIndex;
     }
 }

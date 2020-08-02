@@ -117,8 +117,18 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            case R.id.action_shuffle:
+                // TODO handle shuffle
+                break;
+            case R.id.action_end:
+                stopService(playIntent);
+                musicService = null;
+                System.exit(0);
+                break;
+            case R.id.action_settings:
+                // TODO
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -152,5 +162,10 @@ public class MainActivity extends AppCompatActivity {
                 songList.add(new Song(thisId, title, artist));
             } while (musicCursor.moveToNext());
         }
+    }
+
+    public void songPicked(View view) {
+        musicService.setSong(Integer.parseInt(view.getTag().toString()));
+        musicService.playSong();
     }
 }
