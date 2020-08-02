@@ -16,6 +16,13 @@ public class Song {
         this.artist = songArtist;
         this.album = songAlbum;
     }*/
+    public Song(long songID, String songTitle, String songArtist) {
+        this.id = songID;
+        this.title = songTitle;
+        this.artist = songArtist;
+        this.album = "";
+    }
+
     public Song(long songID, String songTitle, String songArtist, String songAlbum) {
         this.id = songID;
         this.title = songTitle;
