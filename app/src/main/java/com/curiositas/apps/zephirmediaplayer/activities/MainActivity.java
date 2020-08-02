@@ -39,6 +39,8 @@ public class MainActivity extends AppCompatActivity implements MediaController.M
     private MusicService musicService;
     private Intent playIntent;
     private boolean musicBound = false;
+    private boolean paused = false;
+    private boolean playbackPaused = false;
 
 
     @Override
@@ -114,6 +116,28 @@ public class MainActivity extends AppCompatActivity implements MediaController.M
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+        paused = true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (paused) {
+            // insures that the controller gets displayed to the user when the come back to the app
+            setController();
+            paused = false;
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        controller.hide();
+        super.onStop();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -174,6 +198,12 @@ public class MainActivity extends AppCompatActivity implements MediaController.M
      */
     private void playNext() {
         musicService.playNext();
+        // if user interacts with the play controls while the music is paused, the music player
+        // can behave erratically
+        if (playbackPaused) {
+            setController();
+            playbackPaused = false;
+        }
         controller.show(0);
     }
 
@@ -182,6 +212,12 @@ public class MainActivity extends AppCompatActivity implements MediaController.M
      */
     private void playPrev() {
         musicService.playPrev();
+        // if user interacts with the play controls while the music is paused, the music player
+        // can behave erratically
+        if (playbackPaused) {
+            setController();
+            playbackPaused = false;
+        }
         controller.show(0);
     }
 
@@ -218,6 +254,12 @@ public class MainActivity extends AppCompatActivity implements MediaController.M
     public void songPicked(View view) {
         musicService.setSong(Integer.parseInt(view.getTag().toString()));
         musicService.playSong();
+
+        if (playbackPaused) {
+            setController();
+            playbackPaused = false;
+        }
+        controller.show();
     }
 
     @Override
@@ -227,6 +269,7 @@ public class MainActivity extends AppCompatActivity implements MediaController.M
 
     @Override
     public void pause() {
+        playbackPaused = true;
         musicService.pausePlayer();
     }
 

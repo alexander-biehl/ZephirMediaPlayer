@@ -72,13 +72,25 @@ public class MusicService extends Service implements
         return false;
     }
 
+    /**
+     * This method fires when a track ends, including when the user has chosen a new track or
+     * skipped to the next/previous tracks as well as when the track reaches the end of its
+     * playback
+     * @param mp
+     */
     @Override
     public void onCompletion(MediaPlayer mp) {
-
+        // when a song reaches the end of its playback, we want to play the next
+        // song
+        if (player.getCurrentPosition() > 0) {
+            mp.reset();
+            playNext();
+        }
     }
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
+        mp.reset();
         return false;
     }
 
