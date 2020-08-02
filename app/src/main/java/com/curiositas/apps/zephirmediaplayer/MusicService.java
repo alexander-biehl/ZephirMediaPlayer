@@ -1,13 +1,17 @@
 package com.curiositas.apps.zephirmediaplayer;
 
 import android.app.Service;
+import android.content.ContentUris;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.curiositas.apps.zephirmediaplayer.models.Song;
 
@@ -87,5 +91,25 @@ public class MusicService extends Service implements
         public MusicService getService() {
             return MusicService.this;
         }
+    }
+
+    public void playSong() {
+        player.reset();
+        // Next, get the song from the list, extract the ID for it using its Song object
+        // and model it as a URI
+        Song playSong = songList.get(songPosition);
+        // get the songs ID
+        long currSong = playSong.getID();
+        // set the URI
+        Uri trackUri = ContentUris.withAppendedId(
+                MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                currSong
+        );
+        try {
+            player.setDataSource(getApplicationContext(), trackUri);
+        } catch (Exception e) {
+            Log.e("MusicService", "Error setting the data source", e);
+        }
+        player.prepareAsync();
     }
 }
