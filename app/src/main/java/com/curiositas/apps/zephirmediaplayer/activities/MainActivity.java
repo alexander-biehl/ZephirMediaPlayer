@@ -1,19 +1,24 @@
 package com.curiositas.apps.zephirmediaplayer.activities;
 
+import android.content.ComponentName;
 import android.content.ContentResolver;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListView;
 
+import com.curiositas.apps.zephirmediaplayer.MusicService;
 import com.curiositas.apps.zephirmediaplayer.R;
 import com.curiositas.apps.zephirmediaplayer.SongAdapter;
 import com.curiositas.apps.zephirmediaplayer.models.Song;
@@ -25,6 +30,10 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<Song> songList;
     private ListView songView;
+
+    private MusicService musicService;
+    private Intent playIntent;
+    private boolean musicBound = false;
 
 
     @Override
@@ -52,6 +61,31 @@ public class MainActivity extends AppCompatActivity {
         SongAdapter songAdapter = new SongAdapter(this, songList);
         songView.setAdapter(songAdapter);
     }
+
+    // connect to the music service
+    private ServiceConnection musicConnection = new ServiceConnection() {
+
+        /**
+         * This callback defines what happens when the Activity instance has successfully connected
+         * to the Service Instance. 
+         * @param name
+         * @param service
+         */
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            MusicService.MusicBinder binder = (MusicService.MusicBinder) service;
+            // get the service
+            musicService = binder.getService();
+            // pass the song list
+            musicService.setList(songList);
+            musicBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
