@@ -13,14 +13,19 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.media.AudioManagerCompat;
 
 import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.curiositas.apps.zephirmediaplayer.R;
 
 public class MediaPlayerActivity extends AppCompatActivity {
 
     private MediaBrowserCompat mediaBrowser;
+    private ImageView playPause;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,4 +71,76 @@ public class MediaPlayerActivity extends AppCompatActivity {
         }
         mediaBrowser.disconnect();
     }
+
+    private final MediaBrowserCompat.ConnectionCallback connectionCallbacks =
+            new MediaBrowserCompat.ConnectionCallback() {
+                @Override
+                public void onConnected() {
+                    // get the token for the MediaSession
+                    MediaSessionCompat.Token token = mediaBrowser.getSessionToken();
+
+                    // Create a MediaControllerCompat
+                    MediaControllerCompat mediaController =
+                            new MediaControllerCompat(MediaPlayerActivity.this, // context
+                                    token);
+
+                    // Save the controller
+                    MediaControllerCompat.setMediaController(MediaPlayerActivity.this, mediaController);
+
+                    // Finish building the UI
+                    buildTransportControls();
+                }
+
+                @Override
+                public void onConnectionSuspended() {
+                    // The Service has crashed. Disable transport controls until it automatically reconnects
+                }
+
+                @Override
+                public void onConnectionFailed() {
+                    // The Service has refused our connection
+                }
+            };
+
+    void buildTransportControls() {
+        //Grab the view for the play/pause button
+        playPause = (ImageView) findViewById(R.id.play_pause);
+
+        // Attach a listener to the button
+        playPause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // SInce this is a play/pause button, you'll need to test the current state
+                // and choose the action accordingly
+                int pbState = MediaControllerCompat.getMediaController(MediaPlayerActivity.this).getPlaybackState().getState();
+                if (pbState == PlaybackStateCompat.STATE_PLAYING) {
+                    MediaControllerCompat.getMediaController(MediaPlayerActivity.this).getTransportControls().pause();
+                } else {
+                    MediaControllerCompat.getMediaController(MediaPlayerActivity.this).getTransportControls().play();
+                }
+            }
+        });
+
+        MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(MediaPlayerActivity.this);
+
+        // Display the initial state
+        MediaMetadataCompat metadata = mediaController.getMetadata();
+        PlaybackStateCompat pbState = mediaController.getPlaybackState();
+
+        // Register a Callback to stay in sync
+        mediaController.registerCallback(controllerCallback);
+    }
+
+    MediaControllerCompat.Callback controllerCallback =
+            new MediaControllerCompat.Callback() {
+                @Override
+                public void onPlaybackStateChanged(PlaybackStateCompat state) {
+                    super.onPlaybackStateChanged(state);
+                }
+
+                @Override
+                public void onMetadataChanged(MediaMetadataCompat metadata) {
+                    super.onMetadataChanged(metadata);
+                }
+            };
 }
