@@ -66,10 +66,20 @@ public class MediaPlayerActivity extends AppCompatActivity {
     public void onStop() {
         super.onStop();
         // (see "stay in sync with the mediaSession")
-        if (MediaControllerCompat.getMediaController(MediaPlayerActivity.this) != null) {
-            MediaControllerCompat.getMediaController(MediaPlayerActivity.this).unregisterCallback(controllerCallback);
+        if (getController() != null) {
+            getController().unregisterCallback(controllerCallback);
         }
         mediaBrowser.disconnect();
+    }
+
+
+    /**
+     * Convenience method so that we don't have to write that whole line out a bunch
+     * of times
+     * @return {@code MediaControllerCompat} - the MediaController for this Activity
+     */
+    private MediaControllerCompat getController() {
+        return MediaControllerCompat.getMediaController(MediaPlayerActivity.this);
     }
 
     private final MediaBrowserCompat.ConnectionCallback connectionCallbacks =
@@ -104,7 +114,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
 
     void buildTransportControls() {
         //Grab the view for the play/pause button
-        playPause = (ImageView) findViewById(R.id.play_pause);
+        playPause = (ImageView) findViewById(R.id.btn_play);
 
         // Attach a listener to the button
         playPause.setOnClickListener(new View.OnClickListener() {
@@ -112,16 +122,16 @@ public class MediaPlayerActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // SInce this is a play/pause button, you'll need to test the current state
                 // and choose the action accordingly
-                int pbState = MediaControllerCompat.getMediaController(MediaPlayerActivity.this).getPlaybackState().getState();
+                int pbState = getController().getPlaybackState().getState();
                 if (pbState == PlaybackStateCompat.STATE_PLAYING) {
-                    MediaControllerCompat.getMediaController(MediaPlayerActivity.this).getTransportControls().pause();
+                    getController().getTransportControls().pause();
                 } else {
-                    MediaControllerCompat.getMediaController(MediaPlayerActivity.this).getTransportControls().play();
+                    getController().getTransportControls().play();
                 }
             }
         });
 
-        MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(MediaPlayerActivity.this);
+        MediaControllerCompat mediaController = getController();
 
         // Display the initial state
         MediaMetadataCompat metadata = mediaController.getMetadata();

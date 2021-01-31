@@ -1,5 +1,10 @@
 package com.curiositas.apps.zephirmediaplayer.service;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.session.MediaSessionCompat;
@@ -13,13 +18,15 @@ import androidx.media.MediaBrowserServiceCompat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MusicService extends MediaBrowserServiceCompat {
+public class MusicService extends MediaBrowserServiceCompat implements
+        MediaPlayer.OnCompletionListener, AudioManager.OnAudioFocusChangeListener {
 
     private static final String TAG = "MusicService";
 
     private static final String MY_MEDIA_ROOT_ID = "media_root_id";
     private static final String MY_EMPTY_MEDIA_ROOT_ID = "empty_root_id";
 
+    private MediaPlayer mediaPlayer;
     private MediaSessionCompat mediaSession;
     private PlaybackStateCompat.Builder stateBuilder;
 
@@ -103,4 +110,43 @@ public class MusicService extends MediaBrowserServiceCompat {
         // Most business logic should be handled in onLoadChildren() method.
         return true;
     }
+
+    @Override
+    public void onAudioFocusChange(int focusChange) {
+
+    }
+
+    @Override
+    public void onCompletion(MediaPlayer mp) {
+
+    }
+
+    // Callback to the broadcast reciever that listens for changes in the
+    // headphone state.
+    private BroadcastReceiver noisyReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                mediaPlayer.pause();
+            }
+        }
+    };
+
+    private MediaSessionCompat.Callback mediaSessionCallback = new MediaSessionCompat.Callback() {
+        @Override
+        public void onPlay() {
+            super.onPlay();
+        }
+
+        @Override
+        public void onPause() {
+            super.onPause();
+        }
+
+        @Override
+        public void onPlayFromMediaId(String mediaId, Bundle extras) {
+            super.onPlayFromMediaId(mediaId, extras);
+        }
+    };
+
 }
