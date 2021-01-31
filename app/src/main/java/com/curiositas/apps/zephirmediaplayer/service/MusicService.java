@@ -1,11 +1,15 @@
 package com.curiositas.apps.zephirmediaplayer.service;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.session.MediaSession;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -13,7 +17,9 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.media.AudioAttributesCompat;
 import androidx.media.MediaBrowserServiceCompat;
+import androidx.media.session.MediaButtonReceiver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +64,37 @@ public class MusicService extends MediaBrowserServiceCompat implements
 
         // Set the session's token so that client activities can communicate with it.
         setSessionToken(mediaSession.getSessionToken());
+    }
+
+    private void initMediaPlayer() {
+        mediaPlayer = new MediaPlayer();
+        mediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
+        //mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
+        .setUsage(AudioAttributes.USAGE_MEDIA)
+        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+        .build());
+        mediaPlayer.setVolume(1.0f, 1.0f);
+    }
+
+    private void initMediaSession() {
+        ComponentName mediaButtonReceiver = new ComponentName(
+                getApplicationContext(),
+                MediaButtonReceiver.class);
+
+        mediaSession.setCallback(mediaSessionCallback);
+        
+        /*mediaSession.setFlags(
+                MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
+        );*/
+    }
+
+    // This is the entrypoint of the service.  This method will take the Intent
+    // that is passed to the Service and send it to the MediaButtonReceiver Class.
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        MediaButtonReceiver.handleIntent(mediaSession, intent);
+        return super.onStartCommand(intent, flags, startId);
     }
 
     @Nullable
