@@ -20,10 +20,15 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.media.AudioAttributesCompat;
 import androidx.media.AudioManagerCompat;
 import androidx.media.MediaBrowserServiceCompat;
 import androidx.media.session.MediaButtonReceiver;
+
+import com.curiositas.apps.zephirmediaplayer.R;
+import com.curiositas.apps.zephirmediaplayer.utilities.MediaStyleHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -253,6 +258,33 @@ public class MusicService extends MediaBrowserServiceCompat implements
         mediaSession.setPlaybackState(playbackStateBuilder.build());
     }
 
+    private void showPlayingNotification() {
+        NotificationCompat.Builder builder = MediaStyleHelper.from(BackgroundAudioService.this, mediaSession);
+        if (builder == null) {
+            return;
+        }
+
+        builder.addAction(
+                new NotificationCompat.Action(
+                        android.R.drawable.ic_media_pause,
+                        "Pause",
+                        MediaButtonReceiver.buildMediaButtonPendingIntent(
+                                this,
+                                PlaybackStateCompat.ACTION_PLAY_PAUSE
+                        )
+                )
+        );
+        builder.setStyle(
+                new NotificationCompat
+                        .MediaStyle()
+                        .setShowActionsInCompactView(0)
+                        .setMediaSession(mediaSession.getSessionToken())
+        );
+        builder.setSmallIcon(R.mipmap.ic_launcher);
+        NotificationManagerCompat.from(BackgroundAudioService.this)
+                .notify(1, builder.build());
+    }
+
     private MediaSessionCompat.Callback mediaSessionCallback = new MediaSessionCompat.Callback() {
         @Override
         public void onPlay() {
@@ -264,6 +296,8 @@ public class MusicService extends MediaBrowserServiceCompat implements
 
             mediaSession.setActive(true);
             setMediaPlaybackState(PlaybackStateCompat.STATE_PLAYING);
+            showPlayingNotification();
+            mediaPlayer.start();
         }
 
         @Override
