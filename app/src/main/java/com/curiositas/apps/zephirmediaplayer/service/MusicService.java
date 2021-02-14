@@ -1,9 +1,11 @@
 package com.curiositas.apps.zephirmediaplayer.service;
 
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -18,6 +20,7 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.media.AudioAttributesCompat;
+import androidx.media.AudioManagerCompat;
 import androidx.media.MediaBrowserServiceCompat;
 import androidx.media.session.MediaButtonReceiver;
 
@@ -40,8 +43,12 @@ public class MusicService extends MediaBrowserServiceCompat implements
     public void onCreate() {
         super.onCreate();
 
+        initMediaPlayer();
+        initMediaSession();
+        initNoisyReceiver();
+
         // Create a MediaSessionCompat
-        mediaSession = new MediaSessionCompat(getApplicationContext(), TAG);
+        //mediaSession = new MediaSessionCompat(getApplicationContext(), TAG);
 
         // Disabled because these 2 flags have been depreciated and are set
         // by default
@@ -52,18 +59,18 @@ public class MusicService extends MediaBrowserServiceCompat implements
         );*/
 
         // set an initial PlaybackState with ACTION_PLAY, so media buttons can start the player
-        stateBuilder = new PlaybackStateCompat.Builder()
+        /*stateBuilder = new PlaybackStateCompat.Builder()
                 .setActions(
                         PlaybackStateCompat.ACTION_PLAY |
-                        PlaybackStateCompat.ACTION_PLAY_PAUSE
-                );
-        mediaSession.setPlaybackState(stateBuilder.build());
+                                PlaybackStateCompat.ACTION_PLAY_PAUSE
+                );*/
+        //mediaSession.setPlaybackState(stateBuilder.build());
 
         // MySessionCallback() has methods that handle callbacks from a media controller
         //mediaSession.setCallback(new MySessionCallback());
 
         // Set the session's token so that client activities can communicate with it.
-        setSessionToken(mediaSession.getSessionToken());
+        //setSessionToken(mediaSession.getSessionToken());
     }
 
     private void initMediaPlayer() {
@@ -71,9 +78,9 @@ public class MusicService extends MediaBrowserServiceCompat implements
         mediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
         //mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
-        .setUsage(AudioAttributes.USAGE_MEDIA)
-        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-        .build());
+                .setUsage(AudioAttributes.USAGE_MEDIA)
+                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                .build());
         mediaPlayer.setVolume(1.0f, 1.0f);
     }
 
@@ -83,10 +90,24 @@ public class MusicService extends MediaBrowserServiceCompat implements
                 MediaButtonReceiver.class);
 
         mediaSession.setCallback(mediaSessionCallback);
-        
+
+        // no longer needed because all media sessions are now expected to handle
+        // flags from media buttons and controls
         /*mediaSession.setFlags(
                 MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
         );*/
+        Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
+        mediaButtonIntent.setClass(this, MediaButtonReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, mediaButtonIntent, 0);
+        mediaSession.setMediaButtonReceiver(pendingIntent);
+
+        setSessionToken(mediaSession.getSessionToken());
+    }
+
+    private void initNoisyReceiver() {
+        // Handles headphones coming unplugged. cannot be done through a manifest receiver
+        IntentFilter filter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+        registerReceiver(noisyReceiver, filter);
     }
 
     // This is the entrypoint of the service.  This method will take the Intent
