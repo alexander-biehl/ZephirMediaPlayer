@@ -171,7 +171,33 @@ public class MusicService extends MediaBrowserServiceCompat implements
 
     @Override
     public void onAudioFocusChange(int focusChange) {
-
+        switch (focusChange) {
+            case AudioManager.AUDIOFOCUS_LOSS: {
+                if (mediaPlayer.isPlaying()) {
+                    mediaPlayer.stop();
+                }
+                break;
+            }
+            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT: {
+                mediaPlayer.pause();
+                break;
+            }
+            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK: {
+                if (mediaPlayer != null) {
+                    mediaPlayer.setVolume(0.3f, 0.3f);
+                }
+                break;
+            }
+            case AudioManager.AUDIOFOCUS_GAIN: {
+                if (mediaPlayer != null) {
+                    if (!mediaPlayer.isPlaying()) {
+                        mediaPlayer.start();
+                    }
+                    mediaPlayer.setVolume(1.0f, 1.0f);
+                }
+                break;
+            }
+        }
     }
 
     @Override
@@ -190,10 +216,33 @@ public class MusicService extends MediaBrowserServiceCompat implements
         }
     };
 
+    /**
+     * Gets a reference to the system AudioManager, and attempts to request audio
+     * focus for streaming music. Returns a boolean representing whether or not the request
+     * succeeded
+     *
+     * @return true if it got audio focus, false otherwise
+     */
+    private boolean successfullyRetrievedAudioFocus() {
+        AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
+        int result = audioManager.requestAudioFocus(
+                this,
+                AudioManager.STREAM_MUSIC,
+                AudioManager.AUDIOFOCUS_GAIN
+        );
+
+        return result == AudioManager.AUDIOFOCUS_GAIN;
+    }
+
     private MediaSessionCompat.Callback mediaSessionCallback = new MediaSessionCompat.Callback() {
         @Override
         public void onPlay() {
             super.onPlay();
+            // audio is handled by focus, which determines what app is making sounds currently.
+            if (!successfullyRetrievedAudioFocus()) {
+                return;
+            }
         }
 
         @Override
