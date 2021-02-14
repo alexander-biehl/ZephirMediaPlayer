@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.drm.DrmStore;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -235,6 +236,23 @@ public class MusicService extends MediaBrowserServiceCompat implements
         return result == AudioManager.AUDIOFOCUS_GAIN;
     }
 
+    private void setMediaPlaybackState(int state) {
+        PlaybackStateCompat.Builder playbackStateBuilder = new PlaybackStateCompat.Builder();
+        if (state == PlaybackStateCompat.STATE_PLAYING) {
+            playbackStateBuilder.setActions(
+                    PlaybackStateCompat.ACTION_PLAY_PAUSE |
+                            PlaybackStateCompat.ACTION_PAUSE
+            );
+        } else {
+            playbackStateBuilder.setActions(
+                    PlaybackStateCompat.ACTION_PLAY_PAUSE |
+                            PlaybackStateCompat.ACTION_PLAY
+            );
+        }
+        playbackStateBuilder.setState(state, PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN, 0);
+        mediaSession.setPlaybackState(playbackStateBuilder.build());
+    }
+
     private MediaSessionCompat.Callback mediaSessionCallback = new MediaSessionCompat.Callback() {
         @Override
         public void onPlay() {
@@ -243,6 +261,9 @@ public class MusicService extends MediaBrowserServiceCompat implements
             if (!successfullyRetrievedAudioFocus()) {
                 return;
             }
+
+            mediaSession.setActive(true);
+            setMediaPlaybackState(PlaybackStateCompat.STATE_PLAYING);
         }
 
         @Override
