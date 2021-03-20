@@ -370,6 +370,12 @@ public class MusicService extends MediaBrowserServiceCompat implements
 
             // Work here with extras if needed
         }
+
+        @Override
+        public void onSeekTo(long pos) {
+            super.onSeekTo(pos);
+            //TODO implement seekTo method to allow users to move to a specific position
+        }
     };
 
 }
