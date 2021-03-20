@@ -25,7 +25,7 @@ public class MediaStyleHelper {
         MediaMetadataCompat mediaMetadata = controller.getMetadata();
         MediaDescriptionCompat description = mediaMetadata.getDescription();
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(/*TODO context and channel*/);
         builder
                 .setContentTitle(description.getTitle())
                 .setContentText(description.getSubtitle())
