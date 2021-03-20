@@ -275,7 +275,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
                 )
         );
         builder.setStyle(
-                new NotificationCompat
+                new NotificationCompat.
                         .MediaStyle()
                         .setShowActionsInCompactView(0)
                         .setMediaSession(mediaSession.getSessionToken())
@@ -283,6 +283,31 @@ public class MusicService extends MediaBrowserServiceCompat implements
         builder.setSmallIcon(R.mipmap.ic_launcher);
         NotificationManagerCompat.from(BackgroundAudioService.this)
                 .notify(1, builder.build());
+    }
+
+    private void showPausedNotification() {
+        NotificationCompat.Builder builder = MediaStyleHelper.from(this, mediaSession);
+        if (builder == null) {
+            return;
+        }
+
+        builder.addAction(
+                new NotificationCompat.Action(
+                        android.R.drawable.ic_media_play,
+                        "Play",
+                        MediaButtonReceiver.buildMediaButtonPendingIntent(
+                                this,
+                                PlaybackStateCompat.ACTION_PLAY_PAUSE
+                        )
+                )
+        );
+        builder.setStyle(
+                new NotificationCompat.MediaStyle()
+                        .setShowActionsInCompactView(0)
+                        .setMediaSession(mediaSession.getSessionToken())
+        );
+        builder.setSmallIcon(R.mipmap.ic_launcher);
+        NotificationManagerCompat.from(this).notify(1, builder.build());
     }
 
     private MediaSessionCompat.Callback mediaSessionCallback = new MediaSessionCompat.Callback() {
@@ -303,6 +328,12 @@ public class MusicService extends MediaBrowserServiceCompat implements
         @Override
         public void onPause() {
             super.onPause();
+
+            if (mediaPlayer.isPlaying()) {
+                mediaPlayer.pause();
+                setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED);
+                showPausedNotification();
+            }
         }
 
         @Override
