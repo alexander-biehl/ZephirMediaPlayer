@@ -256,12 +256,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
     private boolean successfullyRetrievedAudioFocus() {
         AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
-
-        int result = audioManager.requestAudioFocus(
-                this,
-                AudioManager.STREAM_MUSIC,
-                AudioManager.AUDIOFOCUS_GAIN
-        );
+        int result = audioManager.requestAudioFocus(audioFocusRequest);
 
         return result == AudioManager.AUDIOFOCUS_GAIN;
     }
@@ -366,7 +361,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
             super.onPlayFromMediaId(mediaId, extras);
 
             try {
-                AssetFileDescriptor afd = getResources().openRawResourceFd(Integer.valueOf(mediaId));
+                AssetFileDescriptor afd = getResources().openRawResourceFd(Integer.parseInt(mediaId));
                 if (afd == null) {
                     return;
                 }
