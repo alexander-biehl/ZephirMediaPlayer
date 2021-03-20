@@ -384,6 +384,8 @@ public class MusicService extends MediaBrowserServiceCompat implements
                 }
 
                 afd.close();
+                //TODO figure out what media metadata needs to be set for each song
+                // and how to set it
                 initMediaSessionMetadata();
             } catch (IOException e) {
                 return;
