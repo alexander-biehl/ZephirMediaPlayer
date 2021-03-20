@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.content.res.AssetFileDescriptor;
 import android.drm.DrmStore;
 import android.media.AudioAttributes;
+import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.session.MediaSession;
@@ -44,6 +45,8 @@ public class MusicService extends MediaBrowserServiceCompat implements
     private static final String MY_EMPTY_MEDIA_ROOT_ID = "empty_root_id";
 
     private MediaPlayer mediaPlayer;
+    private AudioAttributes audioAttributes;
+    private AudioFocusRequest audioFocusRequest;
     private MediaSessionCompat mediaSession;
     private PlaybackStateCompat.Builder stateBuilder;
 
@@ -51,6 +54,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
     public void onCreate() {
         super.onCreate();
 
+        initAudioAttributesAndRequest();
         initMediaPlayer();
         initMediaSession();
         initNoisyReceiver();
@@ -81,14 +85,24 @@ public class MusicService extends MediaBrowserServiceCompat implements
         //setSessionToken(mediaSession.getSessionToken());
     }
 
+    private void initAudioAttributesAndRequest() {
+        audioAttributes = new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_MEDIA)
+                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                .build();
+        audioFocusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
+                .setAudioAttributes(audioAttributes)
+                .setAcceptsDelayedFocusGain(false)
+                .setWillPauseWhenDucked(true)
+                .setOnAudioFocusChangeListener(this)
+                .build();
+    }
+
     private void initMediaPlayer() {
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
         //mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        mediaPlayer.setAudioAttributes(new AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_MEDIA)
-                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                .build());
+        mediaPlayer.setAudioAttributes(audioAttributes);
         mediaPlayer.setVolume(1.0f, 1.0f);
     }
 
@@ -210,7 +224,19 @@ public class MusicService extends MediaBrowserServiceCompat implements
 
     @Override
     public void onCompletion(MediaPlayer mp) {
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+        }
+    }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        audioManager.abandonAudioFocusRequest(audioFocusRequest);
+        unregisterReceiver(noisyReceiver);
+        mediaSession.release();
+        NotificationManagerCompat.from(this).cancel(1);
     }
 
     // Callback to the broadcast reciever that listens for changes in the
@@ -233,6 +259,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
      */
     private boolean successfullyRetrievedAudioFocus() {
         AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
 
         int result = audioManager.requestAudioFocus(
                 this,
@@ -261,7 +288,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
     }
 
     private void showPlayingNotification() {
-        NotificationCompat.Builder builder = MediaStyleHelper.from(BackgroundAudioService.this, mediaSession);
+        NotificationCompat.Builder builder = MediaStyleHelper.from(MusicService.this, mediaSession);
         if (builder == null) {
             return;
         }
@@ -283,7 +310,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
                         .setMediaSession(mediaSession.getSessionToken())
         );
         builder.setSmallIcon(R.mipmap.ic_launcher);
-        NotificationManagerCompat.from(BackgroundAudioService.this)
+        NotificationManagerCompat.from(MusicService.this)
                 .notify(1, builder.build());
     }
 
