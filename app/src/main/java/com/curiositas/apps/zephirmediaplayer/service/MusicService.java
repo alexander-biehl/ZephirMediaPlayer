@@ -6,6 +6,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.AssetFileDescriptor;
 import android.drm.DrmStore;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
@@ -30,6 +31,7 @@ import androidx.media.session.MediaButtonReceiver;
 import com.curiositas.apps.zephirmediaplayer.R;
 import com.curiositas.apps.zephirmediaplayer.utilities.MediaStyleHelper;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -339,6 +341,34 @@ public class MusicService extends MediaBrowserServiceCompat implements
         @Override
         public void onPlayFromMediaId(String mediaId, Bundle extras) {
             super.onPlayFromMediaId(mediaId, extras);
+
+            try {
+                AssetFileDescriptor afd = getResources().openRawResourceFd(Integer.valueOf(mediaId));
+                if (afd == null) {
+                    return;
+                }
+
+                try {
+                    mediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+                } catch (IllegalStateException e) {
+                    mediaPlayer.release();
+                    initMediaPlayer();
+                    mediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+                }
+
+                afd.close();
+                initMediaSessionMetadata();
+            } catch (IOException e) {
+                return;
+            }
+
+            try {
+                mediaPlayer.prepare();
+            } catch (IOException e) {
+
+            }
+
+            // Work here with extras if needed
         }
     };
 
