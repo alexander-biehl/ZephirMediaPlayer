@@ -54,31 +54,6 @@ public class MusicService extends MediaBrowserServiceCompat implements
         initMediaPlayer();
         initMediaSession();
         initNoisyReceiver();
-
-        // Create a MediaSessionCompat
-        //mediaSession = new MediaSessionCompat(getApplicationContext(), TAG);
-
-        // Disabled because these 2 flags have been depreciated and are set
-        // by default
-        // Enable callbacks from MediaButtons and TransportControls
-        /*mediaSession.setFlags(
-                MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
-                        MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
-        );*/
-
-        // set an initial PlaybackState with ACTION_PLAY, so media buttons can start the player
-        /*stateBuilder = new PlaybackStateCompat.Builder()
-                .setActions(
-                        PlaybackStateCompat.ACTION_PLAY |
-                                PlaybackStateCompat.ACTION_PLAY_PAUSE
-                );*/
-        //mediaSession.setPlaybackState(stateBuilder.build());
-
-        // MySessionCallback() has methods that handle callbacks from a media controller
-        //mediaSession.setCallback(new MySessionCallback());
-
-        // Set the session's token so that client activities can communicate with it.
-        //setSessionToken(mediaSession.getSessionToken());
     }
 
     private void initAudioAttributesAndRequest() {
@@ -88,7 +63,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
                 .build();
         audioFocusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
                 .setAudioAttributes(audioAttributes)
-                .setAcceptsDelayedFocusGain(false)
+                .setAcceptsDelayedFocusGain(true)
                 .setWillPauseWhenDucked(true)
                 .setOnAudioFocusChangeListener(this)
                 .build();
@@ -97,7 +72,6 @@ public class MusicService extends MediaBrowserServiceCompat implements
     private void initMediaPlayer() {
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
-        //mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mediaPlayer.setAudioAttributes(audioAttributes);
         mediaPlayer.setVolume(1.0f, 1.0f);
     }
@@ -109,11 +83,6 @@ public class MusicService extends MediaBrowserServiceCompat implements
 
         mediaSession.setCallback(mediaSessionCallback);
 
-        // no longer needed because all media sessions are now expected to handle
-        // flags from media buttons and controls
-        /*mediaSession.setFlags(
-                MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
-        );*/
         Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
         mediaButtonIntent.setClass(this, MediaButtonReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, mediaButtonIntent, 0);
@@ -161,7 +130,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
             result.sendResult(null);
             return;
         }
-
+        //TODO
         // Assume for example that the music catalog is already loaded/cached
 
         List<MediaBrowserCompat.MediaItem> mediaItems = new ArrayList<>();
@@ -181,6 +150,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
     }
 
     private boolean allowBrowsing(@NonNull String clientPackageName, int clientUid) {
+        //TODO
         // logic for verification goes here. Note: this should return quickly with a non-null
         // value. User authentication and other slow processes should not run in onGetRoot().
         // Most business logic should be handled in onLoadChildren() method.
@@ -197,7 +167,9 @@ public class MusicService extends MediaBrowserServiceCompat implements
                 break;
             }
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT: {
-                mediaPlayer.pause();
+                if (mediaPlayer != null) {
+                    mediaPlayer.pause();
+                }
                 break;
             }
             case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK: {
