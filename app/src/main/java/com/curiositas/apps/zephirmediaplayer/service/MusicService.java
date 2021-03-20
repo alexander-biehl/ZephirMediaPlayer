@@ -275,7 +275,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
                 )
         );
         builder.setStyle(
-                new NotificationCompat.
+                new androidx.media.app.NotificationCompat
                         .MediaStyle()
                         .setShowActionsInCompactView(0)
                         .setMediaSession(mediaSession.getSessionToken())
@@ -302,7 +302,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
                 )
         );
         builder.setStyle(
-                new NotificationCompat.MediaStyle()
+                new androidx.media.app.NotificationCompat.MediaStyle()
                         .setShowActionsInCompactView(0)
                         .setMediaSession(mediaSession.getSessionToken())
         );
