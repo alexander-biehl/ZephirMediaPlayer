@@ -328,6 +328,10 @@ public class MusicService extends MediaBrowserServiceCompat implements
             }
         }
 
+        private void initMediaSessionMetadata() {
+            //TODO
+        }
+
         @Override
         public void onPlayFromMediaId(String mediaId, Bundle extras) {
             super.onPlayFromMediaId(mediaId, extras);
