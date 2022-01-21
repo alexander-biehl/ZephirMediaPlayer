@@ -130,23 +130,25 @@ public class MusicService extends MediaBrowserServiceCompat implements
             result.sendResult(null);
             return;
         }
-        //TODO
-        // Assume for example that the music catalog is already loaded/cached
 
-        List<MediaBrowserCompat.MediaItem> mediaItems = new ArrayList<>();
+        // For now we just send null since this method is more important for auto apps
+        // that need to browse the media we offer. Can look at implementing this later.
+        result.sendResult(null);
+
+        // List<MediaBrowserCompat.MediaItem> mediaItems = new ArrayList<>();
 
         //NOTE: MediaItem objects delivered by the MediaBrowserService should not contain icon
         // bitmaps. Use a Uri instead by calling setIconUri(...) when you build the MediaDescription
         // for each item
         // Check if this is the root menu.
-        if (MY_MEDIA_ROOT_ID.equals(parentId)) {
+        // if (MY_MEDIA_ROOT_ID.equals(parentId)) {
             // Build the MediaItem objects for the top level,
             // and put them in the mediaItems list...
-        } else {
+        // } else {
             // Examine the passed parentId to see which submenu we're at,
             // and put the children of that menu in the mediaItems list.
-        }
-        result.sendResult(mediaItems);
+        // }
+        // result.sendResult(mediaItems);
     }
 
     private boolean allowBrowsing(@NonNull String clientPackageName, int clientUid) {
