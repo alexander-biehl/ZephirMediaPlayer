@@ -256,6 +256,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
             return;
         }
 
+        // add a Pause action to the notification
         builder.addAction(
                 new NotificationCompat.Action(
                         android.R.drawable.ic_media_pause,
@@ -266,6 +267,8 @@ public class MusicService extends MediaBrowserServiceCompat implements
                         )
                 )
         );
+
+        //
         builder.setStyle(
                 new androidx.media.app.NotificationCompat
                         .MediaStyle()
