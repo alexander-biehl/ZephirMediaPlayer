@@ -27,13 +27,17 @@ import androidx.media.MediaBrowserServiceCompat;
 import androidx.media.session.MediaButtonReceiver;
 
 import com.curiositas.apps.zephirmediaplayer.R;
+import com.curiositas.apps.zephirmediaplayer.SongManager;
 import com.curiositas.apps.zephirmediaplayer.utilities.MediaStyleHelper;
 
+import java.io.File;
+import java.io.FileDescriptor;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 public class MusicService extends MediaBrowserServiceCompat implements
-        MediaPlayer.OnCompletionListener, AudioManager.OnAudioFocusChangeListener {
+        MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener, AudioManager.OnAudioFocusChangeListener {
 
     private static final String TAG = MusicService.class.getSimpleName();
 
@@ -49,17 +53,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
     private AudioAttributes audioAttributes;
     private AudioFocusRequest audioFocusRequest;
     private MediaSessionCompat mediaSession;
-    private PlaybackStateCompat.Builder stateBuilder;
-    // Callback to the broadcast reciever that listens for changes in the
-    // headphone state.
-    private final BroadcastReceiver noisyReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                mediaPlayer.pause();
-            }
-        }
-    };
+    private SongManager songManager;
     private final MediaSessionCompat.Callback mediaSessionCallback = new MediaSessionCompat.Callback() {
         @Override
         public void onPlay() {
@@ -75,7 +69,22 @@ public class MusicService extends MediaBrowserServiceCompat implements
             mediaSession.setActive(true);
             setMediaPlaybackState(PlaybackStateCompat.STATE_PLAYING);
             showPlayingNotification();
-            mediaPlayer.start();
+
+            //File file = new File("/mnt/sdcard/Download/02 Use Me.mp3");
+            try {
+                mediaPlayer.setDataSource("/mnt/sdcard/Download/02 Use Me.mp3");
+            } catch (IOException e) {
+                Log.e(TAG, "Error setting the data source.");
+                e.printStackTrace();
+            }
+            //try {
+                mediaPlayer.prepareAsync();
+                //mediaPlayer.start();
+//            } catch (IOException e) {
+//                Log.e(TAG, "There was an error attempting to prepare or start the MediaPlayer" +
+//                        " \nEx: " + e.getMessage());
+//                //throw e;
+//            }
         }
 
         @Override
@@ -160,9 +169,23 @@ public class MusicService extends MediaBrowserServiceCompat implements
         }
     };
 
+    // Callback to the broadcast reciever that listens for changes in the
+    // headphone state.
+    private final BroadcastReceiver noisyReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                mediaPlayer.pause();
+            }
+        }
+    };
+
     @Override
     public void onCreate() {
         super.onCreate();
+
+        songManager = new SongManager();
+        List<HashMap<String,String>> songs = songManager.getPlayList();
 
         initAudioAttributesAndRequest();
         initMediaPlayer();
@@ -188,6 +211,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
         mediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
         mediaPlayer.setAudioAttributes(audioAttributes);
         mediaPlayer.setVolume(1.0f, 1.0f);
+        mediaPlayer.setOnPreparedListener(this);
     }
 
     private void initMediaSession() {
@@ -241,7 +265,8 @@ public class MusicService extends MediaBrowserServiceCompat implements
     }
 
     @Override
-    public void onLoadChildren(@NonNull String parentId, @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
+    public void onLoadChildren(@NonNull String parentId,
+                               @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
 
         // Browsing not allowed
         if (TextUtils.equals(MY_EMPTY_MEDIA_ROOT_ID, parentId)) {
@@ -327,6 +352,15 @@ public class MusicService extends MediaBrowserServiceCompat implements
         NotificationManagerCompat.from(this).cancel(NOTIF_ID);
     }
 
+    // It appears that we only need to do this if we plan on running the mediaPlayer from
+    // our main thread, which we won't be here
+    @Override
+    public void onPrepared(MediaPlayer mp) {
+        if (this.mediaPlayer != null) {
+            this.mediaPlayer.start();
+        }
+    }
+
     /**
      * Gets a reference to the system AudioManager, and attempts to request audio
      * focus for streaming music. Returns a boolean representing whether or not the request
@@ -385,7 +419,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
         );
         builder.setSmallIcon(R.mipmap.ic_launcher);
         // NotificationManagerCompat.from(MusicService.this)
-                // .notify(NOTIF_ID, builder.build());
+        // .notify(NOTIF_ID, builder.build());
         // put the service into the foreground
         startForeground(NOTIF_ID, builder.build());
     }

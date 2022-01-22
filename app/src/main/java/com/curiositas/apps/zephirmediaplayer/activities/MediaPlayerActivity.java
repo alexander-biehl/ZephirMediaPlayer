@@ -17,15 +17,22 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import com.curiositas.apps.zephirmediaplayer.R;
 
 public class MediaPlayerActivity extends AppCompatActivity {
 
+    private static final String TAG = MediaPlayerActivity.class.getSimpleName();
+
     private MediaBrowserCompat mediaBrowser;
-    private ImageView playPause;
+    private FloatingActionButton playPause;
+    private FloatingActionButton pause_btn;
+    private FloatingActionButton stop_btn;
+    private Button load_button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +55,11 @@ public class MediaPlayerActivity extends AppCompatActivity {
                 new ComponentName(this, MusicService.class),
                 connectionCallbacks,
                 null); // optional bundle
+
+        load_button = findViewById(R.id.load_button);
+        load_button.setOnClickListener(view -> {
+            // TODO figure out what is necessary to load a song
+        });
     }
 
     @Override
@@ -104,6 +116,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
                 @Override
                 public void onConnectionSuspended() {
                     // The Service has crashed. Disable transport controls until it automatically reconnects
+                    Log.d(TAG, "onConnectionSuspended");
                 }
 
                 @Override
@@ -114,7 +127,9 @@ public class MediaPlayerActivity extends AppCompatActivity {
 
     void buildTransportControls() {
         //Grab the view for the play/pause button
-        playPause = (ImageView) findViewById(R.id.btn_play);
+        playPause = findViewById(R.id.btn_play);
+        pause_btn = findViewById(R.id.btn_pause);
+        stop_btn = findViewById(R.id.btn_stop);
 
         // Attach a listener to the button
         playPause.setOnClickListener(new View.OnClickListener() {

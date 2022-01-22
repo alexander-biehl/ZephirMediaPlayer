@@ -23,14 +23,18 @@ public class MediaStyleHelper {
     ) {
         MediaControllerCompat controller = mediaSession.getController();
         MediaMetadataCompat mediaMetadata = controller.getMetadata();
-        MediaDescriptionCompat description = mediaMetadata.getDescription();
+        // setting this empty now since it's null
+        // MediaDescriptionCompat description = mediaMetadata.getDescription();
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "channel1");
         builder
-                .setContentTitle(description.getTitle())
-                .setContentText(description.getSubtitle())
-                .setSubText(description.getDescription())
-                .setLargeIcon(description.getIconBitmap())
+                //.setContentTitle(description.getTitle())
+                .setContentTitle("Test Title")
+                //.setContentText(description.getSubtitle())
+                .setContentText("Test Description")
+                //.setSubText(description.getDescription())
+                .setSubText("Test description")
+                //.setLargeIcon(description.getIconBitmap())
                 .setContentIntent(controller.getSessionActivity())
                 .setDeleteIntent(
                         MediaButtonReceiver.buildMediaButtonPendingIntent(context, PlaybackStateCompat.ACTION_STOP))
