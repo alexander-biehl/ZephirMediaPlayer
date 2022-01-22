@@ -29,7 +29,6 @@ import com.curiositas.apps.zephirmediaplayer.R;
 import com.curiositas.apps.zephirmediaplayer.utilities.MediaStyleHelper;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class MusicService extends MediaBrowserServiceCompat implements
@@ -40,11 +39,97 @@ public class MusicService extends MediaBrowserServiceCompat implements
     private static final String MY_MEDIA_ROOT_ID = "media_root_id";
     private static final String MY_EMPTY_MEDIA_ROOT_ID = "empty_root_id";
 
+    /**
+     * ID That we use to keep track of our notification
+     */
+    private static final int NOTIF_ID = 1;
+
     private MediaPlayer mediaPlayer;
     private AudioAttributes audioAttributes;
     private AudioFocusRequest audioFocusRequest;
     private MediaSessionCompat mediaSession;
     private PlaybackStateCompat.Builder stateBuilder;
+    // Callback to the broadcast reciever that listens for changes in the
+    // headphone state.
+    private final BroadcastReceiver noisyReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                mediaPlayer.pause();
+            }
+        }
+    };
+    private final MediaSessionCompat.Callback mediaSessionCallback = new MediaSessionCompat.Callback() {
+        @Override
+        public void onPlay() {
+            super.onPlay();
+            // audio is handled by focus, which determines what app is making sounds currently.
+            if (!successfullyRetrievedAudioFocus()) {
+                return;
+            }
+
+            mediaSession.setActive(true);
+            setMediaPlaybackState(PlaybackStateCompat.STATE_PLAYING);
+            showPlayingNotification();
+            mediaPlayer.start();
+        }
+
+        @Override
+        public void onPause() {
+            super.onPause();
+
+            if (mediaPlayer.isPlaying()) {
+                mediaPlayer.pause();
+                setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED);
+                showPausedNotification();
+            }
+        }
+
+        private void initMediaSessionMetadata() {
+            //TODO
+        }
+
+        @Override
+        public void onPlayFromMediaId(String mediaId, Bundle extras) {
+            super.onPlayFromMediaId(mediaId, extras);
+
+            try {
+                AssetFileDescriptor afd = getResources().openRawResourceFd(Integer.parseInt(mediaId));
+                if (afd == null) {
+                    return;
+                }
+
+                try {
+                    mediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+                } catch (IllegalStateException e) {
+                    mediaPlayer.release();
+                    initMediaPlayer();
+                    mediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+                }
+
+                afd.close();
+                //TODO figure out what media metadata needs to be set for each song
+                // and how to set it
+                initMediaSessionMetadata();
+            } catch (IOException e) {
+                return;
+            }
+
+            try {
+                mediaPlayer.prepare();
+            } catch (IOException e) {
+
+            }
+
+            // Work here with extras if needed
+        }
+
+        @Override
+        public void onSeekTo(long pos) {
+            super.onSeekTo(pos);
+            //TODO implement seekTo method to allow users to move to a specific position
+        }
+    };
 
     @Override
     public void onCreate() {
@@ -102,6 +187,9 @@ public class MusicService extends MediaBrowserServiceCompat implements
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         MediaButtonReceiver.handleIntent(mediaSession, intent);
+
+        // May end up wanting to replace this line with return START_STICK
+        // see https://developer.android.com/reference/android/app/Service#START_NOT_STICKY
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -142,11 +230,11 @@ public class MusicService extends MediaBrowserServiceCompat implements
         // for each item
         // Check if this is the root menu.
         // if (MY_MEDIA_ROOT_ID.equals(parentId)) {
-            // Build the MediaItem objects for the top level,
-            // and put them in the mediaItems list...
+        // Build the MediaItem objects for the top level,
+        // and put them in the mediaItems list...
         // } else {
-            // Examine the passed parentId to see which submenu we're at,
-            // and put the children of that menu in the mediaItems list.
+        // Examine the passed parentId to see which submenu we're at,
+        // and put the children of that menu in the mediaItems list.
         // }
         // result.sendResult(mediaItems);
     }
@@ -206,19 +294,8 @@ public class MusicService extends MediaBrowserServiceCompat implements
         audioManager.abandonAudioFocusRequest(audioFocusRequest);
         unregisterReceiver(noisyReceiver);
         mediaSession.release();
-        NotificationManagerCompat.from(this).cancel(1);
+        NotificationManagerCompat.from(this).cancel(NOTIF_ID);
     }
-
-    // Callback to the broadcast reciever that listens for changes in the
-    // headphone state.
-    private BroadcastReceiver noisyReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-                mediaPlayer.pause();
-            }
-        }
-    };
 
     /**
      * Gets a reference to the system AudioManager, and attempts to request audio
@@ -232,7 +309,8 @@ public class MusicService extends MediaBrowserServiceCompat implements
 
         int result = audioManager.requestAudioFocus(audioFocusRequest);
 
-        return result == AudioManager.AUDIOFOCUS_GAIN;
+        //return result == AudioManager.AUDIOFOCUS_GAIN;
+        return result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED;
     }
 
     private void setMediaPlaybackState(int state) {
@@ -306,77 +384,5 @@ public class MusicService extends MediaBrowserServiceCompat implements
         builder.setSmallIcon(R.mipmap.ic_launcher);
         NotificationManagerCompat.from(this).notify(1, builder.build());
     }
-
-    private MediaSessionCompat.Callback mediaSessionCallback = new MediaSessionCompat.Callback() {
-        @Override
-        public void onPlay() {
-            super.onPlay();
-            // audio is handled by focus, which determines what app is making sounds currently.
-            if (!successfullyRetrievedAudioFocus()) {
-                return;
-            }
-
-            mediaSession.setActive(true);
-            setMediaPlaybackState(PlaybackStateCompat.STATE_PLAYING);
-            showPlayingNotification();
-            mediaPlayer.start();
-        }
-
-        @Override
-        public void onPause() {
-            super.onPause();
-
-            if (mediaPlayer.isPlaying()) {
-                mediaPlayer.pause();
-                setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED);
-                showPausedNotification();
-            }
-        }
-
-        private void initMediaSessionMetadata() {
-            //TODO
-        }
-
-        @Override
-        public void onPlayFromMediaId(String mediaId, Bundle extras) {
-            super.onPlayFromMediaId(mediaId, extras);
-
-            try {
-                AssetFileDescriptor afd = getResources().openRawResourceFd(Integer.parseInt(mediaId));
-                if (afd == null) {
-                    return;
-                }
-
-                try {
-                    mediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
-                } catch (IllegalStateException e) {
-                    mediaPlayer.release();
-                    initMediaPlayer();
-                    mediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
-                }
-
-                afd.close();
-                //TODO figure out what media metadata needs to be set for each song
-                // and how to set it
-                initMediaSessionMetadata();
-            } catch (IOException e) {
-                return;
-            }
-
-            try {
-                mediaPlayer.prepare();
-            } catch (IOException e) {
-
-            }
-
-            // Work here with extras if needed
-        }
-
-        @Override
-        public void onSeekTo(long pos) {
-            super.onSeekTo(pos);
-            //TODO implement seekTo method to allow users to move to a specific position
-        }
-    };
 
 }
