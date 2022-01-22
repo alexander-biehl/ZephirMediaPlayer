@@ -17,6 +17,7 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,7 +35,7 @@ import java.util.List;
 public class MusicService extends MediaBrowserServiceCompat implements
         MediaPlayer.OnCompletionListener, AudioManager.OnAudioFocusChangeListener {
 
-    private static final String TAG = "MusicService";
+    private static final String TAG = MusicService.class.getSimpleName();
 
     private static final String MY_MEDIA_ROOT_ID = "media_root_id";
     private static final String MY_EMPTY_MEDIA_ROOT_ID = "empty_root_id";
@@ -63,11 +64,14 @@ public class MusicService extends MediaBrowserServiceCompat implements
         @Override
         public void onPlay() {
             super.onPlay();
+            Log.d(TAG, "mediaSessionCallback.onPlay called");
             // audio is handled by focus, which determines what app is making sounds currently.
             if (!successfullyRetrievedAudioFocus()) {
                 return;
             }
-
+            // insure our service is started
+            startService(new Intent(getApplicationContext(), MusicService.class));
+            // set our mediaSession to active so it is discoverable
             mediaSession.setActive(true);
             setMediaPlaybackState(PlaybackStateCompat.STATE_PLAYING);
             showPlayingNotification();
@@ -77,12 +81,30 @@ public class MusicService extends MediaBrowserServiceCompat implements
         @Override
         public void onPause() {
             super.onPause();
+            Log.d(TAG, "mediaSessionCallback.onPause called");
 
             if (mediaPlayer.isPlaying()) {
                 mediaPlayer.pause();
                 setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED);
                 showPausedNotification();
+                // take the service out of the foreground, but leave the notification
+                stopForeground(false);
             }
+        }
+
+        @Override
+        public void onStop() {
+            super.onStop();
+            Log.d(TAG, "mediaSessionCallback.onStop called");
+
+            // stop the service so it's not taking up resources
+            stopSelf();
+            // set the mediaSession to inactive
+            mediaSession.setActive(false);
+            // stop the mediaPlayer
+            mediaPlayer.stop();
+            // take the service out of the foreground
+            stopForeground(false);
         }
 
         private void initMediaSessionMetadata() {
@@ -93,8 +115,15 @@ public class MusicService extends MediaBrowserServiceCompat implements
         public void onPlayFromMediaId(String mediaId, Bundle extras) {
             super.onPlayFromMediaId(mediaId, extras);
 
+
+            Log.d(TAG, "mediaSessionCallback.onPlayFromMediaId called.\nMediaId: " + mediaId);
+
+            // String filename = "android.resource://" + getPackageName() + "/raw/use_me.mp3";
+
+
             try {
                 AssetFileDescriptor afd = getResources().openRawResourceFd(Integer.parseInt(mediaId));
+                //AssetFileDescriptor afd = getResources().
                 if (afd == null) {
                     return;
                 }
@@ -166,6 +195,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
                 getApplicationContext(),
                 MediaButtonReceiver.class);
 
+        mediaSession = new MediaSessionCompat(getApplicationContext(), TAG);
         mediaSession.setCallback(mediaSessionCallback);
 
         Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
@@ -347,8 +377,6 @@ public class MusicService extends MediaBrowserServiceCompat implements
                         )
                 )
         );
-
-        //
         builder.setStyle(
                 new androidx.media.app.NotificationCompat
                         .MediaStyle()
@@ -356,8 +384,10 @@ public class MusicService extends MediaBrowserServiceCompat implements
                         .setMediaSession(mediaSession.getSessionToken())
         );
         builder.setSmallIcon(R.mipmap.ic_launcher);
-        NotificationManagerCompat.from(MusicService.this)
-                .notify(1, builder.build());
+        // NotificationManagerCompat.from(MusicService.this)
+                // .notify(NOTIF_ID, builder.build());
+        // put the service into the foreground
+        startForeground(NOTIF_ID, builder.build());
     }
 
     private void showPausedNotification() {

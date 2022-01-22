@@ -79,7 +79,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
      * @return {@code MediaControllerCompat} - the MediaController for this Activity
      */
     private MediaControllerCompat getController() {
-        return MediaControllerCompat.getMediaController(MediaPlayerActivity.this);
+        return MediaControllerCompat.getMediaController(this);
     }
 
     private final MediaBrowserCompat.ConnectionCallback connectionCallbacks =
@@ -122,8 +122,12 @@ public class MediaPlayerActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // SInce this is a play/pause button, you'll need to test the current state
                 // and choose the action accordingly
-                int pbState = getController().getPlaybackState().getState();
-                if (pbState == PlaybackStateCompat.STATE_PLAYING) {
+                PlaybackStateCompat pbState = getController().getPlaybackState();
+                int state = 0;
+                if (pbState != null) {
+                    state = pbState.getState();
+                }
+                if (pbState != null && state == PlaybackStateCompat.STATE_PLAYING) {
                     getController().getTransportControls().pause();
                 } else {
                     getController().getTransportControls().play();
