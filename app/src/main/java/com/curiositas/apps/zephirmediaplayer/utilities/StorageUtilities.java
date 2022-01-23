@@ -43,6 +43,11 @@ public class StorageUtilities {
         return externalStorageAvailable;
     }
 
+    /**
+     * Checks to see if the read storage permission has been given to our app,
+     * opens a dialog to request the permissions.
+     * @param activity
+     */
     public static void verifyStoragePermission(Activity activity) {
         // check if we have read permission
         int permission = ActivityCompat.checkSelfPermission(activity.getApplicationContext(),

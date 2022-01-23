@@ -183,6 +183,8 @@ public class MediaPlayerActivity extends AppCompatActivity {
     /**
      * Callback that will be called when the activity to request permissions
      * returns
+     * TODO right now this is not being used, but eventually it would be good to hook into
+     * the response from StorageUtilities
      */
     private ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
