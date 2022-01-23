@@ -5,9 +5,12 @@ import android.media.AudioManager;
 import android.os.Bundle;
 
 import com.curiositas.apps.zephirmediaplayer.service.MusicService;
+import com.curiositas.apps.zephirmediaplayer.utilities.StorageUtilities;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.media.AudioManagerCompat;
@@ -19,6 +22,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import android.view.View;
+import android.webkit.PermissionRequest;
 import android.widget.Button;
 import android.widget.ImageView;
 
@@ -49,6 +53,9 @@ public class MediaPlayerActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
+        // Check that we have the permissions that we need
+        StorageUtilities.verifyStoragePermission(this);
 
         // create MediaBrowserServiceCompat
         mediaBrowser = new MediaBrowserCompat(this,
@@ -172,4 +179,17 @@ public class MediaPlayerActivity extends AppCompatActivity {
                     super.onMetadataChanged(metadata);
                 }
             };
+
+    /**
+     * Callback that will be called when the activity to request permissions
+     * returns
+     */
+    private ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    Log.d(TAG, "Permission Granted!");
+                } else {
+                    Log.d(TAG, "Permission denied");
+                }
+            });
 }

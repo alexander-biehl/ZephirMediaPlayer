@@ -11,6 +11,7 @@ import android.media.AudioAttributes;
 import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.media.MediaBrowserCompat;
@@ -70,9 +71,12 @@ public class MusicService extends MediaBrowserServiceCompat implements
             setMediaPlaybackState(PlaybackStateCompat.STATE_PLAYING);
             showPlayingNotification();
 
-            //File file = new File("/mnt/sdcard/Download/02 Use Me.mp3");
+            String path = "/sdcard/Download/02 Use Me.mp3";
+            File file = new File(path);
+            Uri uri = Uri.parse(file.getAbsolutePath());
+
             try {
-                mediaPlayer.setDataSource("/mnt/sdcard/Download/02 Use Me.mp3");
+                mediaPlayer.setDataSource(path);
             } catch (IOException e) {
                 Log.e(TAG, "Error setting the data source.");
                 e.printStackTrace();
@@ -123,13 +127,9 @@ public class MusicService extends MediaBrowserServiceCompat implements
         @Override
         public void onPlayFromMediaId(String mediaId, Bundle extras) {
             super.onPlayFromMediaId(mediaId, extras);
-
-
             Log.d(TAG, "mediaSessionCallback.onPlayFromMediaId called.\nMediaId: " + mediaId);
 
             // String filename = "android.resource://" + getPackageName() + "/raw/use_me.mp3";
-
-
             try {
                 AssetFileDescriptor afd = getResources().openRawResourceFd(Integer.parseInt(mediaId));
                 //AssetFileDescriptor afd = getResources().
