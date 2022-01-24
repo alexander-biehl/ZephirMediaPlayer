@@ -186,7 +186,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
      * TODO right now this is not being used, but eventually it would be good to hook into
      * the response from StorageUtilities
      */
-    private ActivityResultLauncher<String> requestPermissionLauncher =
+    private final ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (isGranted) {
                     Log.d(TAG, "Permission Granted!");

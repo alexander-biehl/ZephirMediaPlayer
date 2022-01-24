@@ -193,6 +193,10 @@ public class MusicService extends MediaBrowserServiceCompat implements
         initNoisyReceiver();
     }
 
+    /**
+     * Initializes our AudioAttributes and AudioFocusRequest, which will be used
+     * to request and check if our app has system audio focus.
+     */
     private void initAudioAttributesAndRequest() {
         audioAttributes = new AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_MEDIA)
@@ -206,6 +210,10 @@ public class MusicService extends MediaBrowserServiceCompat implements
                 .build();
     }
 
+    /**
+     * Initialize our MediaPlayer instance, including wakelocks, audio attributes, and
+     * setting the OnPreparedListener
+     */
     private void initMediaPlayer() {
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setWakeMode(getApplicationContext(), PowerManager.PARTIAL_WAKE_LOCK);
@@ -214,6 +222,11 @@ public class MusicService extends MediaBrowserServiceCompat implements
         mediaPlayer.setOnPreparedListener(this);
     }
 
+    /**
+     * Initialize our MediaSessionCompat object, which allows clients to connect to our
+     * service, sets the mediaSessionCallback for communicating between the client and service,
+     * as well as register a MediaButtonReceiver so that our service can receive MediaButton intents
+     */
     private void initMediaSession() {
         ComponentName mediaButtonReceiver = new ComponentName(
                 getApplicationContext(),
@@ -352,8 +365,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
         NotificationManagerCompat.from(this).cancel(NOTIF_ID);
     }
 
-    // It appears that we only need to do this if we plan on running the mediaPlayer from
-    // our main thread, which we won't be here
+
     @Override
     public void onPrepared(MediaPlayer mp) {
         if (this.mediaPlayer != null) {
@@ -373,10 +385,16 @@ public class MusicService extends MediaBrowserServiceCompat implements
 
         int result = audioManager.requestAudioFocus(audioFocusRequest);
 
-        //return result == AudioManager.AUDIOFOCUS_GAIN;
         return result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED;
     }
 
+    /**
+     * Updates the PlaybackStateCompat (used to represent that state of Playback to clients)
+     * based on whether the passed in state parameter indicates that we want to be in a playing
+     * state or paused state
+     * @param state - integer representing the state that we would like to configure the Playback
+     *              for
+     */
     private void setMediaPlaybackState(int state) {
         PlaybackStateCompat.Builder playbackStateBuilder = new PlaybackStateCompat.Builder();
         if (state == PlaybackStateCompat.STATE_PLAYING) {
