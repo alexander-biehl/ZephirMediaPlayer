@@ -32,7 +32,6 @@ import com.curiositas.apps.zephirmediaplayer.SongManager;
 import com.curiositas.apps.zephirmediaplayer.utilities.MediaStyleHelper;
 
 import java.io.File;
-import java.io.FileDescriptor;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -255,7 +254,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
     public int onStartCommand(Intent intent, int flags, int startId) {
         MediaButtonReceiver.handleIntent(mediaSession, intent);
 
-        // May end up wanting to replace this line with return START_STICK
+        // May end up wanting to replace this line with return START_STICKY
         // see https://developer.android.com/reference/android/app/Service#START_NOT_STICKY
         return super.onStartCommand(intent, flags, startId);
     }
