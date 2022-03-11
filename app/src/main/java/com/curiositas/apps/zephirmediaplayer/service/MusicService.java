@@ -30,6 +30,7 @@ import androidx.media.session.MediaButtonReceiver;
 import com.curiositas.apps.zephirmediaplayer.R;
 import com.curiositas.apps.zephirmediaplayer.SongManager;
 import com.curiositas.apps.zephirmediaplayer.utilities.MediaStyleHelper;
+import com.curiositas.apps.zephirmediaplayer.utilities.NotificationUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -190,6 +191,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
         initMediaPlayer();
         initMediaSession();
         initNoisyReceiver();
+        initNotificationChannel();
     }
 
     /**
@@ -246,6 +248,10 @@ public class MusicService extends MediaBrowserServiceCompat implements
         // Handles headphones coming unplugged. cannot be done through a manifest receiver
         IntentFilter filter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
         registerReceiver(noisyReceiver, filter);
+    }
+
+    private void initNotificationChannel() {
+        NotificationUtil.createNotificationChannel(getApplicationContext());
     }
 
     // This is the entrypoint of the service.  This method will take the Intent

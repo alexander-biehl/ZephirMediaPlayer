@@ -11,7 +11,7 @@ public class NotificationUtil {
 
     public static final String CHANNEL_ID = "1";
 
-    public void createNotificationChannel(Context context) {
+    public static void createNotificationChannel(Context context) {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
