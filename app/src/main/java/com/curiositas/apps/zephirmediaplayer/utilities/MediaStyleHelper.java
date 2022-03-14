@@ -1,7 +1,6 @@
 package com.curiositas.apps.zephirmediaplayer.utilities;
 
 import android.content.Context;
-import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
@@ -28,6 +27,8 @@ public class MediaStyleHelper {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "channel1");
         builder
+                // make sure we set the channel
+                .setChannelId(NotificationUtil.CHANNEL_ID)
                 //.setContentTitle(description.getTitle())
                 .setContentTitle("Test Title")
                 //.setContentText(description.getSubtitle())

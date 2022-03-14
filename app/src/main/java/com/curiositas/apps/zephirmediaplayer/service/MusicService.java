@@ -71,7 +71,8 @@ public class MusicService extends MediaBrowserServiceCompat implements
             setMediaPlaybackState(PlaybackStateCompat.STATE_PLAYING);
             showPlayingNotification();
 
-            String path = "/sdcard/Download/02 Use Me.mp3";
+            //String path = "/sdcard/Download/02 Use Me.mp3";
+            String path = "/mnt/sdcard/Music/01 Peacebone.mp3";
             File file = new File(path);
             Uri uri = Uri.parse(file.getAbsolutePath());
 
