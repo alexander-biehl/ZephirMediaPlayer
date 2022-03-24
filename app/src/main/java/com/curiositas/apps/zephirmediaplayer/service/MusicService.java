@@ -188,6 +188,13 @@ public class MusicService extends MediaBrowserServiceCompat implements
         songManager = new SongManager();
         List<HashMap<String,String>> songs = songManager.getPlayList();
 
+        // TODO use the info from here https://developer.android.com/training/data-storage/shared/media#query-collection
+        // and https://developer.android.com/training/data-storage/shared/media#check-for-updates
+        // to check/load media items
+
+        // TODO this link may be useful also:
+        // https://developer.android.com/guide/topics/media/mediaplayer#viacontentresolver
+
         initAudioAttributesAndRequest();
         initMediaPlayer();
         initMediaSession();
