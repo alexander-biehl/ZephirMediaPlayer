@@ -2,7 +2,7 @@ package com.curiositas.apps.zephirmediaplayer.models;
 
 public class Song {
 
-    private long id;
+    private long contentID;
     private String title;
     //private Artist artist;
     private String artist;
@@ -16,15 +16,15 @@ public class Song {
         this.artist = songArtist;
         this.album = songAlbum;
     }*/
-    public Song(long songID, String songTitle, String songArtist, String songAlbum) {
-        this.id = songID;
+    public Song(long contentID, String songTitle, String songArtist, String songAlbum) {
+        this.contentID = contentID;
         this.title = songTitle;
         this.artist = songArtist;
         this.album = songAlbum;
     }
 
     public long getID() {
-        return this.id;
+        return this.contentID;
     }
 
     public String getTitle() {
