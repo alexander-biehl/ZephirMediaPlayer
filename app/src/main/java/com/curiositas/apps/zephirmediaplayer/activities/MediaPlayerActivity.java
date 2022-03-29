@@ -3,18 +3,6 @@ package com.curiositas.apps.zephirmediaplayer.activities;
 import android.content.ComponentName;
 import android.media.AudioManager;
 import android.os.Bundle;
-
-import com.curiositas.apps.zephirmediaplayer.service.MusicService;
-import com.curiositas.apps.zephirmediaplayer.utilities.StorageUtilities;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.media.AudioManagerCompat;
-
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
@@ -22,11 +10,18 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import android.view.View;
-import android.webkit.PermissionRequest;
 import android.widget.Button;
-import android.widget.ImageView;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.curiositas.apps.zephirmediaplayer.R;
+import com.curiositas.apps.zephirmediaplayer.service.MusicService;
+import com.curiositas.apps.zephirmediaplayer.utilities.StorageUtilities;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 public class MediaPlayerActivity extends AppCompatActivity {
 
@@ -123,11 +118,13 @@ public class MediaPlayerActivity extends AppCompatActivity {
                 @Override
                 public void onConnectionSuspended() {
                     // The Service has crashed. Disable transport controls until it automatically reconnects
+                    // TODO disable transport controls
                     Log.d(TAG, "onConnectionSuspended");
                 }
 
                 @Override
                 public void onConnectionFailed() {
+                    // TODO
                     // The Service has refused our connection
                 }
             };
