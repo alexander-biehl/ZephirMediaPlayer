@@ -13,7 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:requestLegacyExternalStorage="true">
+        android:requestLegacyExternalStorage="true"
+        android:name=".MainApp">
         <activity
             android:name=".activities.MediaPlayerActivity"
             android:label="@string/title_activity_media_player"
