@@ -20,8 +20,16 @@ public class SongLoader {
         ArrayList<Song> songList = new ArrayList<>();
 
         ContentResolver resolver = context.getContentResolver();
+        // define the location that we want to retrieve the media from
         Uri mediaUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        Cursor cursor = resolver.query(mediaUri, null, null, null, null);
+        // define which columns we want
+        String[] projection = {
+                MediaStore.Audio.Media._ID,
+                MediaStore.Audio.Media.TITLE,
+                MediaStore.Audio.Media.ARTIST,
+                MediaStore.Audio.Media.ALBUM
+        };
+        Cursor cursor = resolver.query(mediaUri, projection, null, null, null);
         if (cursor == null) {
             Log.d(TAG, "The song cursor returned null");
         } else if (!cursor.moveToFirst()) {
