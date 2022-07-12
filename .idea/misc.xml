@@ -5,16 +5,26 @@
       <map>
         <entry key="..\:/dev/workspace/Android/ZephirMediaPlayer/app/src/main/res/layout/activity_main.xml" value="0.20896656534954408" />
         <entry key="..\:/dev/workspace/Android/ZephirMediaPlayer/app/src/main/res/layout/activity_media_player.xml" value="0.3" />
+        <entry key="..\:/dev/workspace/Android/ZephirMediaPlayer/app/src/main/res/layout/activity_song_list.xml" value="0.18642350557244175" />
+        <entry key="..\:/dev/workspace/Android/ZephirMediaPlayer/app/src/main/res/layout/bg_player_footer.xml" value="0.18515704154002027" />
+        <entry key="..\:/dev/workspace/Android/ZephirMediaPlayer/app/src/main/res/layout/bg_player_header.xml" value="0.18515704154002027" />
+        <entry key="..\:/dev/workspace/Android/ZephirMediaPlayer/app/src/main/res/layout/content_main.xml" value="0.5541666666666667" />
         <entry key="..\:/dev/workspace/Android/ZephirMediaPlayer/app/src/main/res/layout/content_media_player.xml" value="0.2953125" />
+        <entry key="..\:/dev/workspace/Android/ZephirMediaPlayer/app/src/main/res/layout/content_scrolling.xml" value="0.1" />
         <entry key="..\:/dev/workspace/Android/ZephirMediaPlayer/app/src/main/res/layout/fragment_first.xml" value="0.3" />
+        <entry key="..\:/dev/workspace/Android/ZephirMediaPlayer/app/src/main/res/layout/fragment_song.xml" value="0.18515704154002027" />
+        <entry key="..\:/dev/workspace/Android/ZephirMediaPlayer/app/src/main/res/layout/fragment_song_list.xml" value="0.17958459979736577" />
+        <entry key="..\:/dev/workspace/Android/ZephirMediaPlayer/app/src/main/res/layout/player.xml" value="0.1" />
+        <entry key="..\:/dev/workspace/Android/ZephirMediaPlayer/app/src/main/res/layout/playlist.xml" value="0.15121580547112462" />
+        <entry key="..\:/dev/workspace/Android/ZephirMediaPlayer/app/src/main/res/layout/playlist_item.xml" value="0.15121580547112462" />
+        <entry key="..\:/dev/workspace/Android/ZephirMediaPlayer/app/src/main/res/layout/rounded_corner.xml" value="0.18515704154002027" />
+        <entry key="..\:/dev/workspace/Android/ZephirMediaPlayer/app/src/main/res/layout/song_recyclerview_item.xml" value="0.31354166666666666" />
         <entry key="app/src/main/res/drawable/btn_forward.xml" value="0.2682291666666667" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.19384057971014493" />
         <entry key="app/src/main/res/layout/activity_media_player.xml" value="0.19384057971014493" />
         <entry key="app/src/main/res/layout/bg_player_header.xml" value="0.18931159420289856" />
         <entry key="app/src/main/res/layout/content_main.xml" value="0.19384057971014493" />
         <entry key="app/src/main/res/layout/content_media_player.xml" value="0.19384057971014493" />
-        <entry key="app/src/main/res/layout/fragment_song_list.xml" value="0.1743659420289855" />
-        <entry key="app/src/main/res/layout/song_recyclerview_item.xml" value="0.1743659420289855" />
       </map>
     </option>
   </component>

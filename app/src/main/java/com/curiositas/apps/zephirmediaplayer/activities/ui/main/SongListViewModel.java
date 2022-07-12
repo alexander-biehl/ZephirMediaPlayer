@@ -1,14 +1,16 @@
 package com.curiositas.apps.zephirmediaplayer.activities.ui.main;
 
+import android.app.Application;
+
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModel;
 
 import com.curiositas.apps.zephirmediaplayer.models.Song;
 import com.curiositas.apps.zephirmediaplayer.repositories.SongRepository;
 
 import java.util.List;
 
-public class SongListViewModel extends ViewModel {
+public class SongListViewModel extends AndroidViewModel {
 
     /** class name for logging */
     private final String TAG = SongListViewModel.class.getSimpleName();
@@ -17,10 +19,11 @@ public class SongListViewModel extends ViewModel {
     private LiveData<List<Song>> songList;
 
     /** Repository used to retieve songs from the backend */
-    private final SongRepository songRepository;
+    private SongRepository songRepository;
 
-    public SongListViewModel(SongRepository songRepository) {
-        this.songRepository = songRepository;
+    public SongListViewModel(Application app) {
+        super(app);
+        this.songRepository = new SongRepository(app);
         this.songList = this.songRepository.getSongList();
     }
 

@@ -19,13 +19,17 @@ public class SongManager {
     // Constructor
     public SongManager() {
 
-//        storageUtilities = new StorageUtilities();
-//        if (storageUtilities.isExternalStorageAvailable()) {
-//            MEDIA_PATH = new String(Environment.getExternalStorageDirectory().getParent());
-//        } else {
-//            MEDIA_PATH = new String(Environment.getDataDirectory().getPath());
-//        }
-        MEDIA_PATH = new String(Environment.getDownloadCacheDirectory().getPath());
+        storageUtilities = new StorageUtilities();
+        if (storageUtilities.isExternalStorageAvailable()) {
+            MEDIA_PATH = new String(
+                    (Environment.getExternalStorageDirectory().getParent() != null) ?
+                            Environment.getExternalStorageDirectory().getParent() :
+                            Environment.getExternalStorageDirectory().getPath()
+            );
+        } else {
+            MEDIA_PATH = new String(Environment.getDataDirectory().getPath());
+        }
+        //MEDIA_PATH = new String(Environment.getDownloadCacheDirectory().getPath());
     }
 
     /**
@@ -55,8 +59,8 @@ public class SongManager {
      */
     class FileExtensionFilter implements FilenameFilter {
         public boolean accept(File dir, String name) {
-            return true;
-            //return (name.endsWith(".mp3") || name.endsWith(".MP3"));
+            //return true;
+            return (name.endsWith(".mp3") || name.endsWith(".MP3"));
         }
     }
 }

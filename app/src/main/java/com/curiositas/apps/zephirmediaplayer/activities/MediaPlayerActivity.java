@@ -1,6 +1,7 @@
 package com.curiositas.apps.zephirmediaplayer.activities;
 
 import android.content.ComponentName;
+import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.media.MediaBrowserCompat;
@@ -32,6 +33,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
     private FloatingActionButton pause_btn;
     private FloatingActionButton stop_btn;
     private Button load_button;
+    private Button songListButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +63,12 @@ public class MediaPlayerActivity extends AppCompatActivity {
         load_button = findViewById(R.id.load_button);
         load_button.setOnClickListener(view -> {
             // TODO figure out what is necessary to load a song
+        });
+
+        songListButton = findViewById(R.id.song_list_button);
+        songListButton.setOnClickListener(view -> {
+            Intent intent = new Intent(this, SongListActivity.class);
+            startActivity(intent);
         });
     }
 

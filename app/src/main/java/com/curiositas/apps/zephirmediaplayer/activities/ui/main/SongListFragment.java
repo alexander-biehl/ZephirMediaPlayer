@@ -31,22 +31,16 @@ public class SongListFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_song_list, container, false);
         this.recyclerView = view.findViewById(R.id.song_recycler_view);
-        final SongListAdapter adapter = new SongListAdapter(view.getContext());
-        this.recyclerView.setAdapter(adapter);
         this.recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
 
+        final SongListAdapter adapter = new SongListAdapter(view.getContext());
+        this.recyclerView.setAdapter(adapter);
+
+        mViewModel = new ViewModelProvider(this).get(SongListViewModel.class);
         mViewModel.getSongs().observe(getActivity(), songs -> {
             adapter.setSongs(songs);
         });
 
         return view;
     }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        mViewModel = new ViewModelProvider(this).get(SongListViewModel.class);
-    }
-
 }
