@@ -82,14 +82,8 @@ public class MusicService extends MediaBrowserServiceCompat implements
                 Log.e(TAG, "Error setting the data source.");
                 e.printStackTrace();
             }
-            //try {
-                mediaPlayer.prepareAsync();
-                //mediaPlayer.start();
-//            } catch (IOException e) {
-//                Log.e(TAG, "There was an error attempting to prepare or start the MediaPlayer" +
-//                        " \nEx: " + e.getMessage());
-//                //throw e;
-//            }
+
+            mediaPlayer.prepareAsync();
         }
 
         @Override

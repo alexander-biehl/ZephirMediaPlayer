@@ -2,6 +2,7 @@ package com.curiositas.apps.zephirmediaplayer;
 
 import android.app.Application;
 
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -32,5 +33,9 @@ public class MainApp extends Application {
         // TODO do we need to clean up references to ExecutorService, WorkManager, etc?
         // tell executor to stop accepting new threads
         executorService.shutdown();
+    }
+
+    public Executor getExec() {
+        return executorService;
     }
 }
