@@ -39,6 +39,7 @@ public class SongManager {
     public ArrayList<HashMap<String,String>> getPlayList() {
         File home = new File(MEDIA_PATH);
 
+        // problem is this is not recursive. Need to walk the path down
         File[] paths = home.listFiles(new FileExtensionFilter());
         if (paths != null && paths.length > 0) {
             for (File file : home.listFiles(new FileExtensionFilter())) {
