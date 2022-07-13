@@ -32,7 +32,6 @@ import com.curiositas.apps.zephirmediaplayer.SongManager;
 import com.curiositas.apps.zephirmediaplayer.utilities.MediaStyleHelper;
 import com.curiositas.apps.zephirmediaplayer.utilities.NotificationUtil;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -57,33 +56,25 @@ public class MusicService extends MediaBrowserServiceCompat implements
     private SongManager songManager;
     private final MediaSessionCompat.Callback mediaSessionCallback = new MediaSessionCompat.Callback() {
         @Override
+        public void onPrepareFromMediaId(String mediaId, Bundle extras) {
+            super.onPrepareFromMediaId(mediaId, extras);
+        }
+
+        @Override
+        public void onPrepareFromUri(Uri uri, Bundle extras) {
+            super.onPrepareFromUri(uri, extras);
+        }
+
+        @Override
+        public void onPlayFromUri(Uri uri, Bundle extras) {
+            super.onPlayFromUri(uri, extras);
+        }
+
+        @Override
         public void onPlay() {
             super.onPlay();
             Log.d(TAG, "mediaSessionCallback.onPlay called");
-            // audio is handled by focus, which determines what app is making sounds currently.
-            if (!successfullyRetrievedAudioFocus()) {
-                return;
-            }
-            // insure our service is started
-            startService(new Intent(getApplicationContext(), MusicService.class));
-            // set our mediaSession to active so it is discoverable
-            mediaSession.setActive(true);
-            setMediaPlaybackState(PlaybackStateCompat.STATE_PLAYING);
-            showPlayingNotification();
-
-            //String path = "/sdcard/Download/02 Use Me.mp3";
-            String path = "/mnt/sdcard/Music/01 Peacebone.mp3";
-            File file = new File(path);
-            Uri uri = Uri.parse(file.getAbsolutePath());
-
-            try {
-                mediaPlayer.setDataSource(path);
-            } catch (IOException e) {
-                Log.e(TAG, "Error setting the data source.");
-                e.printStackTrace();
-            }
-
-            mediaPlayer.prepareAsync();
+            startPlayback();
         }
 
         @Override
@@ -91,13 +82,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
             super.onPause();
             Log.d(TAG, "mediaSessionCallback.onPause called");
 
-            if (mediaPlayer.isPlaying()) {
-                mediaPlayer.pause();
-                setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED);
-                showPausedNotification();
-                // take the service out of the foreground, but leave the notification
-                stopForeground(false);
-            }
+            pausePlayback();
         }
 
         @Override
@@ -105,14 +90,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
             super.onStop();
             Log.d(TAG, "mediaSessionCallback.onStop called");
 
-            // stop the service so it's not taking up resources
-            stopSelf();
-            // set the mediaSession to inactive
-            mediaSession.setActive(false);
-            // stop the mediaPlayer
-            mediaPlayer.stop();
-            // take the service out of the foreground
-            stopForeground(false);
+            stopPlayback();
         }
 
         private void initMediaSessionMetadata() {
@@ -148,11 +126,12 @@ public class MusicService extends MediaBrowserServiceCompat implements
                 return;
             }
 
-            try {
-                mediaPlayer.prepare();
-            } catch (IOException e) {
-
-            }
+//            try {
+//                mediaPlayer.prepare();
+//            } catch (IOException e) {
+//
+//            }
+            mediaPlayer.prepareAsync();
 
             // Work here with extras if needed
         }
@@ -192,7 +171,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
         initAudioAttributesAndRequest();
         initMediaPlayer();
         initMediaSession();
-        initNoisyReceiver();
+        // initNoisyReceiver();
         initNotificationChannel();
     }
 
@@ -250,6 +229,10 @@ public class MusicService extends MediaBrowserServiceCompat implements
         // Handles headphones coming unplugged. cannot be done through a manifest receiver
         IntentFilter filter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
         registerReceiver(noisyReceiver, filter);
+    }
+
+    private void removeNoisyReceiver() {
+        unregisterReceiver(noisyReceiver);
     }
 
     private void initNotificationChannel() {
@@ -367,7 +350,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
         super.onDestroy();
         AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         audioManager.abandonAudioFocusRequest(audioFocusRequest);
-        unregisterReceiver(noisyReceiver);
+        // unregisterReceiver(noisyReceiver);
         mediaSession.release();
         NotificationManagerCompat.from(this).cancel(NOTIF_ID);
     }
@@ -474,4 +457,50 @@ public class MusicService extends MediaBrowserServiceCompat implements
         NotificationManagerCompat.from(this).notify(1, builder.build());
     }
 
+    /**
+     * Convenience method for pausing the mediaPlayer and handling notifications
+     */
+    private void pausePlayback() {
+        if (mediaPlayer.isPlaying()) {
+            mediaPlayer.pause();
+            setMediaPlaybackState(PlaybackStateCompat.STATE_PAUSED);
+            showPausedNotification();
+            removeNoisyReceiver();
+            // take the service out of the foreground, but leave the notification
+            stopForeground(false);
+        }
+    }
+
+    /**
+     * Convenience method for starting the mediaPlayer and handling notifications
+     */
+    private void startPlayback() {
+        // audio is handled by focus, which determines what app is making sounds currently.
+        if (!successfullyRetrievedAudioFocus()) {
+            return;
+        }
+        // insure our service is started
+        startService(new Intent(getApplicationContext(), MusicService.class));
+        // set our mediaSession to active so it is discoverable
+        mediaSession.setActive(true);
+        setMediaPlaybackState(PlaybackStateCompat.STATE_PLAYING);
+        showPlayingNotification();
+        mediaPlayer.start();
+        initNoisyReceiver();
+    }
+
+    /**
+     * Convenience method for stopping the mediaPlayer and handling notifications
+     */
+    private void stopPlayback() {
+        // stop the service so it's not taking up resources
+        stopSelf();
+        // set the mediaSession to inactive
+        mediaSession.setActive(false);
+        // stop the mediaPlayer
+        mediaPlayer.stop();
+        removeNoisyReceiver();
+        // take the service out of the foreground
+        stopForeground(false);
+    }
 }
