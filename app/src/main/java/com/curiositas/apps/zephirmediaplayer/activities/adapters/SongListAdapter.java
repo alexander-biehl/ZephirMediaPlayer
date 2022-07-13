@@ -26,7 +26,7 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
     @NonNull
     @Override
     public SongListAdapter.SongViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = inflater.inflate(R.layout.fragment_song_list, parent, false);
+        View itemView = inflater.inflate(R.layout.song_recyclerview_item, parent, false);
         return new SongViewHolder(itemView);
     }
 
@@ -34,10 +34,10 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
     public void onBindViewHolder(@NonNull SongListAdapter.SongViewHolder holder, int position) {
         if (songs != null) {
             Song current = songs.get(position);
-            holder.songItem.setText(current.getTitle());
+            holder.getView().setText(current.getTitle());
         } else {
             // in case data isn't ready yet
-            holder.songItem.setText("No Song");
+            holder.getView().setText("No Song");
         }
     }
 
@@ -56,11 +56,15 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
 
     class SongViewHolder extends RecyclerView.ViewHolder {
 
-        private final TextView songItem;
+        TextView songItem;
 
         public SongViewHolder(@NonNull View itemView) {
             super(itemView);
             songItem = (TextView) itemView.findViewById(R.id.song_list_title);
+        }
+
+        public TextView getView() {
+            return songItem;
         }
     }
 }
