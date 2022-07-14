@@ -133,7 +133,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
                 @Override
                 public void onConnectionFailed() {
                     // TODO
-                    // The Service has refused our connection
+                    // The Service has refused our connectionLog.e(TAG, "Failed to connect to the service");
                 }
             };
 
@@ -147,7 +147,7 @@ public class MediaPlayerActivity extends AppCompatActivity {
         playPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // SInce this is a play/pause button, you'll need to test the current state
+                // Since this is a play/pause button, you'll need to test the current state
                 // and choose the action accordingly
                 PlaybackStateCompat pbState = getController().getPlaybackState();
                 int state = 0;
