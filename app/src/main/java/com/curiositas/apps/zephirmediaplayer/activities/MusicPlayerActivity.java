@@ -258,6 +258,10 @@ implements MediaPlayer.OnCompletionListener, SeekBar.OnSeekBarChangeListener {
     public void playSong(int songIndex) {
         // play song
         try {
+
+            //TODO update this to use the MusicBrowserCompat instead of directly
+            // loading
+
             mp.reset();
             mp.setDataSource(songsList.get(songIndex).get("songPath"));
             mp.prepare();
