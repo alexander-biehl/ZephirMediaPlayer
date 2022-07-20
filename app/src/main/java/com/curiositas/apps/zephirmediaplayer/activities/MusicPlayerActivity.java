@@ -1,30 +1,38 @@
 package com.curiositas.apps.zephirmediaplayer.activities;
 
-import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Intent;
-import android.media.MediaPlayer;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaControllerCompat;
+import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.curiositas.apps.zephirmediaplayer.Constants;
 import com.curiositas.apps.zephirmediaplayer.R;
-import com.curiositas.apps.zephirmediaplayer.SongManager;
+import com.curiositas.apps.zephirmediaplayer.service.MusicService;
 import com.curiositas.apps.zephirmediaplayer.utilities.Utilities;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Random;
+import java.util.List;
 
-public class MusicPlayerActivity extends Activity
-implements MediaPlayer.OnCompletionListener, SeekBar.OnSeekBarChangeListener {
+public class MusicPlayerActivity extends AppCompatActivity implements
+SeekBar.OnSeekBarChangeListener {
+//        extends Activity
+//implements MediaPlayer.OnCompletionListener, SeekBar.OnSeekBarChangeListener {
 
-    private static final String TAG = "MusicPlayerActivity";
+    private static final String TAG = MusicPlayerActivity.class.getSimpleName();
 
     private ImageButton btnPlay;
     private ImageButton btnForward;
@@ -38,11 +46,13 @@ implements MediaPlayer.OnCompletionListener, SeekBar.OnSeekBarChangeListener {
     private TextView songTitleLabel;
     private TextView songCurrentDurationLabel;
     private TextView songTotalDurationLabel;
+
+    private MediaBrowserCompat mediaBrowser;
     // Media Player
-    private  MediaPlayer mp;
+    //private  MediaPlayer mp;
     // Handler to update UI timer, progress bar etc,.
     private Handler mHandler = new Handler();;
-    private SongManager songManager;
+    //private SongManager songManager;
     private Utilities utils;
     private int seekForwardTime = 5000; // 5000 milliseconds
     private int seekBackwardTime = 5000; // 5000 milliseconds
@@ -70,21 +80,37 @@ implements MediaPlayer.OnCompletionListener, SeekBar.OnSeekBarChangeListener {
         songCurrentDurationLabel = (TextView) findViewById(R.id.songCurrentDurationLabel);
         songTotalDurationLabel = (TextView) findViewById(R.id.songTotalDurationLabel);
 
+        mediaBrowser = new MediaBrowserCompat(this,
+                new ComponentName(this, MusicService.class),
+                connectionCallbacks, null);
         // MediaPlayer
-        mp = new MediaPlayer();
-        songManager = new SongManager();
+        //mp = new MediaPlayer();
+        //songManager = new SongManager();
         utils = new Utilities();
 
         // Listeners
         songProgressBar.setOnSeekBarChangeListener(this); // Important
-        mp.setOnCompletionListener(this); // Important
+        //mp.setOnCompletionListener(this); // Important
 
         // Getting all songs list
-        songsList = songManager.getPlayList();
+        //songsList = songManager.getPlayList();
 
         // By default play first song
-        playSong(0);
+        //playSong(0);
 
+        initClickHandlers();
+
+        // retrieve extras from intent
+        Intent intent = getIntent();
+        String uriStr = intent.getStringExtra(Constants.URI_EXTRA);
+        if (uriStr != null) {
+            Log.d(TAG, "Retrieved URI String: " + uriStr);
+        } else {
+            Log.d(TAG, "Unable to retrieve URI string");
+        }
+    }
+
+    private void initClickHandlers() {
         /**
          * Play button click event
          * plays a song and changes button to pause image
@@ -95,20 +121,20 @@ implements MediaPlayer.OnCompletionListener, SeekBar.OnSeekBarChangeListener {
             @Override
             public void onClick(View arg0) {
                 // check for if already playing
-                if (mp.isPlaying()) {
-                    if (mp != null) {
-                        mp.pause();
-                        // changing button image to play button
-                        btnPlay.setImageResource(R.drawable.btn_play);
-                    }
-                } else {
-                    // Resume song
-                    if (mp != null) {
-                        mp.start();
-                        // changing button image to pause button
-                        btnPlay.setImageResource(R.drawable.btn_pause);
-                    }
-                }
+//                if (mp.isPlaying()) {
+//                    if (mp != null) {
+//                        mp.pause();
+//                        // changing button image to play button
+//                        btnPlay.setImageResource(R.drawable.btn_play);
+//                    }
+//                } else {
+//                    // Resume song
+//                    if (mp != null) {
+//                        mp.start();
+//                        // changing button image to pause button
+//                        btnPlay.setImageResource(R.drawable.btn_pause);
+//                    }
+//                }
             }
         });
 
@@ -120,16 +146,16 @@ implements MediaPlayer.OnCompletionListener, SeekBar.OnSeekBarChangeListener {
 
             @Override
             public void onClick(View arg0) {
-                // get current song position
-                int currentPosition = mp.getCurrentPosition();
-                // check if seekForward time is lesser than song duration
-                if (currentPosition + seekForwardTime <= mp.getDuration()) {
-                    // forward song
-                    mp.seekTo(currentPosition + seekForwardTime);
-                } else {
-                    // forward to end position
-                    mp.seekTo(mp.getDuration());
-                }
+//                // get current song position
+//                int currentPosition = mp.getCurrentPosition();
+//                // check if seekForward time is lesser than song duration
+//                if (currentPosition + seekForwardTime <= mp.getDuration()) {
+//                    // forward song
+//                    mp.seekTo(currentPosition + seekForwardTime);
+//                } else {
+//                    // forward to end position
+//                    mp.seekTo(mp.getDuration());
+//                }
             }
         });
 
@@ -142,14 +168,14 @@ implements MediaPlayer.OnCompletionListener, SeekBar.OnSeekBarChangeListener {
             @Override
             public void onClick(View arg0) {
                 // check if next song is there or not
-                if (currentSongIndex < (songsList.size() - 1)) {
-                    playSong(currentSongIndex + 1);
-                    currentSongIndex++;
-                } else {
-                    // play first song
-                    playSong(0);
-                    currentSongIndex = 0;
-                }
+//                if (currentSongIndex < (songsList.size() - 1)) {
+//                    playSong(currentSongIndex + 1);
+//                    currentSongIndex++;
+//                } else {
+//                    // play first song
+//                    playSong(0);
+//                    currentSongIndex = 0;
+//                }
             }
         });
 
@@ -161,14 +187,14 @@ implements MediaPlayer.OnCompletionListener, SeekBar.OnSeekBarChangeListener {
 
             @Override
             public void onClick(View arg0) {
-                if (currentSongIndex > 0) {
-                    playSong(currentSongIndex - 1);
-                    currentSongIndex--;
-                } else {
-                    // play last song
-                    playSong(songsList.size() - 1);
-                    currentSongIndex = songsList.size() - 1;
-                }
+//                if (currentSongIndex > 0) {
+//                    playSong(currentSongIndex - 1);
+//                    currentSongIndex--;
+//                } else {
+//                    // play last song
+//                    playSong(songsList.size() - 1);
+//                    currentSongIndex = songsList.size() - 1;
+//                }
             }
         });
 
@@ -179,19 +205,19 @@ implements MediaPlayer.OnCompletionListener, SeekBar.OnSeekBarChangeListener {
 
             @Override
             public void onClick(View arg0) {
-                if (isRepeat) {
-                    isRepeat = false;
-                    Toast.makeText(getApplicationContext(), "Repeat is OFF", Toast.LENGTH_SHORT).show();
-                    btnRepeat.setImageResource(R.drawable.btn_repeat);
-                } else {
-                    // make repeat to true
-                    isRepeat = true;
-                    Toast.makeText(getApplicationContext(), "Repeat is ON", Toast.LENGTH_SHORT).show();
-                    // make shuffle false
-                    isShuffle = false;
-                    btnRepeat.setImageResource(R.drawable.btn_repeat_focused);
-                    btnShuffle.setImageResource(R.drawable.btn_shuffle);
-                }
+//                if (isRepeat) {
+//                    isRepeat = false;
+//                    Toast.makeText(getApplicationContext(), "Repeat is OFF", Toast.LENGTH_SHORT).show();
+//                    btnRepeat.setImageResource(R.drawable.btn_repeat);
+//                } else {
+//                    // make repeat to true
+//                    isRepeat = true;
+//                    Toast.makeText(getApplicationContext(), "Repeat is ON", Toast.LENGTH_SHORT).show();
+//                    // make shuffle false
+//                    isShuffle = false;
+//                    btnRepeat.setImageResource(R.drawable.btn_repeat_focused);
+//                    btnShuffle.setImageResource(R.drawable.btn_shuffle);
+//                }
             }
         });
 
@@ -203,19 +229,20 @@ implements MediaPlayer.OnCompletionListener, SeekBar.OnSeekBarChangeListener {
 
             @Override
             public void onClick(View arg0) {
-                if (isShuffle) {
-                    isShuffle = false;
-                    Toast.makeText(getApplicationContext(), "Shuffle is OFF", Toast.LENGTH_SHORT).show();
-                    btnShuffle.setImageResource(R.drawable.btn_shuffle);
-                } else {
-                    // make shuffle true
-                    isShuffle = true;
-                    Toast.makeText(getApplicationContext(), "Shuffle is ON", Toast.LENGTH_SHORT).show();
-                    // make repeat false
-                    isRepeat = false;
-                    btnShuffle.setImageResource(R.drawable.btn_shuffle_focused);
-                    btnRepeat.setImageResource(R.drawable.btn_repeat);
-                }
+                //getMediaController().getTransportControls().playFromUri(Uri.parse());
+//                if (isShuffle) {
+//                    isShuffle = false;
+//                    Toast.makeText(getApplicationContext(), "Shuffle is OFF", Toast.LENGTH_SHORT).show();
+//                    btnShuffle.setImageResource(R.drawable.btn_shuffle);
+//                } else {
+//                    // make shuffle true
+//                    isShuffle = true;
+//                    Toast.makeText(getApplicationContext(), "Shuffle is ON", Toast.LENGTH_SHORT).show();
+//                    // make repeat false
+//                    isRepeat = false;
+//                    btnShuffle.setImageResource(R.drawable.btn_shuffle_focused);
+//                    btnRepeat.setImageResource(R.drawable.btn_repeat);
+//                }
             }
         });
 
@@ -247,7 +274,7 @@ implements MediaPlayer.OnCompletionListener, SeekBar.OnSeekBarChangeListener {
         if (resultCode == 100) {
             currentSongIndex = data.getExtras().getInt("songIndex");
             // play selected song
-            playSong(currentSongIndex);
+            //playSong(currentSongIndex);
         }
     }
 
@@ -255,38 +282,38 @@ implements MediaPlayer.OnCompletionListener, SeekBar.OnSeekBarChangeListener {
      * Function to play a song
      * @param songIndex
      */
-    public void playSong(int songIndex) {
-        // play song
-        try {
-
-            //TODO update this to use the MusicBrowserCompat instead of directly
-            // loading
-
-            mp.reset();
-            mp.setDataSource(songsList.get(songIndex).get("songPath"));
-            mp.prepare();
-            mp.start();
-            // Display song title
-            String songTitle = songsList.get(songIndex).get("songTitle");
-            songTitleLabel.setText(songTitle);
-
-            // Change Button Image to pause image
-            btnPlay.setImageResource(R.drawable.btn_pause);
-
-            // set progress bar value
-            songProgressBar.setProgress(0);
-            songProgressBar.setMax(100);
-
-            // update progress bar
-            updateProgressBar();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//    public void playSong(int songIndex) {
+//        // play song
+//        try {
+//
+//            //TODO update this to use the MusicBrowserCompat instead of directly
+//            // loading
+//
+//            mp.reset();
+//            mp.setDataSource(songsList.get(songIndex).get("songPath"));
+//            mp.prepare();
+//            mp.start();
+//            // Display song title
+//            String songTitle = songsList.get(songIndex).get("songTitle");
+//            songTitleLabel.setText(songTitle);
+//
+//            // Change Button Image to pause image
+//            btnPlay.setImageResource(R.drawable.btn_pause);
+//
+//            // set progress bar value
+//            songProgressBar.setProgress(0);
+//            songProgressBar.setMax(100);
+//
+//            // update progress bar
+//            updateProgressBar();
+//        } catch (IllegalArgumentException e) {
+//            e.printStackTrace();
+//        } catch (IllegalStateException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     /**
      * Update timer on seekbar
@@ -301,8 +328,11 @@ implements MediaPlayer.OnCompletionListener, SeekBar.OnSeekBarChangeListener {
     private Runnable mUpdateTimeTask = new Runnable() {
         @Override
         public void run() {
-            long totalDuration = mp.getDuration();
-            long currentDuration = mp.getCurrentPosition();
+            // TODO fix these
+            //long totalDuration = mp.getDuration();
+            //long currentDuration = mp.getCurrentPosition();
+            long totalDuration = 2L;
+            long currentDuration = 1L;
 
             // Display total duration time
             songTotalDurationLabel.setText("" + utils.millisecondsToTimer(totalDuration));
@@ -315,7 +345,9 @@ implements MediaPlayer.OnCompletionListener, SeekBar.OnSeekBarChangeListener {
             songProgressBar.setProgress(progress);
 
             // run this thread after 100 milliseconds
-            mHandler.postDelayed(this, 100);
+            if (progress > 100) {
+                mHandler.postDelayed(this, 100);
+            }
         }
     };
 
@@ -333,42 +365,120 @@ implements MediaPlayer.OnCompletionListener, SeekBar.OnSeekBarChangeListener {
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         mHandler.removeCallbacks(mUpdateTimeTask);
-        int totalDuration = mp.getDuration();
-        int currentPosition = utils.progressToTimer(seekBar.getProgress(), totalDuration);
+        long pos = getMediaController().getPlaybackState().getBufferedPosition();
+        //int totalDuration = mp.getDuration();
+        //int currentPosition = utils.progressToTimer(seekBar.getProgress(), totalDuration);
 
         // forward or backward to position
-        mp.seekTo(currentPosition);
+        //mp.seekTo(currentPosition);
+        getMediaController().getTransportControls().seekTo(pos);
 
         // update timer progress again
         updateProgressBar();
     }
 
+//    @Override
+//    public void onCompletion(MediaPlayer arg0) {
+//        // check if repeat is On or OFF
+//        if (isRepeat) {
+//            // repeat is on play same song again
+//            playSong(currentSongIndex);
+//        } else if (isShuffle){
+//            // shuffle is on - play random song
+//            Random rand = new Random();
+//            currentSongIndex = rand.nextInt((songsList.size() - 1) - 0 + 1) + 0;
+//            playSong(currentSongIndex);
+//        } else {
+//            // n repeat or shuffle, - play next song
+//            if (currentSongIndex < (songsList.size() - 1)) {
+//                playSong(currentSongIndex + 1);
+//                currentSongIndex++;
+//            } else {
+//                // play first song
+//                playSong(currentSongIndex = 0);
+//            }
+//        }
+//    }
+
     @Override
-    public void onCompletion(MediaPlayer arg0) {
-        // check if repeat is On or OFF
-        if (isRepeat) {
-            // repeat is on play same song again
-            playSong(currentSongIndex);
-        } else if (isShuffle){
-            // shuffle is on - play random song
-            Random rand = new Random();
-            currentSongIndex = rand.nextInt((songsList.size() - 1) - 0 + 1) + 0;
-            playSong(currentSongIndex);
-        } else {
-            // n repeat or shuffle, - play next song
-            if (currentSongIndex < (songsList.size() - 1)) {
-                playSong(currentSongIndex + 1);
-                currentSongIndex++;
-            } else {
-                // play first song
-                playSong(currentSongIndex = 0);
-            }
-        }
+    protected void onStart() {
+        super.onStart();
+        mediaBrowser.connect();
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mp.release();
+    protected void onStop() {
+        super.onStop();
+        if (getController() != null) {
+            getController().unregisterCallback(controllerCallback);
+        }
+        mediaBrowser.disconnect();
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
+    }
+
+    private MediaControllerCompat getController() {
+        return MediaControllerCompat.getMediaController(this);
+    }
+
+    private final MediaBrowserCompat.ConnectionCallback connectionCallbacks =
+            new MediaBrowserCompat.ConnectionCallback() {
+
+                @Override
+                public void onConnected() {
+                    super.onConnected();
+                    MediaSessionCompat.Token token = mediaBrowser.getSessionToken();
+
+                    MediaControllerCompat mediaController =
+                            new MediaControllerCompat(MusicPlayerActivity.this,
+                                    token);
+
+                    mediaController.registerCallback(controllerCallback);
+
+                    MediaControllerCompat.setMediaController(MusicPlayerActivity.this, mediaController);
+
+                    // buildTransportControls
+
+                }
+
+                @Override
+                public void onConnectionSuspended() {
+                    super.onConnectionSuspended();
+                    Log.d(TAG, "onConnectionSuspended");
+                }
+
+                @Override
+                public void onConnectionFailed() {
+                    super.onConnectionFailed();
+                    Log.e(TAG, "onConnectionFailed");
+                }
+            };
+
+    MediaControllerCompat.Callback controllerCallback =
+            new MediaControllerCompat.Callback() {
+                @Override
+                public void onSessionDestroyed() {
+                    super.onSessionDestroyed();
+                    mediaBrowser.disconnect();
+                }
+
+                @Override
+                public void onPlaybackStateChanged(PlaybackStateCompat state) {
+                    super.onPlaybackStateChanged(state);
+                }
+
+                @Override
+                public void onMetadataChanged(MediaMetadataCompat metadata) {
+                    super.onMetadataChanged(metadata);
+                }
+
+                @Override
+                public void onQueueChanged(List<MediaSessionCompat.QueueItem> queue) {
+                    super.onQueueChanged(queue);
+                }
+            };
 }

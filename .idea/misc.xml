@@ -16,6 +16,7 @@
         <entry key="app/src/main/res/layout/content_media_player.xml" value="0.19384057971014493" />
         <entry key="app/src/main/res/layout/fragment_song_list.xml" value="0.1743659420289855" />
         <entry key="app/src/main/res/layout/player.xml" value="0.22146739130434784" />
+        <entry key="app/src/main/res/layout/playlist.xml" value="0.22146739130434784" />
         <entry key="app/src/main/res/layout/song_recyclerview_item.xml" value="0.1743659420289855" />
       </map>
     </option>

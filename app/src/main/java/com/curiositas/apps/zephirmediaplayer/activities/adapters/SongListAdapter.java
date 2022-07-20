@@ -1,6 +1,8 @@
 package com.curiositas.apps.zephirmediaplayer.activities.adapters;
 
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,13 +11,16 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.curiositas.apps.zephirmediaplayer.Constants;
 import com.curiositas.apps.zephirmediaplayer.R;
+import com.curiositas.apps.zephirmediaplayer.activities.MusicPlayerActivity;
 import com.curiositas.apps.zephirmediaplayer.models.Song;
 
 import java.util.List;
 
 public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongViewHolder>{
 
+    private final String TAG = SongListAdapter.class.getSimpleName();
     private final LayoutInflater inflater;
     private List<Song> songs; // cached copy of songs
 
@@ -39,6 +44,21 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
             // in case data isn't ready yet
             holder.getView().setText("No Song");
         }
+        holder.getView().setOnClickListener(view -> {
+            // retrieve the position of the item clicked
+            int pos = holder.getBindingAdapterPosition();
+            // get the song corresponding to that adapter position
+            Song currSong = songs.get(pos);
+            if (currSong != null) {
+                // if valid, open song in music player activity
+                Log.d(TAG, "Retrieved song: " + currSong.getID().toString());
+                Intent intent = new Intent(inflater.getContext(), MusicPlayerActivity.class);
+                intent.putExtra(Constants.URI_EXTRA, currSong.getID().toString());
+                inflater.getContext().startActivity(intent);
+            } else {
+                Log.d(TAG, "Position " + pos + " did not return a song");
+            }
+        });
     }
 
     public void setSongs(List<Song> songs) {
@@ -54,7 +74,7 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
         return 0;
     }
 
-    class SongViewHolder extends RecyclerView.ViewHolder {
+    class SongViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         TextView songItem;
 
@@ -65,6 +85,11 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
 
         public TextView getView() {
             return songItem;
+        }
+
+        @Override
+        public void onClick(View view) {
+
         }
     }
 }

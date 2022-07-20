@@ -68,6 +68,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
         @Override
         public void onPlayFromUri(Uri uri, Bundle extras) {
             super.onPlayFromUri(uri, extras);
+
         }
 
         @Override
@@ -359,7 +360,8 @@ public class MusicService extends MediaBrowserServiceCompat implements
     @Override
     public void onPrepared(MediaPlayer mp) {
         if (this.mediaPlayer != null) {
-            this.mediaPlayer.start();
+            //this.mediaPlayer.start();
+            startPlayback();
         }
     }
 

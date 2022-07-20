@@ -18,6 +18,8 @@
         <activity
             android:name=".activities.SongListActivity"
             android:exported="false" />
+        <activity android:name=".activities.MusicPlayerActivity"
+            android:exported="false" />
         <activity
             android:name=".activities.MediaPlayerActivity"
             android:exported="true"

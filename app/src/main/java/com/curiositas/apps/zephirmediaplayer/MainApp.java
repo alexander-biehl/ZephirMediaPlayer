@@ -37,6 +37,7 @@ public class MainApp extends Application {
         executorService.shutdown();
     }
 
+    // Note: don't need to make this synchronized since executorService is Final
     public Executor getExec() {
         return executorService;
     }
