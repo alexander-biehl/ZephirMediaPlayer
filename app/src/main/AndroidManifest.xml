@@ -16,9 +16,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".BaseActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.SongListActivity"
             android:exported="false" />
-        <activity android:name=".activities.MusicPlayerActivity"
+        <activity
+            android:name=".activities.MusicPlayerActivity"
             android:exported="false" />
         <activity
             android:name=".activities.MediaPlayerActivity"

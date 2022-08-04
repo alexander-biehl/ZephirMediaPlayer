@@ -424,7 +424,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
         builder.setStyle(
                 new androidx.media.app.NotificationCompat
                         .MediaStyle()
-                        .setShowActionsInCompactView(0)
+                        .setShowActionsInCompactView(0,1,2)
                         .setMediaSession(mediaSession.getSessionToken())
         );
         builder.setSmallIcon(R.mipmap.ic_launcher);
