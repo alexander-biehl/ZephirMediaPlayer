@@ -34,6 +34,7 @@ public final class MusicLibrary {
 
     private MusicLibrary(Application application) {
         mediaRepository = new MediaRepository(application);
+        isReady = new MutableLiveData<>();
         isReady.postValue(false);
         loadIfReady();
     }
