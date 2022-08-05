@@ -6,6 +6,8 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,11 +18,13 @@ import java.util.List;
 
 public class BaseActivity extends AppCompatActivity {
 
+    private static final String TAG = BaseActivity.class.getSimpleName();
+
     private MediaBrowserCompat mediaBrowser;
     private MediaMetadataCompat currentMetadata;
     private PlaybackStateCompat currentState;
 
-    private final MediaBrowserCompat.ConnectionCallback connectionCallback = new MediaBrowserCompat.ConnectionCallback() {
+    final MediaBrowserCompat.ConnectionCallback connectionCallback = new MediaBrowserCompat.ConnectionCallback() {
 
         @Override
         public void onConnected() {
@@ -30,20 +34,24 @@ public class BaseActivity extends AppCompatActivity {
                     new MediaControllerCompat(BaseActivity.this, mediaBrowser.getSessionToken());
             MediaControllerCompat.setMediaController(BaseActivity.this, mediaController);
             mediaController.registerCallback(controllerCallback);
+            Toast.makeText(getApplicationContext(), "Connected!", Toast.LENGTH_LONG);
+            Log.d(TAG, "Connected");
         }
 
         @Override
         public void onConnectionSuspended() {
             super.onConnectionSuspended();
+            Toast.makeText(getApplicationContext(), "Connection suspended!", Toast.LENGTH_LONG);
         }
 
         @Override
         public void onConnectionFailed() {
             super.onConnectionFailed();
+            Toast.makeText(getApplicationContext(), "Connection failed", Toast.LENGTH_SHORT);
         }
     };
 
-    private final MediaControllerCompat.Callback controllerCallback = new MediaControllerCompat.Callback() {
+    final MediaControllerCompat.Callback controllerCallback = new MediaControllerCompat.Callback() {
         @Override
         public void onSessionDestroyed() {
             //super.onSessionDestroyed();
@@ -67,11 +75,12 @@ public class BaseActivity extends AppCompatActivity {
         }
     };
 
-    private final MediaBrowserCompat.SubscriptionCallback subscriptionCallback = new MediaBrowserCompat.SubscriptionCallback() {
+    final MediaBrowserCompat.SubscriptionCallback subscriptionCallback = new MediaBrowserCompat.SubscriptionCallback() {
         @Override
         public void onChildrenLoaded(@NonNull String parentId, @NonNull List<MediaBrowserCompat.MediaItem> children) {
             //super.onChildrenLoaded(parentId, children);
             // TODO notify that we've loaded the data
+            Toast.makeText(getApplicationContext(), "Childrend Loaded", Toast.LENGTH_SHORT);
         }
     };
 
@@ -88,6 +97,18 @@ public class BaseActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         mediaBrowser.connect();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (getController() != null) {
+            getController().unregisterCallback(controllerCallback);
+        }
+        if (mediaBrowser != null && mediaBrowser.isConnected() && currentMetadata != null) {
+            mediaBrowser.unsubscribe(currentMetadata.getDescription().getMediaId());
+        }
+        mediaBrowser.disconnect();
     }
 
     protected void onMediaItemSelected(MediaBrowserCompat.MediaItem mediaItem) {
@@ -112,5 +133,9 @@ public class BaseActivity extends AppCompatActivity {
         currentMetadata = metadata;
         // TODO update metdata display of adapter
         // adapter.notifyDataSetChanged();
+    }
+
+    protected MediaControllerCompat getController() {
+        return MediaControllerCompat.getMediaController(this);
     }
 }

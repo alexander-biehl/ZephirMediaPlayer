@@ -103,4 +103,5 @@
         "when a user tries to pick up one of cards.\n\n"
     </string>
     <string name="open_song_list">Open Song List</string>
+    <string name="title_activity_main2">MainActivity2</string>
 </resources>
