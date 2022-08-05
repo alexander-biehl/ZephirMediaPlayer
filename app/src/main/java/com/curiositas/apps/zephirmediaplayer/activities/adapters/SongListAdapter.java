@@ -51,9 +51,9 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.SongVi
             Song currSong = songs.get(pos);
             if (currSong != null) {
                 // if valid, open song in music player activity
-                Log.d(TAG, "Retrieved song: " + currSong.getID().toString());
+                //Log.d(TAG, "Retrieved song: " + currSong.getID().toString());
                 Intent intent = new Intent(inflater.getContext(), MusicPlayerActivity.class);
-                intent.putExtra(Constants.URI_EXTRA, currSong.getID().toString());
+                intent.putExtra(Constants.URI_EXTRA, currSong.get_id());
                 inflater.getContext().startActivity(intent);
             } else {
                 Log.d(TAG, "Position " + pos + " did not return a song");

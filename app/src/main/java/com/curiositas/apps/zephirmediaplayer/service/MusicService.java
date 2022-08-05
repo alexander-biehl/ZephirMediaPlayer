@@ -2,7 +2,6 @@ package com.curiositas.apps.zephirmediaplayer.service;
 
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -54,6 +53,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
     private AudioFocusRequest audioFocusRequest;
     private MediaSessionCompat mediaSession;
     private SongManager songManager;
+    private MusicLibrary library;
     private final MediaSessionCompat.Callback mediaSessionCallback = new MediaSessionCompat.Callback() {
         @Override
         public void onPrepareFromMediaId(String mediaId, Bundle extras) {
@@ -161,6 +161,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
 
         songManager = new SongManager();
         List<HashMap<String,String>> songs = songManager.getPlayList();
+        library = MusicLibrary.getInstance(getApplication());
 
         // TODO use the info from here https://developer.android.com/training/data-storage/shared/media#query-collection
         // and https://developer.android.com/training/data-storage/shared/media#check-for-updates
@@ -211,9 +212,9 @@ public class MusicService extends MediaBrowserServiceCompat implements
      * as well as register a MediaButtonReceiver so that our service can receive MediaButton intents
      */
     private void initMediaSession() {
-        ComponentName mediaButtonReceiver = new ComponentName(
-                getApplicationContext(),
-                MediaButtonReceiver.class);
+//        ComponentName mediaButtonReceiver = new ComponentName(
+//                getApplicationContext(),
+//                MediaButtonReceiver.class);
 
         mediaSession = new MediaSessionCompat(getApplicationContext(), TAG);
         mediaSession.setCallback(mediaSessionCallback);

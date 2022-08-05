@@ -10,6 +10,7 @@ import com.curiositas.apps.zephirmediaplayer.R;
 public class NotificationUtil {
 
     public static final String CHANNEL_ID = "1";
+    public static final int CHANNEL = 99;
 
     public static void createNotificationChannel(Context context) {
         // Create the NotificationChannel, but only on API 26+ because

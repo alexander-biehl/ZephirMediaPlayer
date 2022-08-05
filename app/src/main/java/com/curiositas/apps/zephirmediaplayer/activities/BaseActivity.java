@@ -13,10 +13,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.curiositas.apps.zephirmediaplayer.service.MusicService2;
+import com.curiositas.apps.zephirmediaplayer.utilities.StorageUtilities;
 
 import java.util.List;
 
-public class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity {
 
     private static final String TAG = BaseActivity.class.getSimpleName();
 
@@ -91,6 +92,9 @@ public class BaseActivity extends AppCompatActivity {
                 new ComponentName(this, MusicService2.class),
                 connectionCallback,
                 null);
+
+        // Check that we have the permissions that we need
+        StorageUtilities.verifyStoragePermission(this);
     }
 
     @Override
@@ -105,8 +109,8 @@ public class BaseActivity extends AppCompatActivity {
         if (getController() != null) {
             getController().unregisterCallback(controllerCallback);
         }
-        if (mediaBrowser != null && mediaBrowser.isConnected() && currentMetadata != null) {
-            mediaBrowser.unsubscribe(currentMetadata.getDescription().getMediaId());
+        if (mediaBrowser != null && mediaBrowser.isConnected()) {
+            mediaBrowser.unsubscribe(mediaBrowser.getRoot(), subscriptionCallback);
         }
         mediaBrowser.disconnect();
     }
@@ -123,17 +127,24 @@ public class BaseActivity extends AppCompatActivity {
         currentState = state;
         if (state == null || state.getState() == PlaybackStateCompat.STATE_PAUSED ||
         state.getState() == PlaybackStateCompat.STATE_STOPPED) {
-            // todo make play button visible or decide how to communicate that
+            setPausedState();
         } else {
-            // TODO
+            setPlayingState();
         }
     }
+
+    abstract void setPausedState();
+
+    abstract void setPlayingState();
 
     protected void updateMetadata(MediaMetadataCompat metadata) {
         currentMetadata = metadata;
         // TODO update metdata display of adapter
         // adapter.notifyDataSetChanged();
+        updateMetadataImpl();
     }
+
+    abstract void updateMetadataImpl();
 
     protected MediaControllerCompat getController() {
         return MediaControllerCompat.getMediaController(this);

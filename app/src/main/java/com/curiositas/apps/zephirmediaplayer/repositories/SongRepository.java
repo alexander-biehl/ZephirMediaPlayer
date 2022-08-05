@@ -11,7 +11,6 @@ import com.curiositas.apps.zephirmediaplayer.SongManager;
 import com.curiositas.apps.zephirmediaplayer.dataloaders.SongLoader;
 import com.curiositas.apps.zephirmediaplayer.models.Song;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Executor;
 
@@ -50,9 +49,9 @@ public class SongRepository {
             Log.d(TAG, "SongLoader returned " + songs.size()  + " items.");
             songList.postValue(songs);
         });
-        this.executor.execute(() -> {
-            List<HashMap<String,String>> songs = songManager.getPlayList();
-        });
+//        this.executor.execute(() -> {
+//            List<HashMap<String,String>> songs = songManager.getPlayList();
+//        });
     }
 //    private void loadSongs() {
 //        executor.execute(() -> {

@@ -1,5 +1,6 @@
 package com.curiositas.apps.zephirmediaplayer.service;
 
+import android.app.Application;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -7,8 +8,11 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.curiositas.apps.zephirmediaplayer.BuildConfig;
+import com.curiositas.apps.zephirmediaplayer.repositories.MediaRepository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,13 +20,44 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class MusicLibrary {
+public final class MusicLibrary {
 
     private static final String ROOT = "__root__";
 
     private static final TreeMap<String, MediaMetadataCompat> music = new TreeMap<>();
     private static final Map<String, Integer> albumResourceMap = new HashMap<>();
     private static final Map<String, Integer> musicResourceMap = new HashMap<>();
+
+    private static MusicLibrary INSTANCE;
+    private static MediaRepository mediaRepository;
+    private static MutableLiveData<Boolean> isReady;
+
+    private MusicLibrary(Application application) {
+        mediaRepository = new MediaRepository(application);
+        isReady.postValue(false);
+        loadIfReady();
+    }
+
+    public void loadIfReady() {
+        if (mediaRepository.isReady()) {
+            for (MediaMetadataCompat metadata : mediaRepository.getMedia()) {
+                music.put(metadata.getDescription().getMediaId(), metadata);
+                //musicResourceMap.put(metadata.)
+            }
+            isReady.postValue(true);
+        }
+    }
+
+    public LiveData<Boolean> getIsReady() {
+        return isReady;
+    }
+
+    public static synchronized MusicLibrary getInstance(Application app) {
+        if (INSTANCE == null) {
+            INSTANCE = new MusicLibrary(app);
+        }
+        return INSTANCE;
+    }
 
     public static String getRoot() {
         return ROOT;
@@ -51,7 +86,7 @@ public class MusicLibrary {
     public static Bitmap getAlbumBitmap(@NonNull Context context,String mediaId) {
         return BitmapFactory.decodeResource(
                 context.getResources(),
-                MusicLibrary.getAlbumRes(mediaId)
+                getAlbumRes(mediaId)
         );
     }
 

@@ -1,43 +1,82 @@
 package com.curiositas.apps.zephirmediaplayer.models;
 
-import android.net.Uri;
+import java.util.Date;
 
 public class Song {
 
-    private Uri contentID;
+    private long _id;
     private String title;
-    //private Artist artist;
-    private String artist;
-    //private Album album;
-    private String album;
+    private int trackNumber;
+    private int year;
+    private long duration;
+    private String data;
+    private Date dateAdded;
+    private Date dateModified;
+    private long albumId;
+    private String albumName;
+    private long artistId;
+    private String artistName;
 
-    /* Constructor */
-    /*public Song(long songID, String songTitle, Artist songArtist, Album songAlbum) {
-        this.id = songID;
-        this.title = songTitle;
-        this.artist = songArtist;
-        this.album = songAlbum;
-    }*/
-    public Song(Uri contentID, String songTitle, String songArtist, String songAlbum) {
-        this.contentID = contentID;
-        this.title = songTitle;
-        this.artist = songArtist;
-        this.album = songAlbum;
+    public Song(long _id, String title, int trackNumber, int year, long duration, String data, Date dateAdded, Date dateModified, long albumId, String albumName, long artistId, String artistName) {
+        this._id = _id;
+        this.title = title;
+        this.trackNumber = trackNumber;
+        this.year = year;
+        this.duration = duration;
+        this.data = data;
+        this.dateAdded = dateAdded;
+        this.dateModified = dateModified;
+        this.albumId = albumId;
+        this.albumName = albumName;
+        this.artistId = artistId;
+        this.artistName = artistName;
     }
 
-    public Uri getID() {
-        return this.contentID;
+    public long get_id() {
+        return _id;
     }
 
     public String getTitle() {
-        return this.title;
+        return title;
     }
 
-    public /*Artist*/String getArtist() {
-        return this.artist;
+    public int getTrackNumber() {
+        return trackNumber;
     }
 
-    public /*Album*/String getAlbum() {
-        return this.album;
+    public int getYear() {
+        return year;
+    }
+
+    public long getDuration() {
+        return duration;
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public Date getDateAdded() {
+        return dateAdded;
+    }
+
+    public Date getDateModified() {
+        return dateModified;
+    }
+
+    public long getAlbumId() {
+        return albumId;
+    }
+
+    public String getAlbumName() {
+        return albumName;
+    }
+
+    public long getArtistId() {
+        return artistId;
+    }
+
+    public String getArtistName() {
+        return artistName;
     }
 }

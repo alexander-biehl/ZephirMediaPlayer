@@ -51,4 +51,19 @@ public class MainActivity extends BaseActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    void setPausedState() {
+
+    }
+
+    @Override
+    void setPlayingState() {
+
+    }
+
+    @Override
+    void updateMetadataImpl() {
+
+    }
 }

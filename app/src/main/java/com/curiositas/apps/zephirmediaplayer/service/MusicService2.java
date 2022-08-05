@@ -1,16 +1,25 @@
 package com.curiositas.apps.zephirmediaplayer.service;
 
+import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.media.MediaBrowserCompat;
+import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.media.MediaBrowserServiceCompat;
 import androidx.media.session.MediaButtonReceiver;
+
+import com.curiositas.apps.zephirmediaplayer.R;
+import com.curiositas.apps.zephirmediaplayer.utilities.NotificationUtil;
 
 import java.util.List;
 
@@ -20,6 +29,9 @@ public class MusicService2 extends MediaBrowserServiceCompat {
 
     private MediaSessionCompat mediaSession;
     private PlaybackManager playbackManager;
+    private MusicLibrary library;
+    private boolean isStarted;
+    private boolean libraryReady;
 
     final MediaSessionCompat.Callback sessionCallbacks = new MediaSessionCompat.Callback() {
         @Override
@@ -81,6 +93,21 @@ public class MusicService2 extends MediaBrowserServiceCompat {
                 0);
         mediaSession.setMediaButtonReceiver(pendingIntent);
         setSessionToken(mediaSession.getSessionToken());
+
+        playbackManager = new PlaybackManager(this, new PlaybackManager.Callback() {
+            @Override
+            public void onPlaybackStatusChanged(PlaybackStateCompat state) {
+                mediaSession.setPlaybackState(state);
+                updatePlaybackState(state);
+            }
+        });
+        isStarted = false;
+        libraryReady = false;
+        library = MusicLibrary.getInstance(getApplication());
+        library.getIsReady().observe((LifecycleOwner) getApplicationContext(), isReady -> {
+            libraryReady = isReady;
+        });
+        NotificationUtil.createNotificationChannel(this);
     }
 
     @Override
@@ -99,5 +126,101 @@ public class MusicService2 extends MediaBrowserServiceCompat {
     @Override
     public void onLoadChildren(@NonNull String parentId, @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
         result.sendResult(MusicLibrary.getMediaItems());
+    }
+
+    private void updatePlaybackState(final PlaybackStateCompat state) {
+        if (state == null || state.getState() == PlaybackStateCompat.STATE_STOPPED ||
+        state.getState() == PlaybackStateCompat.STATE_PAUSED) {
+            stopForeground(true);
+            stopSelf();
+        }
+
+        MediaMetadataCompat metadata = playbackManager.getCurrentMedia();
+        if (metadata == null) {
+            return;
+        }
+
+        boolean isPlaying = state.getState() == PlaybackStateCompat.STATE_PLAYING;
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NotificationUtil.CHANNEL_ID);
+        MediaDescriptionCompat description = metadata.getDescription();
+
+        builder
+                .setStyle(
+                        new androidx.media.app.NotificationCompat
+                                .MediaStyle()
+                                .setShowActionsInCompactView(0,1,2)
+                                .setMediaSession(mediaSession.getSessionToken()))
+                .setChannelId(NotificationUtil.CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setContentIntent(mediaSession.getController().getSessionActivity())
+                .setContentTitle(description.getTitle())
+                .setContentText(description.getSubtitle())
+                .setLargeIcon(MusicLibrary.getAlbumBitmap(this, description.getMediaId()))
+                .setOngoing(isPlaying)
+                .setWhen(isPlaying ? System.currentTimeMillis() - state.getPosition() : 0)
+                .setShowWhen(isPlaying);
+
+        if (isPlaying) {
+            builder.addAction(
+                    new NotificationCompat.Action(
+                            R.drawable.btn_pause,
+                            "Pause",
+                            MediaButtonReceiver.buildMediaButtonPendingIntent(
+                                    this,
+                                    PlaybackStateCompat.ACTION_PAUSE
+                            )
+                    )
+            );
+        } else {
+            builder.addAction(
+                    new NotificationCompat.Action(
+                            R.drawable.btn_play,
+                            "Play",
+                            MediaButtonReceiver.buildMediaButtonPendingIntent(
+                                    this,
+                                    PlaybackStateCompat.ACTION_PLAY
+                            )
+                    )
+            );
+        }
+
+        // if skip to previous action is enabled
+        if ((state.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS) != 0) {
+            builder.addAction(
+                    new NotificationCompat.Action(
+                            R.drawable.btn_previous,
+                            "Previous",
+                            MediaButtonReceiver.buildMediaButtonPendingIntent(
+                                    this,
+                                    PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)
+                    )
+            );
+        }
+        // if skip to next action is enabled
+        if ((state.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_NEXT) != 0) {
+            builder.addAction(
+                    new NotificationCompat.Action(
+                            R.drawable.btn_next,
+                            "Next",
+                            MediaButtonReceiver.buildMediaButtonPendingIntent(
+                                    this,
+                                    PlaybackStateCompat.ACTION_SKIP_TO_NEXT)
+                    )
+            );
+        }
+
+        Notification notification = builder.build();
+
+        if (isPlaying && !isStarted) {
+            startService(new Intent(getApplicationContext(), MusicService2.class));
+            startForeground(NotificationUtil.CHANNEL, notification);
+        } else {
+            if (!isPlaying) {
+                stopForeground(false);
+                isStarted = false;
+            }
+            NotificationManagerCompat.from(this).notify(NotificationUtil.CHANNEL, notification);
+        }
     }
 }
