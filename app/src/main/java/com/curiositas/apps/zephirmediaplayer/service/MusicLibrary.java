@@ -8,8 +8,6 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import com.curiositas.apps.zephirmediaplayer.BuildConfig;
 import com.curiositas.apps.zephirmediaplayer.repositories.MediaRepository;
@@ -27,15 +25,13 @@ public final class MusicLibrary {
     private static final TreeMap<String, MediaMetadataCompat> music = new TreeMap<>();
     private static final Map<String, Integer> albumResourceMap = new HashMap<>();
     private static final Map<String, Integer> musicResourceMap = new HashMap<>();
+    private static final List<Callback> listenerCallbacks = new ArrayList<>();
 
     private static MusicLibrary INSTANCE;
     private static MediaRepository mediaRepository;
-    private static MutableLiveData<Boolean> isReady;
 
     private MusicLibrary(Application application) {
         mediaRepository = new MediaRepository(application);
-        isReady = new MutableLiveData<>();
-        isReady.postValue(false);
         loadIfReady();
     }
 
@@ -45,12 +41,8 @@ public final class MusicLibrary {
                 music.put(metadata.getDescription().getMediaId(), metadata);
                 //musicResourceMap.put(metadata.)
             }
-            isReady.postValue(true);
+            notifyListeners();
         }
-    }
-
-    public LiveData<Boolean> getIsReady() {
-        return isReady;
     }
 
     public static synchronized MusicLibrary getInstance(Application app) {
@@ -58,6 +50,24 @@ public final class MusicLibrary {
             INSTANCE = new MusicLibrary(app);
         }
         return INSTANCE;
+    }
+
+    public void subscribe(Callback callback) {
+        if (!listenerCallbacks.contains(callback)) {
+            listenerCallbacks.add(callback);
+        }
+    }
+
+    public void unsubscribe(Callback callback) {
+        if (listenerCallbacks.contains(callback)) {
+            listenerCallbacks.remove(callback);
+        }
+    }
+
+    private void notifyListeners() {
+        for (Callback callback : listenerCallbacks) {
+            callback.onReady(true);
+        }
     }
 
     public static String getRoot() {
@@ -157,5 +167,9 @@ public final class MusicLibrary {
                         .build());
         albumResourceMap.put(mediaId, albumArtResId);
         musicResourceMap.put(mediaId, musicResId);
+    }
+
+    public interface Callback {
+        void onReady(boolean isReady);
     }
 }

@@ -29,9 +29,18 @@ public class MediaLoader {
             MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI,
             MediaMetadataCompat.METADATA_KEY_TITLE,
     };
-    private static final String BASE_SELECTION = String.format("%s=1 AND %s !=''",
+    private static final String BASE_SELECTION = String.format("%s = ? AND %s != ?",
             MediaStore.Audio.AudioColumns.IS_MUSIC,
             MediaStore.Audio.AudioColumns.TITLE);
+    private static final String[] SELECTION_ARGS = {
+            "1",
+            "''"
+    };
+//    private static final String BASE_SELECTION = "=1 AND %s!=''";
+//    private static final String[] SELECTION_ARGS = {
+//            MediaStore.Audio.AudioColumns.IS_MUSIC,
+//            MediaStore.Audio.AudioColumns.TITLE
+//    };
 
     public static List<MediaMetadataCompat> getMedia(@NonNull Context ctx) {
         List<MediaMetadataCompat> media = new ArrayList<>();
@@ -40,7 +49,7 @@ public class MediaLoader {
         try (Cursor cursor = resolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 BASE_PROJECTION,
                 BASE_SELECTION,
-                null,
+                SELECTION_ARGS,
                 null)) {
             if (cursor == null) {
                 Log.d(TAG, "Cursor returned null");

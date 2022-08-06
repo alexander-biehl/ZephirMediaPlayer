@@ -14,7 +14,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.media.MediaBrowserServiceCompat;
 import androidx.media.session.MediaButtonReceiver;
 
@@ -30,6 +29,12 @@ public class MusicService2 extends MediaBrowserServiceCompat {
     private MediaSessionCompat mediaSession;
     private PlaybackManager playbackManager;
     private MusicLibrary library;
+    private final MusicLibrary.Callback libraryCallback = new MusicLibrary.Callback() {
+        @Override
+        public void onReady(boolean isReady) {
+            libraryReady = true;
+        }
+    };;
     private boolean isStarted;
     private boolean libraryReady;
 
@@ -104,15 +109,15 @@ public class MusicService2 extends MediaBrowserServiceCompat {
         isStarted = false;
         libraryReady = false;
         library = MusicLibrary.getInstance(getApplication());
-        library.getIsReady().observe((LifecycleOwner) getApplicationContext(), isReady -> {
-            libraryReady = isReady;
-        });
+        library.subscribe(libraryCallback);
+
         NotificationUtil.createNotificationChannel(this);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        library.unsubscribe(libraryCallback);
         playbackManager.stop();
         mediaSession.release();
     }
