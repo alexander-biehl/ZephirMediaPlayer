@@ -14,13 +14,25 @@ import com.curiositas.apps.zephirmediaplayer.BuildConfig;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class MediaLoader {
 
     private static final String TAG = MediaLoader.class.getSimpleName();
 
+    private static final String[] PROJECTION = {
+        MediaStore.Audio.AudioColumns._ID,
+            MediaStore.Audio.AudioColumns.TITLE,
+            MediaStore.Audio.AudioColumns.ALBUM,
+            MediaStore.Audio.AudioColumns.ARTIST,
+            MediaStore.Audio.AudioColumns.DURATION,
+            MediaStore.Audio.AudioColumns.GENRE,
+            MediaStore.Audio.AudioColumns.ALBUM_ID,
+            MediaStore.Audio.AudioColumns.ARTIST_ID,
+    };
+
     public static final String[] BASE_PROJECTION = {
-            BaseColumns._ID,
+            //BaseColumns._ID,
             MediaMetadataCompat.METADATA_KEY_MEDIA_ID,
             MediaMetadataCompat.METADATA_KEY_ALBUM,
             MediaMetadataCompat.METADATA_KEY_ARTIST,
@@ -32,10 +44,10 @@ public class MediaLoader {
     private static final String BASE_SELECTION = String.format("%s = ? AND %s != ?",
             MediaStore.Audio.AudioColumns.IS_MUSIC,
             MediaStore.Audio.AudioColumns.TITLE);
-    private static final String[] SELECTION_ARGS = {
-            "1",
-            "''"
-    };
+//    private static final String[] SELECTION_ARGS = {
+//            "1",
+//            "''"
+//    };
 //    private static final String BASE_SELECTION = "=1 AND %s!=''";
 //    private static final String[] SELECTION_ARGS = {
 //            MediaStore.Audio.AudioColumns.IS_MUSIC,
@@ -47,9 +59,9 @@ public class MediaLoader {
 
         ContentResolver resolver = ctx.getContentResolver();
         try (Cursor cursor = resolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                BASE_PROJECTION,
-                BASE_SELECTION,
-                SELECTION_ARGS,
+                PROJECTION,
+                null,
+                null,
                 null)) {
             if (cursor == null) {
                 Log.d(TAG, "Cursor returned null");
@@ -57,23 +69,26 @@ public class MediaLoader {
                 Log.d(TAG, "No media on device");
             } else {
                 // cache the column numbers
-                int idColumn = cursor.getColumnIndexOrThrow(BaseColumns._ID);
-                int mediaIdColumn = cursor.getColumnIndexOrThrow(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
-                int albumColumn = cursor.getColumnIndexOrThrow(MediaMetadataCompat.METADATA_KEY_ALBUM);
-                int artistColumn = cursor.getColumnIndexOrThrow(MediaMetadataCompat.METADATA_KEY_ARTIST);
-                int durationColumn = cursor.getColumnIndexOrThrow(MediaMetadataCompat.METADATA_KEY_DURATION);
-                int genreColumn = cursor.getColumnIndexOrThrow(MediaMetadataCompat.METADATA_KEY_GENRE);
-                int albumArtColumn = cursor.getColumnIndexOrThrow(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI);
-                int titleColumn = cursor.getColumnIndexOrThrow(MediaMetadataCompat.METADATA_KEY_TITLE);
+                //int idColumn = cursor.getColumnIndexOrThrow(BaseColumns._ID);
+                int mediaIdColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns._ID);
+                int albumColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ALBUM);
+                int artistColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ARTIST);
+                int durationColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.DURATION);
+                int genreColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.GENRE);
+                //int albumArtColumn = cursor.getColumnIndexOrThrow(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI);
+                int titleColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.TITLE);
 
+                // temp solution
+                Random rand = new Random();
                 do {
-                    final long _id = cursor.getLong(idColumn);
+                    //final long _id = cursor.getLong(idColumn);
+                    final long _id = rand.nextLong();
                     final String mediaId = cursor.getString(mediaIdColumn);
                     final String album = cursor.getString(albumColumn);
                     final String artist = cursor.getString(artistColumn);
                     final long duration = cursor.getLong(durationColumn);
                     final String genre = cursor.getString(genreColumn);
-                    final String albumArtUri = cursor.getString(albumArtColumn);
+                    //final String albumArtUri = cursor.getString(albumArtColumn);
                     final String title = cursor.getString(titleColumn);
 
                     media.add(
@@ -84,7 +99,7 @@ public class MediaLoader {
                                     .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist)
                                     .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration)
                                     .putString(MediaMetadataCompat.METADATA_KEY_GENRE, genre)
-                                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, getAlbumArtUri(albumArtUri))
+                                    //.putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, getAlbumArtUri(albumArtUri))
                                     .putString(MediaMetadataCompat.METADATA_KEY_TITLE, title)
                                     .build()
                     );

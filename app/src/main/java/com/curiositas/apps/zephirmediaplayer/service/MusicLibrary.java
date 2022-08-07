@@ -23,25 +23,38 @@ public final class MusicLibrary {
     private static final String ROOT = "__root__";
 
     private static final TreeMap<String, MediaMetadataCompat> music = new TreeMap<>();
+    private static final Object musicLock = new Object();
     private static final Map<String, Integer> albumResourceMap = new HashMap<>();
     private static final Map<String, Integer> musicResourceMap = new HashMap<>();
     private static final List<Callback> listenerCallbacks = new ArrayList<>();
+    private boolean isReady;
+    private final MediaRepository.Callback repoCallback = new MediaRepository.Callback() {
+        @Override
+        public void onReady() {
+            notifyListeners();
+        }
+    };
 
     private static MusicLibrary INSTANCE;
     private static MediaRepository mediaRepository;
 
     private MusicLibrary(Application application) {
+        isReady = false;
         mediaRepository = new MediaRepository(application);
+        mediaRepository.subscribe(repoCallback);
         loadIfReady();
     }
 
     public void loadIfReady() {
         if (mediaRepository.isReady()) {
-            for (MediaMetadataCompat metadata : mediaRepository.getMedia()) {
-                music.put(metadata.getDescription().getMediaId(), metadata);
-                //musicResourceMap.put(metadata.)
+            synchronized (musicLock) {
+                for (MediaMetadataCompat metadata : mediaRepository.getMedia()) {
+                    music.put(metadata.getDescription().getMediaId(), metadata);
+                    //musicResourceMap.put(metadata.)
+                }
+                isReady = true;
+                notifyListeners();
             }
-            notifyListeners();
         }
     }
 
@@ -74,6 +87,10 @@ public final class MusicLibrary {
         return ROOT;
     }
 
+    public boolean getIsReady() {
+        return isReady;
+    }
+
     public static String getSongUri(String mediaId) {
         return String.format("android.resource://%s/%o",
                 BuildConfig.APPLICATION_ID,
@@ -103,31 +120,46 @@ public final class MusicLibrary {
 
     public static List<MediaBrowserCompat.MediaItem> getMediaItems() {
         List<MediaBrowserCompat.MediaItem> result = new ArrayList<>();
-        for (MediaMetadataCompat metadata : music.values()) {
-            result.add(new MediaBrowserCompat.MediaItem(metadata.getDescription(),
-                    MediaBrowserCompat.MediaItem.FLAG_PLAYABLE));
+        synchronized (musicLock) {
+            for (MediaMetadataCompat metadata : music.values()) {
+                result.add(new MediaBrowserCompat.MediaItem(metadata.getDescription(),
+                        MediaBrowserCompat.MediaItem.FLAG_PLAYABLE));
+            }
         }
         return result;
     }
 
     public static String getPreviousSong(String currentMediaId) {
-        String nextMediaId = music.lowerKey(currentMediaId);
+        String nextMediaId;
+        synchronized (musicLock) {
+            nextMediaId = music.lowerKey(currentMediaId);
+        }
         if (nextMediaId == null) {
-            nextMediaId = music.firstKey();
+            synchronized (musicLock) {
+                nextMediaId = music.firstKey();
+            }
         }
         return nextMediaId;
     }
 
     public static String getNextSong(String currentMediaId) {
-        String nextMediaId = music.higherKey(currentMediaId);
+        String nextMediaId;
+        synchronized (musicLock) {
+            nextMediaId = music.higherKey(currentMediaId);
+        }
         if (nextMediaId == null) {
-            nextMediaId = music.firstKey();
+            synchronized (musicLock) {
+                nextMediaId = music.firstKey();
+            }
         }
         return nextMediaId;
     }
 
     public static MediaMetadataCompat getMetadata(@NonNull Context ctx, String mediaId) {
-        MediaMetadataCompat metadataWithoutBitmap = music.get(mediaId);
+        MediaMetadataCompat metadataWithoutBitmap;
+        synchronized (musicLock) {
+            metadataWithoutBitmap = music.get(mediaId);
+        }
         Bitmap albumArt = getAlbumBitmap(ctx, mediaId);
         MediaMetadataCompat.Builder builder = new MediaMetadataCompat.Builder();
         for (String key: new String[]{MediaMetadataCompat.METADATA_KEY_MEDIA_ID,
@@ -167,6 +199,10 @@ public final class MusicLibrary {
                         .build());
         albumResourceMap.put(mediaId, albumArtResId);
         musicResourceMap.put(mediaId, musicResId);
+    }
+
+    public void release() {
+        mediaRepository.unsubscribe(repoCallback);
     }
 
     public interface Callback {

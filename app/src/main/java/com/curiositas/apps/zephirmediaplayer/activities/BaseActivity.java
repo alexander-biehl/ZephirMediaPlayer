@@ -30,11 +30,12 @@ public abstract class BaseActivity extends AppCompatActivity {
         @Override
         public void onConnected() {
             super.onConnected();
-            mediaBrowser.subscribe(mediaBrowser.getRoot(), subscriptionCallback);
             MediaControllerCompat mediaController =
                     new MediaControllerCompat(BaseActivity.this, mediaBrowser.getSessionToken());
             MediaControllerCompat.setMediaController(BaseActivity.this, mediaController);
             mediaController.registerCallback(controllerCallback);
+            mediaBrowser.subscribe(mediaBrowser.getRoot(), subscriptionCallback);
+
             Toast.makeText(getApplicationContext(), "Connected!", Toast.LENGTH_LONG);
             Log.d(TAG, "Connected");
         }
@@ -63,7 +64,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         @Override
         public void onPlaybackStateChanged(PlaybackStateCompat state) {
             //super.onPlaybackStateChanged(state);
-
             updatePlaybackState(state);
             //adapter.notifyDataSetChanged();
         }
@@ -82,6 +82,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             //super.onChildrenLoaded(parentId, children);
             // TODO notify that we've loaded the data
             Toast.makeText(getApplicationContext(), "Childrend Loaded", Toast.LENGTH_SHORT);
+
         }
     };
 

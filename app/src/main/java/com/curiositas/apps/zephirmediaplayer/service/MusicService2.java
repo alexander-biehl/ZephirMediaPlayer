@@ -20,6 +20,7 @@ import androidx.media.session.MediaButtonReceiver;
 import com.curiositas.apps.zephirmediaplayer.R;
 import com.curiositas.apps.zephirmediaplayer.utilities.NotificationUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MusicService2 extends MediaBrowserServiceCompat {
@@ -33,6 +34,7 @@ public class MusicService2 extends MediaBrowserServiceCompat {
         @Override
         public void onReady(boolean isReady) {
             libraryReady = true;
+            notifyClients();
         }
     };;
     private boolean isStarted;
@@ -118,6 +120,7 @@ public class MusicService2 extends MediaBrowserServiceCompat {
     public void onDestroy() {
         super.onDestroy();
         library.unsubscribe(libraryCallback);
+        library.release();
         playbackManager.stop();
         mediaSession.release();
     }
@@ -130,7 +133,15 @@ public class MusicService2 extends MediaBrowserServiceCompat {
 
     @Override
     public void onLoadChildren(@NonNull String parentId, @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
-        result.sendResult(MusicLibrary.getMediaItems());
+        if (library.getIsReady()) {
+            result.sendResult(MusicLibrary.getMediaItems());
+        } else {
+            result.sendResult(new ArrayList<>());
+        }
+    }
+
+    private void notifyClients() {
+
     }
 
     private void updatePlaybackState(final PlaybackStateCompat state) {

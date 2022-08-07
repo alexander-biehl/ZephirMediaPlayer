@@ -8,6 +8,7 @@ import android.util.Log;
 import com.curiositas.apps.zephirmediaplayer.MainApp;
 import com.curiositas.apps.zephirmediaplayer.dataloaders.MediaLoader;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
 
@@ -17,12 +18,14 @@ public class MediaRepository {
     private final Executor executor;
     private final Context context;
     private List<MediaMetadataCompat> media;
+    private List<Callback> callbacks;
 
     private boolean isReady;
     private final Object readyLock;
     private final Object mediaLock;
 
     public MediaRepository(Application application) {
+        callbacks = new ArrayList<>();
         this.executor = ((MainApp) application).getExec();
         this.context = application.getApplicationContext();
         isReady = false;
@@ -36,6 +39,7 @@ public class MediaRepository {
             Log.d(TAG, "Starting media load");
             List<MediaMetadataCompat> metadata = MediaLoader.getMedia(context);
             setMedia(metadata);
+            notifyListeners();
             Log.d(TAG, "Completed media load");
         });
     }
@@ -61,6 +65,28 @@ public class MediaRepository {
     private void setMedia(final List<MediaMetadataCompat> media) {
         synchronized (mediaLock) {
             this.media = media;
+        }
+    }
+
+    public interface Callback {
+        void onReady();
+    }
+
+    public void subscribe(final Callback callback) {
+        if (!callbacks.contains(callback)) {
+            callbacks.add(callback);
+        }
+    }
+
+    public void unsubscribe(final Callback callback) {
+        if (callbacks.contains(callback)) {
+            callbacks.remove(callback);
+        }
+    }
+
+    public void notifyListeners() {
+        for (Callback call : callbacks) {
+            call.onReady();
         }
     }
 }
