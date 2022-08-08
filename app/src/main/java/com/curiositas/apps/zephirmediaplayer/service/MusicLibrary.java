@@ -31,7 +31,7 @@ public final class MusicLibrary {
     private final MediaRepository.Callback repoCallback = new MediaRepository.Callback() {
         @Override
         public void onReady() {
-            notifyListeners();
+            loadIfReady();
         }
     };
 
@@ -78,7 +78,7 @@ public final class MusicLibrary {
     }
 
     private void notifyListeners() {
-        for (Callback callback : listenerCallbacks) {
+        for (final Callback callback : listenerCallbacks) {
             callback.onReady(true);
         }
     }

@@ -28,6 +28,7 @@ public class MediaRepository {
         callbacks = new ArrayList<>();
         this.executor = ((MainApp) application).getExec();
         this.context = application.getApplicationContext();
+        media = new ArrayList<>();
         isReady = false;
         readyLock = new Object();
         mediaLock = new Object();
@@ -38,6 +39,7 @@ public class MediaRepository {
         this.executor.execute(() -> {
             Log.d(TAG, "Starting media load");
             List<MediaMetadataCompat> metadata = MediaLoader.getMedia(context);
+            setIsReady(true);
             setMedia(metadata);
             notifyListeners();
             Log.d(TAG, "Completed media load");

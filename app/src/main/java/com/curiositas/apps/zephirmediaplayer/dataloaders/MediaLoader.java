@@ -70,7 +70,8 @@ public class MediaLoader {
             } else {
                 // cache the column numbers
                 //int idColumn = cursor.getColumnIndexOrThrow(BaseColumns._ID);
-                int mediaIdColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns._ID);
+                //int mediaIdColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns._ID);
+                int mediaIdColumn = cursor.getColumnIndexOrThrow(BaseColumns._ID);
                 int albumColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ALBUM);
                 int artistColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ARTIST);
                 int durationColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.DURATION);

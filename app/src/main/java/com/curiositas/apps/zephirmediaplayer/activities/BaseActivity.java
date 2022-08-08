@@ -1,6 +1,7 @@
 package com.curiositas.apps.zephirmediaplayer.activities;
 
 import android.content.ComponentName;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -15,6 +16,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.curiositas.apps.zephirmediaplayer.service.MusicService2;
 import com.curiositas.apps.zephirmediaplayer.utilities.StorageUtilities;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class BaseActivity extends AppCompatActivity {
@@ -24,12 +27,14 @@ public abstract class BaseActivity extends AppCompatActivity {
     private MediaBrowserCompat mediaBrowser;
     private MediaMetadataCompat currentMetadata;
     private PlaybackStateCompat currentState;
+    public List<String> subscribedIds;
 
     final MediaBrowserCompat.ConnectionCallback connectionCallback = new MediaBrowserCompat.ConnectionCallback() {
 
         @Override
         public void onConnected() {
             super.onConnected();
+            subscribedIds = new ArrayList<>();
             MediaControllerCompat mediaController =
                     new MediaControllerCompat(BaseActivity.this, mediaBrowser.getSessionToken());
             MediaControllerCompat.setMediaController(BaseActivity.this, mediaController);
@@ -81,7 +86,13 @@ public abstract class BaseActivity extends AppCompatActivity {
         public void onChildrenLoaded(@NonNull String parentId, @NonNull List<MediaBrowserCompat.MediaItem> children) {
             //super.onChildrenLoaded(parentId, children);
             // TODO notify that we've loaded the data
-            Toast.makeText(getApplicationContext(), "Childrend Loaded", Toast.LENGTH_SHORT);
+            if (children == null || children.isEmpty()) {
+                // TODO requiry
+                new RetryTask(mediaBrowser).execute(parentId);
+            } else {
+                // happy path
+                Toast.makeText(getApplicationContext(), "Childrend Loaded", Toast.LENGTH_SHORT);
+            }
 
         }
     };
@@ -111,7 +122,8 @@ public abstract class BaseActivity extends AppCompatActivity {
             getController().unregisterCallback(controllerCallback);
         }
         if (mediaBrowser != null && mediaBrowser.isConnected()) {
-            mediaBrowser.unsubscribe(mediaBrowser.getRoot(), subscriptionCallback);
+            //mediaBrowser.unsubscribe(mediaBrowser.getRoot(), subscriptionCallback);
+            unsubscribeFromAll();
         }
         mediaBrowser.disconnect();
     }
@@ -149,5 +161,39 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected MediaControllerCompat getController() {
         return MediaControllerCompat.getMediaController(this);
+    }
+
+    protected void subscribeToID(String parentID) {
+        if (!subscribedIds.contains(parentID)) {
+            subscribedIds.add(parentID);
+            mediaBrowser.subscribe(parentID, subscriptionCallback);
+        }
+    }
+
+    private void unsubscribeFromAll() {
+        for (String parentID : subscribedIds) {
+            mediaBrowser.unsubscribe(parentID);
+        }
+    }
+
+    private class RetryTask extends AsyncTask<String, Void, Void> {
+
+        WeakReference<MediaBrowserCompat> mediaBrowser;
+
+        RetryTask(MediaBrowserCompat mediaBrowser) {
+            this.mediaBrowser = new WeakReference<>(mediaBrowser);
+        }
+
+        @Override
+        protected Void doInBackground(String... strings) {
+            mediaBrowser.get().unsubscribe(strings[0]);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            mediaBrowser.get().subscribe(strings[0], subscriptionCallback);
+            return null;
+        }
     }
 }
