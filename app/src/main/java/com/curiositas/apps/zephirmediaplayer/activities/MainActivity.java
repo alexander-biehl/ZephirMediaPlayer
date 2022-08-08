@@ -8,6 +8,7 @@ import android.view.View;
 import androidx.appcompat.widget.Toolbar;
 
 import com.curiositas.apps.zephirmediaplayer.R;
+import com.curiositas.apps.zephirmediaplayer.activities.ui.main.MediaListFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -65,5 +66,13 @@ public class MainActivity extends BaseActivity {
     @Override
     void updateMetadataImpl() {
 
+    }
+
+    @Override
+    public void onMediaItemsLoaded() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, MediaListFragment.newInstance(2))
+                .commit();
     }
 }

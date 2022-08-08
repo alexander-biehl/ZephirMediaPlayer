@@ -46,21 +46,9 @@ public class MediaRepository {
         });
     }
 
-    public boolean isReady() {
-        synchronized (readyLock) {
-            return isReady;
-        }
-    }
-
     private void setIsReady(boolean isReady) {
         synchronized (readyLock) {
             this.isReady = isReady;
-        }
-    }
-
-    public List<MediaMetadataCompat> getMedia() {
-        synchronized (mediaLock) {
-            return media;
         }
     }
 
@@ -70,9 +58,18 @@ public class MediaRepository {
         }
     }
 
-    public interface Callback {
-        void onReady();
+    public boolean isReady() {
+        synchronized (readyLock) {
+            return isReady;
+        }
     }
+
+    public List<MediaMetadataCompat> getMedia() {
+        synchronized (mediaLock) {
+            return media;
+        }
+    }
+
 
     public void subscribe(final Callback callback) {
         if (!callbacks.contains(callback)) {
@@ -90,5 +87,9 @@ public class MediaRepository {
         for (Callback call : callbacks) {
             call.onReady();
         }
+    }
+
+    public interface Callback {
+        void onReady();
     }
 }

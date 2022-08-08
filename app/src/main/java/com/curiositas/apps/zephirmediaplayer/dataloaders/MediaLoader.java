@@ -10,8 +10,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.curiositas.apps.zephirmediaplayer.BuildConfig;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -30,29 +28,9 @@ public class MediaLoader {
             MediaStore.Audio.AudioColumns.ALBUM_ID,
             MediaStore.Audio.AudioColumns.ARTIST_ID,
     };
-
-    public static final String[] BASE_PROJECTION = {
-            //BaseColumns._ID,
-            MediaMetadataCompat.METADATA_KEY_MEDIA_ID,
-            MediaMetadataCompat.METADATA_KEY_ALBUM,
-            MediaMetadataCompat.METADATA_KEY_ARTIST,
-            MediaMetadataCompat.METADATA_KEY_DURATION,
-            MediaMetadataCompat.METADATA_KEY_GENRE,
-            MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI,
-            MediaMetadataCompat.METADATA_KEY_TITLE,
-    };
     private static final String BASE_SELECTION = String.format("%s = ? AND %s != ?",
             MediaStore.Audio.AudioColumns.IS_MUSIC,
             MediaStore.Audio.AudioColumns.TITLE);
-//    private static final String[] SELECTION_ARGS = {
-//            "1",
-//            "''"
-//    };
-//    private static final String BASE_SELECTION = "=1 AND %s!=''";
-//    private static final String[] SELECTION_ARGS = {
-//            MediaStore.Audio.AudioColumns.IS_MUSIC,
-//            MediaStore.Audio.AudioColumns.TITLE
-//    };
 
     public static List<MediaMetadataCompat> getMedia(@NonNull Context ctx) {
         List<MediaMetadataCompat> media = new ArrayList<>();
@@ -110,9 +88,9 @@ public class MediaLoader {
         return media;
     }
 
-    private static String getAlbumArtUri(String albumArtResName) {
-        return String.format("android.resource://%s/drawable/%s",
-                BuildConfig.APPLICATION_ID,
-                albumArtResName);
-    }
+//    private static String getAlbumArtUri(String albumArtResName) {
+//        return String.format("android.resource://%s/drawable/%s",
+//                BuildConfig.APPLICATION_ID,
+//                albumArtResName);
+//    }
 }

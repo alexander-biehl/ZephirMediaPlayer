@@ -26,6 +26,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     private MediaBrowserCompat mediaBrowser;
     private MediaMetadataCompat currentMetadata;
+    private List<MediaBrowserCompat.MediaItem> mediaItemList;
     private PlaybackStateCompat currentState;
     public List<String> subscribedIds;
 
@@ -35,11 +36,13 @@ public abstract class BaseActivity extends AppCompatActivity {
         public void onConnected() {
             super.onConnected();
             subscribedIds = new ArrayList<>();
+            mediaItemList = new ArrayList<>();
             MediaControllerCompat mediaController =
                     new MediaControllerCompat(BaseActivity.this, mediaBrowser.getSessionToken());
             MediaControllerCompat.setMediaController(BaseActivity.this, mediaController);
             mediaController.registerCallback(controllerCallback);
-            mediaBrowser.subscribe(mediaBrowser.getRoot(), subscriptionCallback);
+            //mediaBrowser.subscribe(mediaBrowser.getRoot(), subscriptionCallback);
+            subscribeToID(mediaBrowser.getRoot());
 
             Toast.makeText(getApplicationContext(), "Connected!", Toast.LENGTH_LONG);
             Log.d(TAG, "Connected");
@@ -92,6 +95,8 @@ public abstract class BaseActivity extends AppCompatActivity {
             } else {
                 // happy path
                 Toast.makeText(getApplicationContext(), "Childrend Loaded", Toast.LENGTH_SHORT);
+                mediaItemList = children;
+                onMediaItemsLoaded();
             }
 
         }
@@ -133,8 +138,16 @@ public abstract class BaseActivity extends AppCompatActivity {
             getMediaController()
                     .getTransportControls()
                     .playFromMediaId(mediaItem.getMediaId(), null);
+        } else {
+            subscribeToID(mediaItem.getMediaId());
         }
     }
+
+    public List<MediaBrowserCompat.MediaItem> getMediaItems() {
+        return this.mediaItemList;
+    }
+
+    abstract void onMediaItemsLoaded();
 
     protected void updatePlaybackState(PlaybackStateCompat state) {
         currentState = state;
