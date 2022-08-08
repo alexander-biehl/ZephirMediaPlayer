@@ -28,6 +28,7 @@ public class MediaListFragment extends Fragment {
     // TODO: Customize parameters
     private int mColumnCount = 2;
     private List<MediaBrowserCompat.MediaItem> mediaItems;
+    private MediaListRecyclerViewAdapter adapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -70,7 +71,11 @@ public class MediaListFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MediaListRecyclerViewAdapter(mediaItems));
+            adapter = new MediaListRecyclerViewAdapter(mediaItems);
+            recyclerView.setAdapter(adapter);
+            recyclerView.setOnClickListener(v -> {
+                //MediaBrowserCompat.MediaItem item = adapter.
+            });
         }
         return view;
     }

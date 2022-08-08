@@ -5,24 +5,39 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import androidx.appcompat.widget.Toolbar;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 
 import com.curiositas.apps.zephirmediaplayer.R;
 import com.curiositas.apps.zephirmediaplayer.activities.ui.main.MediaListFragment;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.curiositas.apps.zephirmediaplayer.databinding.ActivityMainBinding;
 import com.google.android.material.snackbar.Snackbar;
 
 public class MainActivity extends BaseActivity {
 
+    private AppBarConfiguration appBarConfiguration;
+    private ActivityMainBinding binding;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        //setContentView(R.layout.activity_main);
+        setContentView(binding.getRoot());
+        //Toolbar toolbar = findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
+        setSupportActionBar(binding.toolbar);
+
+        NavController navController = Navigation.findNavController(this,
+                R.id.nav_host_fragment_container);
+        appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
+        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+
+        //FloatingActionButton fab = findViewById(R.id.fab);
+        binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -72,7 +87,16 @@ public class MainActivity extends BaseActivity {
     public void onMediaItemsLoaded() {
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_container, MediaListFragment.newInstance(2))
+                .replace(R.id.nav_host_fragment_container, MediaListFragment.newInstance(1))
+                .setReorderingAllowed(true)
+                .addToBackStack(null)
                 .commit();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_container);
+        return NavigationUI.navigateUp(navController, appBarConfiguration) ||
+                super.onSupportNavigateUp();
     }
 }

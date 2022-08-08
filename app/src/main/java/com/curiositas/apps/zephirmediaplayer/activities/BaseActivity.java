@@ -133,7 +133,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         mediaBrowser.disconnect();
     }
 
-    protected void onMediaItemSelected(MediaBrowserCompat.MediaItem mediaItem) {
+    public void onMediaItemSelected(MediaBrowserCompat.MediaItem mediaItem) {
         if (mediaItem.isPlayable()) {
             getMediaController()
                     .getTransportControls()

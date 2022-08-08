@@ -4,8 +4,10 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.curiositas.apps.zephirmediaplayer.databinding.FragmentMediaBinding;
@@ -26,7 +28,8 @@ public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaList
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ViewHolder(FragmentMediaBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
+        FragmentMediaBinding binding = FragmentMediaBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new ViewHolder(binding);
     }
 
     @Override
@@ -34,6 +37,10 @@ public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaList
         holder.mItem = mValues.get(position);
         holder.mIdView.setText(mValues.get(position).getDescription().getTitle());
         holder.mContentView.setText(mValues.get(position).getDescription().getSubtitle());
+        holder.mLinearLayout.setOnClickListener(view -> {
+            MediaBrowserCompat.MediaItem item = holder.mItem;
+            NavHostFragment.findNavController(holder.)
+        });
     }
 
     @Override
@@ -41,20 +48,35 @@ public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaList
         return mValues.size();
     }
 
+    public List<MediaBrowserCompat.MediaItem> getValues() {
+        return mValues;
+    }
+
+    public MediaBrowserCompat.MediaItem getItem() {
+        return mValues.get()
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final TextView mIdView;
         public final TextView mContentView;
+        public final LinearLayout mLinearLayout;
         public MediaBrowserCompat.MediaItem mItem;
 
         public ViewHolder(FragmentMediaBinding binding) {
             super(binding.getRoot());
             mIdView = binding.mediaItemNumber;
             mContentView = binding.mediaItemContent;
+            mLinearLayout = binding.mediaListItem;
         }
 
         @Override
         public String toString() {
             return super.toString() + " '" + mContentView.getText() + "'";
         }
+
+        public MediaBrowserCompat.MediaItem getItem() {
+            return mItem;
+        }
+
     }
 }
