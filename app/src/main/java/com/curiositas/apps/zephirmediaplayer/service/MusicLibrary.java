@@ -28,12 +28,7 @@ public final class MusicLibrary {
     private static final Map<String, Integer> musicResourceMap = new HashMap<>();
     private static final List<Callback> listenerCallbacks = new ArrayList<>();
     private boolean isReady;
-    private final MediaRepository.Callback repoCallback = new MediaRepository.Callback() {
-        @Override
-        public void onReady() {
-            loadIfReady();
-        }
-    };
+    private final MediaRepository.Callback repoCallback = () -> loadIfReady();
 
     private static MusicLibrary INSTANCE;
     private static MediaRepository mediaRepository;

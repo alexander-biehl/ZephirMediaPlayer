@@ -101,12 +101,9 @@ public class MusicService2 extends MediaBrowserServiceCompat {
         mediaSession.setMediaButtonReceiver(pendingIntent);
         setSessionToken(mediaSession.getSessionToken());
 
-        playbackManager = new PlaybackManager(this, new PlaybackManager.Callback() {
-            @Override
-            public void onPlaybackStatusChanged(PlaybackStateCompat state) {
-                mediaSession.setPlaybackState(state);
-                updatePlaybackState(state);
-            }
+        playbackManager = new PlaybackManager(this, state -> {
+            mediaSession.setPlaybackState(state);
+            updatePlaybackState(state);
         });
         isStarted = false;
         libraryReady = false;

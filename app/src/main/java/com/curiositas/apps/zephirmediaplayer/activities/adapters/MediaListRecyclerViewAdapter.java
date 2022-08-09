@@ -7,8 +7,10 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.curiositas.apps.zephirmediaplayer.R;
 import com.curiositas.apps.zephirmediaplayer.databinding.FragmentMediaBinding;
 
 import java.util.List;
@@ -38,6 +40,8 @@ public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaList
         holder.mContentView.setText(mValues.get(position).getDescription().getSubtitle());
         holder.mLinearLayout.setOnClickListener(view -> {
             MediaBrowserCompat.MediaItem item = holder.mItem;
+            String mediaId = item.getMediaId();
+            Navigation.findNavController(view).navigate(R.id.);
             //NavHostFragment.findNavController(holder.)
         });
     }
