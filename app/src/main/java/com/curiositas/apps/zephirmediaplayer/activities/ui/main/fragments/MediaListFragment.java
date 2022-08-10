@@ -1,4 +1,4 @@
-package com.curiositas.apps.zephirmediaplayer.activities.ui.main;
+package com.curiositas.apps.zephirmediaplayer.activities.ui.main.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -15,20 +15,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.curiositas.apps.zephirmediaplayer.R;
 import com.curiositas.apps.zephirmediaplayer.activities.MainActivity;
 import com.curiositas.apps.zephirmediaplayer.activities.adapters.MediaListRecyclerViewAdapter;
-
-import java.util.List;
+import com.curiositas.apps.zephirmediaplayer.activities.ui.main.MusicQueueViewModel;
 
 /**
  * A fragment representing a list of Items.
  */
-public class MediaListFragment extends Fragment {
+public class MediaListFragment extends Fragment implements MediaListRecyclerViewAdapter.IFragmentBridge {
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
     private int mColumnCount = 2;
-    private List<MediaBrowserCompat.MediaItem> mediaItems;
     private MediaListRecyclerViewAdapter adapter;
+    private MusicQueueViewModel viewModel;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -54,7 +53,8 @@ public class MediaListFragment extends Fragment {
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
-        mediaItems = ((MainActivity)getActivity()).getMediaItems();
+        //mediaItems = ((MainActivity)getActivity()).getMediaItems();
+        viewModel = ((MainActivity) requireActivity()).viewModel;
     }
 
     @Override
@@ -71,12 +71,20 @@ public class MediaListFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            adapter = new MediaListRecyclerViewAdapter(mediaItems);
+            adapter = new MediaListRecyclerViewAdapter(this);
             recyclerView.setAdapter(adapter);
             recyclerView.setOnClickListener(v -> {
                 //MediaBrowserCompat.MediaItem item = adapter.
             });
+            viewModel.getQueue().observe(requireActivity(), mediaItems -> {
+                adapter.setMedia(mediaItems);
+            });
         }
         return view;
+    }
+
+    @Override
+    public void onMediaSelected(MediaBrowserCompat.MediaItem item) {
+
     }
 }

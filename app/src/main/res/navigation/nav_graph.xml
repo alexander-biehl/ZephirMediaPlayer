@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/MediaFragment"
-        android:name="com.curiositas.apps.zephirmediaplayer.activities.ui.main.MediaListFragment"
+        android:name="com.curiositas.apps.zephirmediaplayer.activities.ui.main.fragments.MediaListFragment"
         android:label="Media List"
         tools:layout="@layout/fragment_media">
         <action

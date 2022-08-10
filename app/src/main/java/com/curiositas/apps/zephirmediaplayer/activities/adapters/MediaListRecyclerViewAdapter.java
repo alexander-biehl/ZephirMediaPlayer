@@ -3,16 +3,15 @@ package com.curiositas.apps.zephirmediaplayer.activities.adapters;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.curiositas.apps.zephirmediaplayer.R;
 import com.curiositas.apps.zephirmediaplayer.databinding.FragmentMediaBinding;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,10 +20,22 @@ import java.util.List;
  */
 public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaListRecyclerViewAdapter.ViewHolder> {
 
-    private final List<MediaBrowserCompat.MediaItem> mValues;
+    private List<MediaBrowserCompat.MediaItem> mValues;
+    private ViewHolder holder;
+    private final IFragmentBridge callback;
+    private final View.OnClickListener onClickListener;
 
-    public MediaListRecyclerViewAdapter(List<MediaBrowserCompat.MediaItem> items) {
-        mValues = items;
+    public MediaListRecyclerViewAdapter(final IFragmentBridge callback) {
+        this.callback = callback;
+        mValues = new ArrayList<>();
+        onClickListener = view -> {
+            // TODO create a callback so we can communicate this up to
+            // the Fragment
+            final MediaBrowserCompat.MediaItem item = holder.mItem;
+            if (callback != null) {
+                callback.onMediaSelected(item);
+            }
+        };
     }
 
     @Override
@@ -38,12 +49,9 @@ public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaList
         holder.mItem = mValues.get(position);
         holder.mIdView.setText(mValues.get(position).getDescription().getTitle());
         holder.mContentView.setText(mValues.get(position).getDescription().getSubtitle());
-        holder.mLinearLayout.setOnClickListener(view -> {
-            MediaBrowserCompat.MediaItem item = holder.mItem;
-            String mediaId = item.getMediaId();
-            Navigation.findNavController(view).navigate(R.id.);
-            //NavHostFragment.findNavController(holder.)
-        });
+
+        holder.mIdView.setOnClickListener(onClickListener);
+        holder.mContentView.setOnClickListener(onClickListener);
     }
 
     @Override
@@ -60,27 +68,29 @@ public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaList
         return null;
     }
 
+    public void setMedia(List<MediaBrowserCompat.MediaItem> items) {
+        mValues = items;
+        notifyDataSetChanged();
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final TextView mIdView;
         public final TextView mContentView;
-        public final LinearLayout mLinearLayout;
         public MediaBrowserCompat.MediaItem mItem;
 
         public ViewHolder(FragmentMediaBinding binding) {
             super(binding.getRoot());
             mIdView = binding.mediaItemNumber;
             mContentView = binding.mediaItemContent;
-            mLinearLayout = binding.mediaListItem;
         }
 
         @Override
         public String toString() {
             return super.toString() + " '" + mContentView.getText() + "'";
         }
+    }
 
-        public MediaBrowserCompat.MediaItem getItem() {
-            return mItem;
-        }
-
+    public interface IFragmentBridge {
+        void onMediaSelected(MediaBrowserCompat.MediaItem item);
     }
 }

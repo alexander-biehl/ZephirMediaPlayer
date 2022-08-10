@@ -1,4 +1,4 @@
-package com.curiositas.apps.zephirmediaplayer.activities.ui.main;
+package com.curiositas.apps.zephirmediaplayer.activities.ui.main.fragments;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.curiositas.apps.zephirmediaplayer.R;
 import com.curiositas.apps.zephirmediaplayer.activities.adapters.SongListAdapter;
+import com.curiositas.apps.zephirmediaplayer.activities.ui.main.SongListViewModel;
 
 
 public class SongListFragment extends Fragment {

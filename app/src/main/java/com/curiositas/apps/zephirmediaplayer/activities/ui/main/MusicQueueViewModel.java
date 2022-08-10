@@ -15,7 +15,7 @@ public class MusicQueueViewModel extends AndroidViewModel {
 
     private static final String TAG = MusicQueueViewModel.class.getSimpleName();
 
-    private LiveData<List<MediaBrowserCompat.MediaItem>> currentQueue;
+    private MutableLiveData<List<MediaBrowserCompat.MediaItem>> currentQueue;
 
     public MusicQueueViewModel(@NonNull Application application) {
         super(application);
@@ -24,5 +24,9 @@ public class MusicQueueViewModel extends AndroidViewModel {
 
     public LiveData<List<MediaBrowserCompat.MediaItem>> getQueue() {
         return currentQueue;
+    }
+
+    public void setQueue(final List<MediaBrowserCompat.MediaItem> queue) {
+        currentQueue = new MutableLiveData<>(queue);
     }
 }

@@ -11,7 +11,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.curiositas.apps.zephirmediaplayer.R;
-import com.curiositas.apps.zephirmediaplayer.activities.ui.main.MediaListFragment;
+import com.curiositas.apps.zephirmediaplayer.activities.ui.main.fragments.MediaListFragment;
 import com.curiositas.apps.zephirmediaplayer.databinding.ActivityMainBinding;
 import com.google.android.material.snackbar.Snackbar;
 

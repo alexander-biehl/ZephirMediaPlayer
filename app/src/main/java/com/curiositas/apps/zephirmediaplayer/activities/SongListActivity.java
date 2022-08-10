@@ -5,7 +5,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.curiositas.apps.zephirmediaplayer.R;
-import com.curiositas.apps.zephirmediaplayer.activities.ui.main.SongListFragment;
+import com.curiositas.apps.zephirmediaplayer.activities.ui.main.fragments.SongListFragment;
 
 public class SongListActivity extends AppCompatActivity {
 

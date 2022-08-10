@@ -12,7 +12,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
+import com.curiositas.apps.zephirmediaplayer.activities.ui.main.MusicQueueViewModel;
 import com.curiositas.apps.zephirmediaplayer.service.MusicService2;
 import com.curiositas.apps.zephirmediaplayer.utilities.StorageUtilities;
 
@@ -26,9 +28,9 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     private MediaBrowserCompat mediaBrowser;
     private MediaMetadataCompat currentMetadata;
-    private List<MediaBrowserCompat.MediaItem> mediaItemList;
     private PlaybackStateCompat currentState;
     public List<String> subscribedIds;
+    public MusicQueueViewModel viewModel;
 
     final MediaBrowserCompat.ConnectionCallback connectionCallback = new MediaBrowserCompat.ConnectionCallback() {
 
@@ -36,7 +38,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         public void onConnected() {
             super.onConnected();
             subscribedIds = new ArrayList<>();
-            mediaItemList = new ArrayList<>();
             MediaControllerCompat mediaController =
                     new MediaControllerCompat(BaseActivity.this, mediaBrowser.getSessionToken());
             MediaControllerCompat.setMediaController(BaseActivity.this, mediaController);
@@ -95,7 +96,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             } else {
                 // happy path
                 Toast.makeText(getApplicationContext(), "Childrend Loaded", Toast.LENGTH_SHORT);
-                mediaItemList = children;
+                viewModel.setQueue(children);
                 onMediaItemsLoaded();
             }
 
@@ -110,6 +111,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 connectionCallback,
                 null);
 
+        viewModel = new ViewModelProvider(this).get(MusicQueueViewModel.class);
         // Check that we have the permissions that we need
         StorageUtilities.verifyStoragePermission(this);
     }
@@ -141,10 +143,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         } else {
             subscribeToID(mediaItem.getMediaId());
         }
-    }
-
-    public List<MediaBrowserCompat.MediaItem> getMediaItems() {
-        return this.mediaItemList;
     }
 
     abstract void onMediaItemsLoaded();
