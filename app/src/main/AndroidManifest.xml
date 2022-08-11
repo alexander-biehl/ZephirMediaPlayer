@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.curiositas.apps.zephirmediaplayer">
+    package="com.alexanderbiehl.apps.zephirmediaplayer">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
-        android:name=".MainApp"
+        android:name="com.alexanderbiehl.apps.zephirmediaplayer.MainApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -16,16 +16,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".activities.BaseActivity"
+            android:name="com.alexanderbiehl.apps.zephirmediaplayer.activities.BaseActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.SongListActivity"
+            android:name="com.alexanderbiehl.apps.zephirmediaplayer.activities.SongListActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.MusicPlayerActivity"
+            android:name="com.alexanderbiehl.apps.zephirmediaplayer.activities.MusicPlayerActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.MediaPlayerActivity"
+            android:name="com.alexanderbiehl.apps.zephirmediaplayer.activities.MediaPlayerActivity"
             android:exported="true"
             android:label="@string/title_activity_media_player"
             android:theme="@style/AppTheme.NoActionBar">
@@ -36,7 +36,7 @@
 <!--            </intent-filter>-->
         </activity>
         <activity
-            android:name=".activities.MainActivity"
+            android:name="com.alexanderbiehl.apps.zephirmediaplayer.activities.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"
             android:exported="true">
@@ -48,7 +48,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.PlayListActivity"
+            android:name="com.alexanderbiehl.apps.zephirmediaplayer.activities.PlayListActivity"
             android:label="Zephir Media Player"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
@@ -63,7 +63,7 @@
         </activity>
 
         <service
-            android:name=".service.MusicService"
+            android:name="com.alexanderbiehl.apps.zephirmediaplayer.service.MusicService"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
@@ -73,7 +73,7 @@
         </service>
 
         <service
-            android:name=".service.MusicService2"
+            android:name="com.alexanderbiehl.apps.zephirmediaplayer.service.MusicService2"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />

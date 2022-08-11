@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 32
     defaultConfig {
-        applicationId "com.curiositas.apps.zephirmediaplayer"
+        applicationId "com.alexanderbiehl.apps.zephirmediaplayer"
         minSdkVersion 26
         targetSdkVersion 32
         versionCode 1
