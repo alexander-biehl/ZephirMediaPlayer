@@ -11,7 +11,6 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.curiositas.apps.zephirmediaplayer.R;
-import com.curiositas.apps.zephirmediaplayer.activities.ui.main.fragments.MediaListFragment;
 import com.curiositas.apps.zephirmediaplayer.databinding.ActivityMainBinding;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -85,12 +84,14 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void onMediaItemsLoaded() {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.nav_host_fragment_container, MediaListFragment.newInstance(1))
-                .setReorderingAllowed(true)
-                .addToBackStack(null)
-                .commit();
+//        getSupportFragmentManager()
+//                .beginTransaction()
+//                .replace(R.id.nav_host_fragment_container, MediaListFragment.newInstance(1))
+//                .setReorderingAllowed(true)
+//                .addToBackStack(null)
+//                .commit();
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_container);
+        navController.navigate(R.id.action_Splash_to_MediaList);
     }
 
     @Override

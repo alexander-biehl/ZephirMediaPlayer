@@ -3,6 +3,7 @@ package com.curiositas.apps.zephirmediaplayer.activities.ui.main.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.media.MediaBrowserCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,12 +23,14 @@ import com.curiositas.apps.zephirmediaplayer.activities.ui.main.MusicQueueViewMo
  */
 public class MediaListFragment extends Fragment implements MediaListRecyclerViewAdapter.IFragmentBridge {
 
+    private static final String TAG = MediaListFragment.class.getSimpleName();
+
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
     private int mColumnCount = 2;
-    private MediaListRecyclerViewAdapter adapter;
     private MusicQueueViewModel viewModel;
+    private RecyclerView recyclerView;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -65,13 +68,13 @@ public class MediaListFragment extends Fragment implements MediaListRecyclerView
         // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
+            recyclerView = (RecyclerView) view;
             if (mColumnCount <= 1) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            adapter = new MediaListRecyclerViewAdapter(this);
+            final MediaListRecyclerViewAdapter adapter = new MediaListRecyclerViewAdapter(this);
             recyclerView.setAdapter(adapter);
             recyclerView.setOnClickListener(v -> {
                 //MediaBrowserCompat.MediaItem item = adapter.
@@ -84,7 +87,10 @@ public class MediaListFragment extends Fragment implements MediaListRecyclerView
     }
 
     @Override
-    public void onMediaSelected(MediaBrowserCompat.MediaItem item) {
-
+    public void onMediaSelected(View view) {
+        MediaListRecyclerViewAdapter.ViewHolder holder =
+                (MediaListRecyclerViewAdapter.ViewHolder)recyclerView.findContainingViewHolder(view);
+        MediaBrowserCompat.MediaItem item = holder.mItem;
+        Log.d(TAG, "Retrieved Mediaitem: " + item.getMediaId() + ": " + item.toString());
     }
 }

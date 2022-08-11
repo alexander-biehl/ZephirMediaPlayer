@@ -21,7 +21,6 @@ import java.util.List;
 public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaListRecyclerViewAdapter.ViewHolder> {
 
     private List<MediaBrowserCompat.MediaItem> mValues;
-    private ViewHolder holder;
     private final IFragmentBridge callback;
     private final View.OnClickListener onClickListener;
 
@@ -29,11 +28,11 @@ public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaList
         this.callback = callback;
         mValues = new ArrayList<>();
         onClickListener = view -> {
-            // TODO create a callback so we can communicate this up to
-            // the Fragment
-            final MediaBrowserCompat.MediaItem item = holder.mItem;
+            // Communicate the clicked item back up to the Fragment
+            //final MediaBrowserCompat.MediaItem item = holder.mItem;
+            //int position = get
             if (callback != null) {
-                callback.onMediaSelected(item);
+                callback.onMediaSelected(view);
             }
         };
     }
@@ -46,12 +45,19 @@ public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaList
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).getDescription().getTitle());
-        holder.mContentView.setText(mValues.get(position).getDescription().getSubtitle());
+        MediaBrowserCompat.MediaItem item = mValues.get(position);
+        if (item != null) {
+            holder.mItem = mValues.get(position);
+            holder.mIdView.setText(mValues.get(position).getDescription().getTitle());
+            holder.mContentView.setText(mValues.get(position).getDescription().getSubtitle());
 
-        holder.mIdView.setOnClickListener(onClickListener);
-        holder.mContentView.setOnClickListener(onClickListener);
+            holder.mIdView.setOnClickListener(onClickListener);
+            holder.mContentView.setOnClickListener(onClickListener);
+        } else {
+            holder.mItem = null;
+            holder.mIdView.setText("No Data");
+            holder.mContentView.setText("No Data");
+        }
     }
 
     @Override
@@ -91,6 +97,6 @@ public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaList
     }
 
     public interface IFragmentBridge {
-        void onMediaSelected(MediaBrowserCompat.MediaItem item);
+        void onMediaSelected(View view);
     }
 }

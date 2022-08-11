@@ -104,4 +104,6 @@
     </string>
     <string name="open_song_list">Open Song List</string>
     <string name="title_activity_main2">MainActivity2</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="splash_fragment">Welcome to Zephir Media Player!</string>
 </resources>
