@@ -24,8 +24,6 @@ public class MainApp extends Application {
         //  or WorkManager
         //  https://developer.android.com/reference/androidx/work/WorkManager
         //  here
-//        sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://"
-//                + Environment.getExternalStorageDirectory())));
     }
 
     @Override

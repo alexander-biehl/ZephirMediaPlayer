@@ -42,10 +42,8 @@ public abstract class BaseActivity extends AppCompatActivity {
                     new MediaControllerCompat(BaseActivity.this, mediaBrowser.getSessionToken());
             MediaControllerCompat.setMediaController(BaseActivity.this, mediaController);
             mediaController.registerCallback(controllerCallback);
-            //mediaBrowser.subscribe(mediaBrowser.getRoot(), subscriptionCallback);
             subscribeToID(mediaBrowser.getRoot());
 
-            Toast.makeText(getApplicationContext(), "Connected!", Toast.LENGTH_LONG);
             Log.d(TAG, "Connected");
         }
 
@@ -129,7 +127,6 @@ public abstract class BaseActivity extends AppCompatActivity {
             getController().unregisterCallback(controllerCallback);
         }
         if (mediaBrowser != null && mediaBrowser.isConnected()) {
-            //mediaBrowser.unsubscribe(mediaBrowser.getRoot(), subscriptionCallback);
             unsubscribeFromAll();
         }
         mediaBrowser.disconnect();
@@ -137,9 +134,10 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public void onMediaItemSelected(MediaBrowserCompat.MediaItem mediaItem) {
         if (mediaItem.isPlayable()) {
-            getMediaController()
-                    .getTransportControls()
-                    .playFromMediaId(mediaItem.getMediaId(), null);
+//            getMediaController()
+//                    .getTransportControls()
+//                    .playFromMediaId(mediaItem.getMediaId(), null);
+            // TODO navigate to the NowPlayingFragment
         } else {
             subscribeToID(mediaItem.getMediaId());
         }

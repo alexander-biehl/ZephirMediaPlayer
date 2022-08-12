@@ -28,7 +28,7 @@ public class MediaListFragment extends Fragment implements MediaListRecyclerView
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
-    private int mColumnCount = 2;
+    private int mColumnCount = 1;
     private MusicQueueViewModel viewModel;
     private RecyclerView recyclerView;
 
@@ -69,16 +69,16 @@ public class MediaListFragment extends Fragment implements MediaListRecyclerView
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
             recyclerView = (RecyclerView) view;
+
             if (mColumnCount <= 1) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
+
             final MediaListRecyclerViewAdapter adapter = new MediaListRecyclerViewAdapter(this);
             recyclerView.setAdapter(adapter);
-            recyclerView.setOnClickListener(v -> {
-                //MediaBrowserCompat.MediaItem item = adapter.
-            });
+
             viewModel.getQueue().observe(requireActivity(), mediaItems -> {
                 adapter.setMedia(mediaItems);
             });
