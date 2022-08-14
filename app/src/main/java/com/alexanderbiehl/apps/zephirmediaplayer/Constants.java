@@ -7,5 +7,7 @@ package com.alexanderbiehl.apps.zephirmediaplayer;
 
     public static final String URI_EXTRA = PACKAGE + ".EXTRA.URI";
 
+    public static final String MEDIA_KEY = PACKAGE + ".MEDIA_KEY";
+
     private Constants() {}
 }

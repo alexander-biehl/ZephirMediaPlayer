@@ -112,6 +112,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this).get(MusicQueueViewModel.class);
         // Check that we have the permissions that we need
         StorageUtilities.verifyStoragePermission(this);
+        // TODO need to add callback because music in not retrieved first time app is
+        // loaded
     }
 
     @Override

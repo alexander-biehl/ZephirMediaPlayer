@@ -106,4 +106,9 @@
     <string name="title_activity_main2">MainActivity2</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="splash_fragment">Welcome to Zephir Media Player!</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="play_btn_content_description">play / pause</string>
+    <string name="previous_btn_content_description">previous</string>
+    <string name="next_btn_content_description">play next</string>
 </resources>

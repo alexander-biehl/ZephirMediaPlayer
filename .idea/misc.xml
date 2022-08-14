@@ -17,6 +17,7 @@
         <entry key="app/src/main/res/layout/content_media_player.xml" value="0.19384057971014493" />
         <entry key="app/src/main/res/layout/fragment_media.xml" value="0.2296195652173913" />
         <entry key="app/src/main/res/layout/fragment_media_list.xml" value="0.2296195652173913" />
+        <entry key="app/src/main/res/layout/fragment_now_playing.xml" value="0.2296195652173913" />
         <entry key="app/src/main/res/layout/fragment_song_list.xml" value="0.1743659420289855" />
         <entry key="app/src/main/res/layout/fragment_splash.xml" value="0.12259371833839919" />
         <entry key="app/src/main/res/layout/player.xml" value="0.22146739130434784" />

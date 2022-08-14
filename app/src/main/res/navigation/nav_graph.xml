@@ -25,4 +25,17 @@
             app:destination="@id/MediaFragment" />
     </fragment>
 
+    <fragment
+        android:id="@+id/NowPlayingFragment"
+        android:name="com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.main.fragments.NowPlayingFragment"
+        android:label="Now Playing"
+        tools:layout="@layout/fragment_now_playing">
+        <action
+            android:id="@+id/action_NowPlaying_loop"
+            app:destination="@+id/NowPlayingFragment" />
+        <action
+            android:id="@+id/action_NowPlaying_to_MediaList"
+            app:destination="@id/MediaFragment" />
+    </fragment>
+
 </navigation>

@@ -9,10 +9,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.alexanderbiehl.apps.zephirmediaplayer.Constants;
 import com.alexanderbiehl.apps.zephirmediaplayer.R;
 import com.alexanderbiehl.apps.zephirmediaplayer.activities.MainActivity;
 import com.alexanderbiehl.apps.zephirmediaplayer.activities.adapters.MediaListRecyclerViewAdapter;
@@ -92,5 +95,9 @@ public class MediaListFragment extends Fragment implements MediaListRecyclerView
                 (MediaListRecyclerViewAdapter.ViewHolder)recyclerView.findContainingViewHolder(view);
         MediaBrowserCompat.MediaItem item = holder.mItem;
         Log.d(TAG, "Retrieved Mediaitem: " + item.getMediaId() + ": " + item.toString());
+        Bundle bundle = new Bundle();
+        bundle.putString(Constants.MEDIA_KEY, item.getMediaId());
+        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
+        navController.navigate(R.id.action_MediaList_to_NowPlaying, bundle);
     }
 }
