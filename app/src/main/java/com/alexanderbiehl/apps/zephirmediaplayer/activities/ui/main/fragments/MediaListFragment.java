@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -20,6 +21,7 @@ import com.alexanderbiehl.apps.zephirmediaplayer.R;
 import com.alexanderbiehl.apps.zephirmediaplayer.activities.MainActivity;
 import com.alexanderbiehl.apps.zephirmediaplayer.activities.adapters.MediaListRecyclerViewAdapter;
 import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.main.MusicQueueViewModel;
+import com.alexanderbiehl.apps.zephirmediaplayer.databinding.FragmentMediaListBinding;
 
 /**
  * A fragment representing a list of Items.
@@ -59,8 +61,8 @@ public class MediaListFragment extends Fragment implements MediaListRecyclerView
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
-        //mediaItems = ((MainActivity)getActivity()).getMediaItems();
-        viewModel = ((MainActivity) requireActivity()).viewModel;
+
+        viewModel = new ViewModelProvider(requireActivity()).get(MusicQueueViewModel.class);
     }
 
     @Override
@@ -95,9 +97,6 @@ public class MediaListFragment extends Fragment implements MediaListRecyclerView
                 (MediaListRecyclerViewAdapter.ViewHolder)recyclerView.findContainingViewHolder(view);
         MediaBrowserCompat.MediaItem item = holder.mItem;
         Log.d(TAG, "Retrieved Mediaitem: " + item.getMediaId() + ": " + item.toString());
-        Bundle bundle = new Bundle();
-        bundle.putString(Constants.MEDIA_KEY, item.getMediaId());
-        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_container);
-        navController.navigate(R.id.action_MediaList_to_NowPlaying, bundle);
+        viewModel.setCurrentMediaID(item.getMediaId());
     }
 }

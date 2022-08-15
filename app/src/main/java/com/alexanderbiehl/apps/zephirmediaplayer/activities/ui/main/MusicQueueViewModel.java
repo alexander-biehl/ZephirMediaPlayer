@@ -16,10 +16,12 @@ public class MusicQueueViewModel extends AndroidViewModel {
     private static final String TAG = MusicQueueViewModel.class.getSimpleName();
 
     private MutableLiveData<List<MediaBrowserCompat.MediaItem>> currentQueue;
+    private MutableLiveData<String> currentMediaId;
 
     public MusicQueueViewModel(@NonNull Application application) {
         super(application);
         currentQueue = new MutableLiveData<>(new ArrayList<>());
+        currentMediaId = new MutableLiveData<>();
     }
 
     public LiveData<List<MediaBrowserCompat.MediaItem>> getQueue() {
@@ -27,6 +29,14 @@ public class MusicQueueViewModel extends AndroidViewModel {
     }
 
     public void setQueue(final List<MediaBrowserCompat.MediaItem> queue) {
-        currentQueue = new MutableLiveData<>(queue);
+        currentQueue.setValue(queue);
+    }
+
+    public LiveData<String> getCurrentMediaID() {
+        return this.currentMediaId;
+    }
+
+    public void setCurrentMediaID(String mediaID) {
+        this.currentMediaId.setValue(mediaID);
     }
 }

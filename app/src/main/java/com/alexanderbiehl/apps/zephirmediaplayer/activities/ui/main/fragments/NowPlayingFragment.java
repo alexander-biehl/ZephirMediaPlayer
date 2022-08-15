@@ -7,24 +7,32 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
-import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.main.fragments.databinding.FragmentNowPlayingBinding;
+import com.alexanderbiehl.apps.zephirmediaplayer.Constants;
+import com.alexanderbiehl.apps.zephirmediaplayer.activities.MainActivity;
+import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.main.MusicQueueViewModel;
+import com.alexanderbiehl.apps.zephirmediaplayer.databinding.FragmentNowPlayingBinding;
+
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
 public class NowPlayingFragment extends Fragment {
+
+    private static final String TAG = NowPlayingFragment.class.getSimpleName();
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -107,6 +115,7 @@ public class NowPlayingFragment extends Fragment {
     };
 
     private FragmentNowPlayingBinding binding;
+    private MusicQueueViewModel viewModel;
 
     @Nullable
     @Override
@@ -116,7 +125,6 @@ public class NowPlayingFragment extends Fragment {
 
         binding = FragmentNowPlayingBinding.inflate(inflater, container, false);
         return binding.getRoot();
-
     }
 
     @Override
@@ -138,7 +146,11 @@ public class NowPlayingFragment extends Fragment {
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
-        binding.dummyButton.setOnTouchListener(mDelayHideTouchListener);
+        //binding.dummyButton.setOnTouchListener(mDelayHideTouchListener);
+
+        viewModel = new ViewModelProvider(requireActivity()).get(MusicQueueViewModel.class);
+        String nowPlaying = getArguments().getString(Constants.MEDIA_KEY);
+        Log.d(TAG, "Now playing ID: " + nowPlaying);
     }
 
     @Override

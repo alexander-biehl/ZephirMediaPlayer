@@ -58,6 +58,7 @@ public class MediaLoader {
                 int titleColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.TITLE);
 
                 // temp solution
+                // TODO need to fix this
                 Random rand = new Random();
                 do {
                     //final long _id = cursor.getLong(idColumn);

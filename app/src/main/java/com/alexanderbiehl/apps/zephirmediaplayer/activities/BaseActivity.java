@@ -11,9 +11,14 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
+import com.alexanderbiehl.apps.zephirmediaplayer.Constants;
+import com.alexanderbiehl.apps.zephirmediaplayer.R;
 import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.main.MusicQueueViewModel;
 import com.alexanderbiehl.apps.zephirmediaplayer.service.MusicService2;
 import com.alexanderbiehl.apps.zephirmediaplayer.utilities.StorageUtilities;
@@ -21,6 +26,7 @@ import com.alexanderbiehl.apps.zephirmediaplayer.utilities.StorageUtilities;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
@@ -110,6 +116,20 @@ public abstract class BaseActivity extends AppCompatActivity {
                 null);
 
         viewModel = new ViewModelProvider(this).get(MusicQueueViewModel.class);
+        viewModel.getCurrentMediaID().observe(this, currentMediaID -> {
+            List<MediaBrowserCompat.MediaItem> items = viewModel
+                    .getQueue()
+                    .getValue()
+                    .stream()
+                    .filter(mItem -> { return mItem.getMediaId() == currentMediaID; })
+                    .collect(Collectors.toList());
+
+            if (!items.isEmpty()) {
+                onMediaItemSelected(items.get(0));
+            } else {
+                Log.e(TAG, "MediaID " + currentMediaID + " not found.");
+            }
+        });
         // Check that we have the permissions that we need
         StorageUtilities.verifyStoragePermission(this);
         // TODO need to add callback because music in not retrieved first time app is
@@ -134,14 +154,22 @@ public abstract class BaseActivity extends AppCompatActivity {
         mediaBrowser.disconnect();
     }
 
-    public void onMediaItemSelected(MediaBrowserCompat.MediaItem mediaItem) {
-        if (mediaItem.isPlayable()) {
-//            getMediaController()
-//                    .getTransportControls()
-//                    .playFromMediaId(mediaItem.getMediaId(), null);
-            // TODO navigate to the NowPlayingFragment
-        } else {
+    public void onMediaItemSelected(@Nullable MediaBrowserCompat.MediaItem mediaItem) {
+        if (mediaItem != null && mediaItem.isPlayable()) {
+
+            // navigate to the NowPlayingFragment
+            Bundle bundle = new Bundle();
+            bundle.putString(Constants.MEDIA_KEY, mediaItem.getMediaId());
+            NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_container);
+            navController.navigate(R.id.action_MediaList_to_NowPlaying, bundle);
+
+            getMediaController()
+                    .getTransportControls()
+                    .playFromMediaId(mediaItem.getMediaId(), null);
+        } else if (mediaItem != null){
             subscribeToID(mediaItem.getMediaId());
+        } else {
+            Log.e(TAG, "Passed in null mediaItem");
         }
     }
 
