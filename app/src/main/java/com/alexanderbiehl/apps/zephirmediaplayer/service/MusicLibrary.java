@@ -1,17 +1,25 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.service;
 
 import android.app.Application;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.ParcelFileDescriptor;
+import android.provider.MediaStore;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.BuildConfig;
 import com.alexanderbiehl.apps.zephirmediaplayer.repositories.MediaRepository;
 
+import java.io.FileDescriptor;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +27,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public final class MusicLibrary {
+
+    private static final String TAG = MusicLibrary.class.getSimpleName();
 
     private static final String ROOT = "__root__";
 
@@ -32,8 +42,10 @@ public final class MusicLibrary {
 
     private static MusicLibrary INSTANCE;
     private static MediaRepository mediaRepository;
+    private static Context context;
 
     private MusicLibrary(Application application) {
+        context = application.getApplicationContext();
         isReady = false;
         mediaRepository = new MediaRepository(application);
         mediaRepository.subscribe(repoCallback);
@@ -86,10 +98,24 @@ public final class MusicLibrary {
         return isReady;
     }
 
-    public static String getSongUri(String mediaId) {
-        return String.format("android.resource://%s/%o",
-                BuildConfig.APPLICATION_ID,
-                getMusicRes(mediaId));
+    public static FileDescriptor getFileDescriptor(Uri contentUri) {
+        FileDescriptor fd = null;
+        ContentResolver contentResolver = context.getContentResolver();
+        String readOnlyMode = "r";
+        try (ParcelFileDescriptor pfd =
+                     contentResolver.openFileDescriptor(contentUri, readOnlyMode)) {
+            fd = pfd.getFileDescriptor();
+        } catch (IOException e) {
+            Log.e(TAG, "Unable to retrieve FileDescriptor for " + contentUri.toString());
+        }
+        return fd;
+    }
+
+    public static Uri getSongUri(String mediaId) {
+        return Uri.withAppendedPath(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, mediaId);
+//        return String.format("android.resource://%s/%o",
+//                BuildConfig.APPLICATION_ID,
+//                getMusicRes(mediaId));
     }
 
     private static String getAlbumArtUri(String albumArtResName) {

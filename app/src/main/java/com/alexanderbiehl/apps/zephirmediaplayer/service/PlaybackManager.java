@@ -85,8 +85,10 @@ public class PlaybackManager implements AudioManager.OnAudioFocusChangeListener,
         if (mediaChanged) {
             currentMetadata = metadata;
             try {
+//                mediaPlayer.setDataSource(context.getApplicationContext(),
+//                        Uri.parse(MusicLibrary.getSongUri(mediaId)));
                 mediaPlayer.setDataSource(context.getApplicationContext(),
-                        Uri.parse(MusicLibrary.getSongUri(mediaId)));
+                        MusicLibrary.getSongUri(mediaId));
                 mediaPlayer.prepare();
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -185,7 +187,7 @@ public class PlaybackManager implements AudioManager.OnAudioFocusChangeListener,
         PlaybackStateCompat.Builder builder = new PlaybackStateCompat.Builder()
                 .setActions(getAvailableActions())
                 .setState(state, 0l, SystemClock.elapsedRealtime());
-
+        this.callback.onPlaybackStatusChanged(builder.build());
     }
 
     public interface Callback {
