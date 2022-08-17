@@ -14,6 +14,8 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import androidx.annotation.NonNull;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PlaybackManager implements AudioManager.OnAudioFocusChangeListener,
         MediaPlayer.OnCompletionListener {
@@ -24,6 +26,7 @@ public class PlaybackManager implements AudioManager.OnAudioFocusChangeListener,
     private int state;
     private boolean playOnFocusGain;
     private volatile MediaMetadataCompat currentMetadata;
+    private volatile List<MediaMetadataCompat> currentQueue;
 
     private MediaPlayer mediaPlayer;
     private AudioAttributes audioAttributes;
@@ -48,6 +51,7 @@ public class PlaybackManager implements AudioManager.OnAudioFocusChangeListener,
                 .setWillPauseWhenDucked(true)
                 .setOnAudioFocusChangeListener(this)
                 .build();
+        currentQueue = new ArrayList<>();
     }
 
     public boolean isPlaying() {
@@ -64,6 +68,17 @@ public class PlaybackManager implements AudioManager.OnAudioFocusChangeListener,
 
     public int getCurrentStreamPosition() {
         return mediaPlayer != null ? mediaPlayer.getCurrentPosition() : 0;
+    }
+
+    public int getCurrentQueuePosition() {
+        if (currentQueue == null || currentQueue.isEmpty() || currentMetadata == null) {
+            return 0;
+        }
+        return currentQueue.indexOf(currentMetadata);
+    }
+
+    public void goToQueueIndex(int idx) {
+
     }
 
     public void play(MediaMetadataCompat metadata) {
@@ -184,7 +199,7 @@ public class PlaybackManager implements AudioManager.OnAudioFocusChangeListener,
         }
         PlaybackStateCompat.Builder builder = new PlaybackStateCompat.Builder()
                 .setActions(getAvailableActions())
-                .setState(state, 0l, SystemClock.elapsedRealtime());
+                .setState(state, getCurrentStreamPosition(), 1f);
         this.callback.onPlaybackStatusChanged(builder.build());
     }
 

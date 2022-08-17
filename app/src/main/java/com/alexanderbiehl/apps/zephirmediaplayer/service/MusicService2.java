@@ -58,6 +58,11 @@ public class MusicService2 extends MediaBrowserServiceCompat {
         }
 
         @Override
+        public void onSkipToQueueItem(long id) {
+            super.onSkipToQueueItem(id);
+        }
+
+        @Override
         public void onPause() {
            //super.onPause();
             playbackManager.pause();
@@ -79,6 +84,21 @@ public class MusicService2 extends MediaBrowserServiceCompat {
         public void onStop() {
             super.onStop();
             stopSelf();
+        }
+
+        @Override
+        public void onAddQueueItem(MediaDescriptionCompat description) {
+            super.onAddQueueItem(description);
+        }
+
+        @Override
+        public void onAddQueueItem(MediaDescriptionCompat description, int index) {
+            super.onAddQueueItem(description, index);
+        }
+
+        @Override
+        public void onRemoveQueueItem(MediaDescriptionCompat description) {
+            super.onRemoveQueueItem(description);
         }
     };
 
@@ -139,7 +159,7 @@ public class MusicService2 extends MediaBrowserServiceCompat {
     private void updatePlaybackState(final PlaybackStateCompat state) {
         if (state == null || state.getState() == PlaybackStateCompat.STATE_STOPPED ||
         state.getState() == PlaybackStateCompat.STATE_PAUSED) {
-            stopForeground(true);
+            stopForeground(state.getState() == PlaybackStateCompat.STATE_STOPPED);
             stopSelf();
         }
 
@@ -159,7 +179,7 @@ public class MusicService2 extends MediaBrowserServiceCompat {
                 .setContentIntent(mediaSession.getController().getSessionActivity())
                 .setContentTitle(description.getTitle())
                 .setContentText(description.getSubtitle())
-                .setLargeIcon(MusicLibrary.getAlbumBitmap(this, description.getMediaId()))
+                //.setLargeIcon(MusicLibrary.getAlbumBitmap(this, description.getMediaId()))
                 .setOngoing(isPlaying)
                 .setWhen(isPlaying ? System.currentTimeMillis() - state.getPosition() : 0)
                 .setShowWhen(isPlaying);
