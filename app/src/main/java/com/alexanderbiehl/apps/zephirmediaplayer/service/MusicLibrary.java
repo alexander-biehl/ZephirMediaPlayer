@@ -113,15 +113,13 @@ public final class MusicLibrary {
 
     public static Uri getSongUri(String mediaId) {
         return Uri.withAppendedPath(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, mediaId);
-//        return String.format("android.resource://%s/%o",
-//                BuildConfig.APPLICATION_ID,
-//                getMusicRes(mediaId));
     }
 
-    private static String getAlbumArtUri(String albumArtResName) {
-        return String.format("android.resource://%s/drawable/%s",
-                BuildConfig.APPLICATION_ID,
-                albumArtResName);
+    private static Uri getAlbumArtUri(String albumArtResName) {
+        return Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, albumArtResName);
+//        return String.format("android.resource://%s/drawable/%s",
+//                BuildConfig.APPLICATION_ID,
+//                albumArtResName);
     }
 
     private static int getMusicRes(String mediaId) {
@@ -214,8 +212,8 @@ public final class MusicLibrary {
                         .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist)
                         .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration * 1000)
                         .putString(MediaMetadataCompat.METADATA_KEY_GENRE, genre)
-                        .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, getAlbumArtUri(albumArtResName))
-                        .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON_URI, getAlbumArtUri(albumArtResName))
+                        .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, getAlbumArtUri(albumArtResName).toString())
+                        //.putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_ICON_URI, getAlbumArtUri(albumArtResName).toString())
                         .putString(MediaMetadataCompat.METADATA_KEY_TITLE, title)
                         .build());
         albumResourceMap.put(mediaId, albumArtResId);

@@ -34,7 +34,6 @@ public class MusicService2 extends MediaBrowserServiceCompat {
         @Override
         public void onReady(boolean isReady) {
             libraryReady = true;
-            notifyClients();
         }
     };;
     private boolean isStarted;
@@ -137,10 +136,6 @@ public class MusicService2 extends MediaBrowserServiceCompat {
         }
     }
 
-    private void notifyClients() {
-
-    }
-
     private void updatePlaybackState(final PlaybackStateCompat state) {
         if (state == null || state.getState() == PlaybackStateCompat.STATE_STOPPED ||
         state.getState() == PlaybackStateCompat.STATE_PAUSED) {
@@ -158,11 +153,6 @@ public class MusicService2 extends MediaBrowserServiceCompat {
         MediaDescriptionCompat description = metadata.getDescription();
 
         builder
-                .setStyle(
-                        new androidx.media.app.NotificationCompat
-                                .MediaStyle()
-                                .setShowActionsInCompactView(0,1,2)
-                                .setMediaSession(mediaSession.getSessionToken()))
                 .setChannelId(NotificationUtil.CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -174,10 +164,23 @@ public class MusicService2 extends MediaBrowserServiceCompat {
                 .setWhen(isPlaying ? System.currentTimeMillis() - state.getPosition() : 0)
                 .setShowWhen(isPlaying);
 
+        // if skip to previous action is enabled
+        if ((state.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS) != 0) {
+            builder.addAction(
+                    new NotificationCompat.Action(
+                            R.drawable.ic_notif_previous,
+                            "Previous",
+                            MediaButtonReceiver.buildMediaButtonPendingIntent(
+                                    this,
+                                    PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)
+                    )
+            );
+        }
+
         if (isPlaying) {
             builder.addAction(
                     new NotificationCompat.Action(
-                            R.drawable.btn_pause,
+                            R.drawable.ic_notif_pause,
                             "Pause",
                             MediaButtonReceiver.buildMediaButtonPendingIntent(
                                     this,
@@ -188,7 +191,7 @@ public class MusicService2 extends MediaBrowserServiceCompat {
         } else {
             builder.addAction(
                     new NotificationCompat.Action(
-                            R.drawable.btn_play,
+                            R.drawable.ic_notif_play,
                             "Play",
                             MediaButtonReceiver.buildMediaButtonPendingIntent(
                                     this,
@@ -198,23 +201,11 @@ public class MusicService2 extends MediaBrowserServiceCompat {
             );
         }
 
-        // if skip to previous action is enabled
-        if ((state.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS) != 0) {
-            builder.addAction(
-                    new NotificationCompat.Action(
-                            R.drawable.btn_previous,
-                            "Previous",
-                            MediaButtonReceiver.buildMediaButtonPendingIntent(
-                                    this,
-                                    PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)
-                    )
-            );
-        }
         // if skip to next action is enabled
         if ((state.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_NEXT) != 0) {
             builder.addAction(
                     new NotificationCompat.Action(
-                            R.drawable.btn_next,
+                            R.drawable.ic_notif_next,
                             "Next",
                             MediaButtonReceiver.buildMediaButtonPendingIntent(
                                     this,
@@ -223,6 +214,12 @@ public class MusicService2 extends MediaBrowserServiceCompat {
             );
         }
 
+        // set the style after adding the actions
+        builder.setStyle(
+                new androidx.media.app.NotificationCompat
+                        .MediaStyle()
+                        .setShowActionsInCompactView(1,0,2)
+                        .setMediaSession(mediaSession.getSessionToken()));
         Notification notification = builder.build();
 
         if (isPlaying && !isStarted) {

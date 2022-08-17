@@ -85,8 +85,6 @@ public class PlaybackManager implements AudioManager.OnAudioFocusChangeListener,
         if (mediaChanged) {
             currentMetadata = metadata;
             try {
-//                mediaPlayer.setDataSource(context.getApplicationContext(),
-//                        Uri.parse(MusicLibrary.getSongUri(mediaId)));
                 mediaPlayer.setDataSource(context.getApplicationContext(),
                         MusicLibrary.getSongUri(mediaId));
                 mediaPlayer.prepare();
@@ -108,7 +106,7 @@ public class PlaybackManager implements AudioManager.OnAudioFocusChangeListener,
     public void pause() {
         if (isPlaying()) {
             mediaPlayer.pause();
-            audioManager.abandonAudioFocus(this);
+            //audioManager.abandonAudioFocus(this);
         }
         state = PlaybackStateCompat.STATE_PAUSED;
         updatePlaybackState();
