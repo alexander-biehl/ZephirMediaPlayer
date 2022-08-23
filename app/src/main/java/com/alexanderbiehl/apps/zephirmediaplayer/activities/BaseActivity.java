@@ -71,21 +71,18 @@ public abstract class BaseActivity extends AppCompatActivity {
         public void onSessionDestroyed() {
             //super.onSessionDestroyed();
             updatePlaybackState(null);
-            //adapter.notifyDataSetChanged();
         }
 
         @Override
         public void onPlaybackStateChanged(PlaybackStateCompat state) {
             //super.onPlaybackStateChanged(state);
             updatePlaybackState(state);
-            //adapter.notifyDataSetChanged();
         }
 
         @Override
         public void onMetadataChanged(MediaMetadataCompat metadata) {
             //super.onMetadataChanged(metadata);
             updateMetadata(metadata);
-            //adapter.notifyDatasetChanged();
         }
     };
 
@@ -93,7 +90,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         @Override
         public void onChildrenLoaded(@NonNull String parentId, @NonNull List<MediaBrowserCompat.MediaItem> children) {
             //super.onChildrenLoaded(parentId, children);
-            // TODO notify that we've loaded the data
+            // TODO need to update this so it changes depending on the media_id submitted
             if (children == null || children.isEmpty()) {
                 // TODO requiry
                 new RetryTask(mediaBrowser).execute(parentId);
@@ -191,8 +188,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected void updateMetadata(MediaMetadataCompat metadata) {
         currentMetadata = metadata;
-        // TODO update metdata display of adapter
-        // adapter.notifyDataSetChanged();
         updateMetadataImpl();
     }
 

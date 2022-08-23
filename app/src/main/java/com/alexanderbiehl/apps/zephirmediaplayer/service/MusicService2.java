@@ -149,10 +149,10 @@ public class MusicService2 extends MediaBrowserServiceCompat {
 
     @Override
     public void onLoadChildren(@NonNull String parentId, @NonNull Result<List<MediaBrowserCompat.MediaItem>> result) {
-        if (library.getIsReady()) {
-            result.sendResult(MusicLibrary.getMediaItems());
-        } else {
+        if (!library.getIsReady()) {
             result.sendResult(new ArrayList<>());
+        } else {
+            result.sendResult(MusicLibrary.getItemsForId(parentId));
         }
     }
 

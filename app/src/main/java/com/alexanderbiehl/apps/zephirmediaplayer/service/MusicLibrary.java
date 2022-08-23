@@ -52,6 +52,21 @@ public final class MusicLibrary {
         loadIfReady();
     }
 
+    public static List<MediaBrowserCompat.MediaItem> getItemsForId(final String parentId) {
+        // client requested parent
+        if (parentId == ROOT) {
+            return getMediaItems();
+        }
+        // client requested artists
+
+        // playlists
+
+        // albums
+
+        // none found
+        return new ArrayList<>();
+    }
+
     public void loadIfReady() {
         if (mediaRepository.isReady()) {
             synchronized (musicLock) {
