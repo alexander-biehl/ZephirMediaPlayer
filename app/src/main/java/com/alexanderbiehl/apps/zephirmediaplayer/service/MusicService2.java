@@ -1,7 +1,6 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.service;
 
 import android.app.Notification;
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.media.MediaBrowserCompat;
@@ -40,6 +39,7 @@ public class MusicService2 extends MediaBrowserServiceCompat {
     private boolean libraryReady;
 
     final MediaSessionCompat.Callback sessionCallbacks = new MediaSessionCompat.Callback() {
+
         @Override
         public void onPlay() {
             //super.onPlay();
@@ -110,14 +110,6 @@ public class MusicService2 extends MediaBrowserServiceCompat {
         mediaSession = new MediaSessionCompat(this, TAG);
         mediaSession.setCallback(sessionCallbacks);
 
-        Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
-        mediaButtonIntent.setClass(this, MediaButtonReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                this,
-                0,
-                mediaButtonIntent,
-                0);
-        mediaSession.setMediaButtonReceiver(pendingIntent);
         setSessionToken(mediaSession.getSessionToken());
 
         playbackManager = new PlaybackManager(this, state -> {
@@ -130,6 +122,13 @@ public class MusicService2 extends MediaBrowserServiceCompat {
         library.subscribe(libraryCallback);
 
         NotificationUtil.createNotificationChannel(this);
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        // this is necessary to handle intents sent from the MediaButtonReceiver
+        MediaButtonReceiver.handleIntent(mediaSession, intent);
+        return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
@@ -185,17 +184,17 @@ public class MusicService2 extends MediaBrowserServiceCompat {
                 .setShowWhen(isPlaying);
 
         // if skip to previous action is enabled
-        if ((state.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS) != 0) {
-            builder.addAction(
-                    new NotificationCompat.Action(
-                            R.drawable.ic_notif_previous,
-                            "Previous",
-                            MediaButtonReceiver.buildMediaButtonPendingIntent(
-                                    this,
-                                    PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)
-                    )
-            );
-        }
+//        if ((state.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS) != 0) {
+//            builder.addAction(
+//                    new NotificationCompat.Action(
+//                            R.drawable.ic_notif_previous,
+//                            "Previous",
+//                            MediaButtonReceiver.buildMediaButtonPendingIntent(
+//                                    getApplicationContext(),
+//                                    PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)
+//                    )
+//            );
+//        }
 
         if (isPlaying) {
             builder.addAction(
@@ -203,7 +202,7 @@ public class MusicService2 extends MediaBrowserServiceCompat {
                             R.drawable.ic_notif_pause,
                             "Pause",
                             MediaButtonReceiver.buildMediaButtonPendingIntent(
-                                    this,
+                                    getApplicationContext(),
                                     PlaybackStateCompat.ACTION_PAUSE
                             )
                     )
@@ -214,7 +213,7 @@ public class MusicService2 extends MediaBrowserServiceCompat {
                             R.drawable.ic_notif_play,
                             "Play",
                             MediaButtonReceiver.buildMediaButtonPendingIntent(
-                                    this,
+                                    getApplicationContext(),
                                     PlaybackStateCompat.ACTION_PLAY
                             )
                     )
@@ -222,23 +221,24 @@ public class MusicService2 extends MediaBrowserServiceCompat {
         }
 
         // if skip to next action is enabled
-        if ((state.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_NEXT) != 0) {
-            builder.addAction(
-                    new NotificationCompat.Action(
-                            R.drawable.ic_notif_next,
-                            "Next",
-                            MediaButtonReceiver.buildMediaButtonPendingIntent(
-                                    this,
-                                    PlaybackStateCompat.ACTION_SKIP_TO_NEXT)
-                    )
-            );
-        }
+//        if ((state.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_NEXT) != 0) {
+//            builder.addAction(
+//                    new NotificationCompat.Action(
+//                            R.drawable.ic_notif_next,
+//                            "Next",
+//                            MediaButtonReceiver.buildMediaButtonPendingIntent(
+//                                    getApplicationContext(),
+//                                    PlaybackStateCompat.ACTION_SKIP_TO_NEXT)
+//                    )
+//            );
+//        }
 
         // set the style after adding the actions
         builder.setStyle(
                 new androidx.media.app.NotificationCompat
                         .MediaStyle()
-                        .setShowActionsInCompactView(1,0,2)
+                        //.setShowActionsInCompactView(1,0,2)
+                        .setShowActionsInCompactView(0)
                         .setMediaSession(mediaSession.getSessionToken()));
         Notification notification = builder.build();
 

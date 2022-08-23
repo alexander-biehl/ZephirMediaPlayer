@@ -84,12 +84,6 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void onMediaItemsLoaded() {
-//        getSupportFragmentManager()
-//                .beginTransaction()
-//                .replace(R.id.nav_host_fragment_container, MediaListFragment.newInstance(1))
-//                .setReorderingAllowed(true)
-//                .addToBackStack(null)
-//                .commit();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_container);
         navController.navigate(R.id.action_Splash_to_MediaList);
     }
