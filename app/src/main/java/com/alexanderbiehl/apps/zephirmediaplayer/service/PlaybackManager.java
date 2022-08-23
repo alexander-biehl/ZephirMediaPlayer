@@ -5,9 +5,7 @@ import android.media.AudioAttributes;
 import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.PowerManager;
-import android.os.SystemClock;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
@@ -23,6 +21,7 @@ public class PlaybackManager implements AudioManager.OnAudioFocusChangeListener,
     private static final String TAG = PlaybackManager.class.getSimpleName();
 
     private final Context context;
+    private final MusicService2 service;
     private int state;
     private boolean playOnFocusGain;
     private volatile MediaMetadataCompat currentMetadata;
@@ -35,8 +34,9 @@ public class PlaybackManager implements AudioManager.OnAudioFocusChangeListener,
     private final Callback callback;
     private final AudioManager audioManager;
 
-    public PlaybackManager(@NonNull Context context,Callback callback) {
-        this.context = context;
+    public PlaybackManager(@NonNull MusicService2 service, Callback callback) {
+        this.context = service.getApplicationContext();
+        this.service = service;
         this.callback = callback;
         this.audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
 
@@ -172,7 +172,12 @@ public class PlaybackManager implements AudioManager.OnAudioFocusChangeListener,
 
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
-        stop();
+        if (currentIsLast()) {
+            stop();
+        } else {
+            // TODO we are currently not added anything to currentQueue, need to look at how to add items to the queue from MusicService2
+            playNext();
+        }
     }
 
     private void releaseMediaPlayer() {
@@ -201,6 +206,16 @@ public class PlaybackManager implements AudioManager.OnAudioFocusChangeListener,
                 .setActions(getAvailableActions())
                 .setState(state, getCurrentStreamPosition(), 1f);
         this.callback.onPlaybackStatusChanged(builder.build());
+    }
+
+    private boolean currentIsLast() {
+        return getCurrentQueuePosition() == currentQueue.size() - 1;
+    }
+
+    private void playNext() {
+        int nextIndex = getCurrentQueuePosition();
+        MediaMetadataCompat next = currentQueue.get(nextIndex);
+        service.sessionCallbacks.onPrepareFromMediaId(next.getDescription().getMediaId(), null);
     }
 
     public interface Callback {
