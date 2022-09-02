@@ -27,6 +27,7 @@ public class MediaLoader {
             MediaStore.Audio.AudioColumns.GENRE,
             MediaStore.Audio.AudioColumns.ALBUM_ID,
             MediaStore.Audio.AudioColumns.ARTIST_ID,
+            MediaStore.Audio.AudioColumns.DATA,
     };
     private static final String BASE_SELECTION = String.format("%s = ? AND %s != ?",
             MediaStore.Audio.AudioColumns.IS_MUSIC,
@@ -47,8 +48,6 @@ public class MediaLoader {
                 Log.d(TAG, "No media on device");
             } else {
                 // cache the column numbers
-                //int idColumn = cursor.getColumnIndexOrThrow(BaseColumns._ID);
-                //int mediaIdColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns._ID);
                 int mediaIdColumn = cursor.getColumnIndexOrThrow(BaseColumns._ID);
                 int albumColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ALBUM);
                 int artistColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ARTIST);
@@ -56,20 +55,18 @@ public class MediaLoader {
                 int genreColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.GENRE);
                 //int albumArtColumn = cursor.getColumnIndexOrThrow(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI);
                 int titleColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.TITLE);
+                int filePathColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.DATA);
 
-                // temp solution
-                // TODO need to fix this
-                Random rand = new Random();
                 do {
-                    //final long _id = cursor.getLong(idColumn);
-                    final long _id = rand.nextLong();
                     final String mediaId = cursor.getString(mediaIdColumn);
+                    final long _id = Long.getLong(mediaId);
                     final String album = cursor.getString(albumColumn);
                     final String artist = cursor.getString(artistColumn);
                     final long duration = cursor.getLong(durationColumn);
                     final String genre = cursor.getString(genreColumn);
                     //final String albumArtUri = cursor.getString(albumArtColumn);
                     final String title = cursor.getString(titleColumn);
+                    final String filePath = cursor.getString(filePathColumn);
 
                     media.add(
                             new MediaMetadataCompat.Builder()
@@ -81,6 +78,8 @@ public class MediaLoader {
                                     .putString(MediaMetadataCompat.METADATA_KEY_GENRE, genre)
                                     //.putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, getAlbumArtUri(albumArtUri))
                                     .putString(MediaMetadataCompat.METADATA_KEY_TITLE, title)
+                                    // TODO need to figure out where we can store the file path object
+                                    //.putString(MediaMetadataCompat.)
                                     .build()
                     );
                 } while (cursor.moveToNext());
