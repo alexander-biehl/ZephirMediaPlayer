@@ -27,7 +27,6 @@ import androidx.media.MediaBrowserServiceCompat;
 import androidx.media.session.MediaButtonReceiver;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.R;
-import com.alexanderbiehl.apps.zephirmediaplayer.SongManager;
 import com.alexanderbiehl.apps.zephirmediaplayer.utilities.MediaStyleHelper;
 import com.alexanderbiehl.apps.zephirmediaplayer.utilities.NotificationUtil;
 
@@ -52,7 +51,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
     private AudioAttributes audioAttributes;
     private AudioFocusRequest audioFocusRequest;
     private MediaSessionCompat mediaSession;
-    private SongManager songManager;
+    // private SongManager songManager;
     private MusicLibrary library;
     private final MediaSessionCompat.Callback mediaSessionCallback = new MediaSessionCompat.Callback() {
         @Override
@@ -159,8 +158,8 @@ public class MusicService extends MediaBrowserServiceCompat implements
     public void onCreate() {
         super.onCreate();
 
-        songManager = new SongManager();
-        List<HashMap<String,String>> songs = songManager.getPlayList();
+        // songManager = new SongManager();
+        // List<HashMap<String,String>> songs = songManager.getPlayList();
         library = MusicLibrary.getInstance(getApplication());
 
         // TODO use the info from here https://developer.android.com/training/data-storage/shared/media#query-collection

@@ -84,9 +84,7 @@ public class MediaListFragment extends Fragment implements MediaListRecyclerView
             final MediaListRecyclerViewAdapter adapter = new MediaListRecyclerViewAdapter(this);
             recyclerView.setAdapter(adapter);
 
-            viewModel.getQueue().observe(requireActivity(), mediaItems -> {
-                adapter.setMedia(mediaItems);
-            });
+            viewModel.getQueue().observe(requireActivity(), adapter::setMedia);
         }
         return view;
     }

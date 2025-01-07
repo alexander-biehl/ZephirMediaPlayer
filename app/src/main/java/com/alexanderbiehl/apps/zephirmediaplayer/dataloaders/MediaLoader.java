@@ -24,7 +24,7 @@ public class MediaLoader {
             MediaStore.Audio.AudioColumns.ALBUM,
             MediaStore.Audio.AudioColumns.ARTIST,
             MediaStore.Audio.AudioColumns.DURATION,
-            MediaStore.Audio.AudioColumns.GENRE,
+            // MediaStore.Audio.AudioColumns.GENRE,
             MediaStore.Audio.AudioColumns.ALBUM_ID,
             MediaStore.Audio.AudioColumns.ARTIST_ID,
             MediaStore.Audio.AudioColumns.DATA,
@@ -52,7 +52,7 @@ public class MediaLoader {
                 int albumColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ALBUM);
                 int artistColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ARTIST);
                 int durationColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.DURATION);
-                int genreColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.GENRE);
+                // int genreColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.GENRE);
                 //int albumArtColumn = cursor.getColumnIndexOrThrow(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI);
                 int titleColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.TITLE);
                 int filePathColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.DATA);
@@ -63,7 +63,7 @@ public class MediaLoader {
                     final String album = cursor.getString(albumColumn);
                     final String artist = cursor.getString(artistColumn);
                     final long duration = cursor.getLong(durationColumn);
-                    final String genre = cursor.getString(genreColumn);
+                    // final String genre = cursor.getString(genreColumn);
                     //final String albumArtUri = cursor.getString(albumArtColumn);
                     final String title = cursor.getString(titleColumn);
                     final String filePath = cursor.getString(filePathColumn);
@@ -75,7 +75,7 @@ public class MediaLoader {
                                     .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, album)
                                     .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist)
                                     .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration)
-                                    .putString(MediaMetadataCompat.METADATA_KEY_GENRE, genre)
+                                    // .putString(MediaMetadataCompat.METADATA_KEY_GENRE, genre)
                                     //.putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, getAlbumArtUri(albumArtUri))
                                     .putString(MediaMetadataCompat.METADATA_KEY_TITLE, title)
                                     // TODO need to figure out where we can store the file path object

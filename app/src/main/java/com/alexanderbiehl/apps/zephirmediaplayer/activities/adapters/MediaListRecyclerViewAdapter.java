@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.databinding.FragmentMediaBinding;
@@ -31,20 +32,21 @@ public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaList
             // Communicate the clicked item back up to the Fragment
             //final MediaBrowserCompat.MediaItem item = holder.mItem;
             //int position = get
-            if (callback != null) {
-                callback.onMediaSelected(view);
+            if (this.callback != null) {
+                this.callback.onMediaSelected(view);
             }
         };
     }
 
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         FragmentMediaBinding binding = FragmentMediaBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
         return new ViewHolder(binding);
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         MediaBrowserCompat.MediaItem item = mValues.get(position);
         if (item != null) {
             holder.mItem = mValues.get(position);
@@ -79,7 +81,7 @@ public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaList
         notifyDataSetChanged();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         public final TextView mIdView;
         public final TextView mContentView;
         public MediaBrowserCompat.MediaItem mItem;
@@ -90,6 +92,7 @@ public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaList
             mContentView = binding.mediaItemContent;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return super.toString() + " '" + mContentView.getText() + "'";
