@@ -1,8 +1,10 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.dataloaders;
 
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.provider.BaseColumns;
 import android.provider.MediaStore;
 import android.support.v4.media.MediaMetadataCompat;
@@ -67,6 +69,10 @@ public class MediaLoader {
                     //final String albumArtUri = cursor.getString(albumArtColumn);
                     final String title = cursor.getString(titleColumn);
                     final String filePath = cursor.getString(filePathColumn);
+                    final Uri uri = ContentUris.withAppendedId(
+                            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                            _id
+                    );
 
                     media.add(
                             new MediaMetadataCompat.Builder()
@@ -80,6 +86,7 @@ public class MediaLoader {
                                     .putString(MediaMetadataCompat.METADATA_KEY_TITLE, title)
                                     // TODO need to figure out where we can store the file path object
                                     //.putString(MediaMetadataCompat.)
+
                                     .build()
                     );
                 } while (cursor.moveToNext());
