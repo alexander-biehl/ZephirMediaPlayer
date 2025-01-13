@@ -32,34 +32,39 @@ public class MediaLibraryCallback implements MediaLibraryService.MediaLibrarySes
         );
     }
 
+    @NonNull
     @Override
     public ListenableFuture<LibraryResult<MediaItem>> onGetLibraryRoot(
-            MediaLibraryService.MediaLibrarySession session,
-            MediaSession.ControllerInfo browser,
+            @NonNull MediaLibraryService.MediaLibrarySession session,
+            @NonNull MediaSession.ControllerInfo browser,
             @Nullable MediaLibraryService.LibraryParams params
     ) {
         return Futures.immediateFuture(LibraryResult.ofItem(
                 MediaItemTree.getInstance().getRootItem(), params));
     }
 
-    @OptIn(markerClass = UnstableApi.class) @Override
+    @NonNull
+    @OptIn(markerClass = UnstableApi.class)
+    @Override
     public ListenableFuture<LibraryResult<MediaItem>> onGetItem(
-            MediaLibraryService.MediaLibrarySession session,
-            MediaSession.ControllerInfo browser,
-            String mediaId
+            @NonNull MediaLibraryService.MediaLibrarySession session,
+            @NonNull MediaSession.ControllerInfo browser,
+            @NonNull String mediaId
     ) {
         Optional<MediaItem> optItem = MediaItemTree.getInstance().getItem(mediaId);
-        if (optItem.isEmpty()) {
-            return Futures.immediateFuture(LibraryResult.ofError(SessionError.ERROR_BAD_VALUE));
-        }
-        return Futures.immediateFuture(LibraryResult.ofItem(optItem.get(), null));
+        return optItem.map(mediaItem ->
+                        Futures.immediateFuture(LibraryResult.ofItem(mediaItem, null)))
+                .orElseGet(() ->
+                        Futures.immediateFuture(LibraryResult.ofError(SessionError.ERROR_BAD_VALUE)));
     }
 
-    @OptIn(markerClass = UnstableApi.class) @Override
+    @NonNull
+    @OptIn(markerClass = UnstableApi.class)
+    @Override
     public ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> onGetChildren(
-            MediaLibraryService.MediaLibrarySession session,
-            MediaSession.ControllerInfo browser,
-            String parentId,
+            @NonNull MediaLibraryService.MediaLibrarySession session,
+            @NonNull MediaSession.ControllerInfo browser,
+            @NonNull String parentId,
             int page,
             int pageSize,
             @Nullable MediaLibraryService.LibraryParams params
@@ -70,11 +75,12 @@ public class MediaLibraryCallback implements MediaLibraryService.MediaLibrarySes
                 Futures.immediateFuture(LibraryResult.ofItemList(optChildren, params));
     }
 
+    @NonNull
     @Override
     public ListenableFuture<List<MediaItem>> onAddMediaItems(
-            MediaSession mediaSession,
-            MediaSession.ControllerInfo controller,
-            List<MediaItem> mediaItems
+            @NonNull MediaSession mediaSession,
+            @NonNull MediaSession.ControllerInfo controller,
+            @NonNull List<MediaItem> mediaItems
     ) {
         return Futures.immediateFuture(resolveMediaItems(mediaItems));
     }
