@@ -9,6 +9,7 @@ import androidx.media3.session.LibraryResult;
 import androidx.media3.session.MediaLibraryService;
 import androidx.media3.session.MediaSession;
 
+import com.alexanderbiehl.apps.zephirmediaplayer.dataloaders.MediaLoader;
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.ListenableFuture;
 
@@ -20,7 +21,9 @@ public class MediaLibraryCallback implements MediaLibraryService.MediaLibrarySes
 
     public MediaLibraryCallback(@NonNull Context context) {
         this.context = context;
-        // TODO initialize MediaTree
+        MediaItemTree.getInstance().initialize(
+                MediaLoader.getMedia(this.context)
+        );
     }
 
     @Override

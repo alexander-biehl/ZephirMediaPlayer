@@ -11,6 +11,8 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.media3.common.MediaItem;
+import androidx.media3.common.MediaMetadata;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,8 +35,8 @@ public class MediaLoader {
             "1" // TRUE
     };
 
-    public static List<MediaMetadataCompat> getMedia(@NonNull Context ctx) {
-        List<MediaMetadataCompat> media = new ArrayList<>();
+    public static List<MediaItem> getMedia(@NonNull Context ctx) {
+        List<MediaItem> media = new ArrayList<>();
 
         ContentResolver resolver = ctx.getContentResolver();
         try (Cursor cursor = resolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
@@ -65,13 +67,24 @@ public class MediaLoader {
                     );
 
                     media.add(
-                            new MediaMetadataCompat.Builder()
-                                    .putLong(BaseColumns._ID, _id)
-                                    .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, mediaId)
-                                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, album)
-                                    .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist)
-                                    .putString(MediaMetadataCompat.METADATA_KEY_TITLE, title)
+                            new MediaItem.Builder()
+                                    .setMediaId(mediaId)
+                                    .setUri(uri)
+                                    .setMediaMetadata(
+                                            new MediaMetadata.Builder()
+                                                    .setTitle(title)
+                                                    .setArtist(artist)
+                                                    .setAlbumTitle(album)
+                                                    .build()
+                                    )
                                     .build()
+//                            new MediaMetadataCompat.Builder()
+//                                    .putLong(BaseColumns._ID, _id)
+//                                    .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, mediaId)
+//                                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, album)
+//                                    .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist)
+//                                    .putString(MediaMetadataCompat.METADATA_KEY_TITLE, title)
+//                                    .build()
                     );
                 } while (cursor.moveToNext());
             }

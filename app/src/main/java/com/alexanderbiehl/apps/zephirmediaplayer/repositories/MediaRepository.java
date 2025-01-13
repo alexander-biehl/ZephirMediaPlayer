@@ -38,9 +38,9 @@ public class MediaRepository {
     private void loadMedia() {
         this.executor.execute(() -> {
             Log.d(TAG, "Starting media load");
-            List<MediaMetadataCompat> metadata = MediaLoader.getMedia(context);
+            // List<MediaMetadataCompat> metadata = MediaLoader.getMedia(context);
             setIsReady(true);
-            setMedia(metadata);
+            // setMedia(metadata);
             notifyListeners();
             Log.d(TAG, "Completed media load");
         });
