@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.media3.common.Player;
 import androidx.media3.exoplayer.ExoPlayer;
@@ -47,7 +48,7 @@ public class Media3Service extends MediaLibraryService {
 
     @Nullable
     @Override
-    public MediaLibrarySession onGetSession(MediaSession.ControllerInfo controllerInfo) {
-        return null;
+    public MediaLibrarySession onGetSession(@NonNull MediaSession.ControllerInfo controllerInfo) {
+        return mediaLibrarySession;
     }
 }
