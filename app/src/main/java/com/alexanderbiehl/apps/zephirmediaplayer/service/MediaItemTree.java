@@ -40,14 +40,49 @@ public class MediaItemTree {
         return INSTANCE;
     }
 
-    private MediaItem buildMediaItem(String title, String mediaID, boolean isPlayable, boolean isBrowsable, @MediaMetadata.MediaType int mediaType) {
-        return buildMediaItem(title, mediaID, isPlayable, isBrowsable, mediaType, "", "", null);
+    private MediaItem buildMediaItem(
+            String title,
+            String mediaID,
+            boolean isPlayable,
+            boolean isBrowsable,
+            @MediaMetadata.MediaType int mediaType
+    ) {
+        return buildMediaItem(
+                title,
+                mediaID,
+                isPlayable,
+                isBrowsable,
+                mediaType,
+                "",
+                "",
+                null
+        );
     }
 
-    private MediaItem buildMediaItem(String title, String mediaID, boolean isPlayable, boolean isBrowsable, @MediaMetadata.MediaType int mediaType, String album, String artist, Uri sourceUri) {
-        MediaMetadata metadata = new MediaMetadata.Builder().setAlbumTitle(album).setTitle(title).setArtist(artist).setIsBrowsable(isBrowsable).setIsPlayable(isPlayable).setMediaType(mediaType).build();
+    private MediaItem buildMediaItem(
+            String title,
+            String mediaID,
+            boolean isPlayable,
+            boolean isBrowsable,
+            @MediaMetadata.MediaType int mediaType,
+            String album,
+            String artist,
+            Uri sourceUri
+    ) {
+        MediaMetadata metadata = new MediaMetadata.Builder()
+                .setAlbumTitle(album)
+                .setTitle(title)
+                .setArtist(artist)
+                .setIsBrowsable(isBrowsable)
+                .setIsPlayable(isPlayable)
+                .setMediaType(mediaType)
+                .build();
 
-        return new MediaItem.Builder().setMediaId(mediaID).setMediaMetadata(metadata).setUri(sourceUri).build();
+        return new MediaItem.Builder()
+                .setMediaId(mediaID)
+                .setMediaMetadata(metadata)
+                .setUri(sourceUri)
+                .build();
     }
 
     public void initialize(List<MediaItem> media) {
@@ -187,7 +222,7 @@ public class MediaItemTree {
      * Returns the media ID of the parent of the given media ID, or null if the media ID
      * wasn't found.
      *
-     * @param mediaID The media ID of which to search the parent.
+     * @param mediaID  The media ID of which to search the parent.
      * @param parentID The optional media ID of the media item to start the search from,
      *                 or undefined to search
      * @return Optional of the found ID.
