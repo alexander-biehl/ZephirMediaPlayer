@@ -4,16 +4,22 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
 import androidx.media3.common.MediaItem;
+import androidx.media3.common.util.UnstableApi;
 import androidx.media3.session.LibraryResult;
 import androidx.media3.session.MediaLibraryService;
 import androidx.media3.session.MediaSession;
+import androidx.media3.session.SessionError;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.dataloaders.MediaLoader;
 import com.google.common.collect.ImmutableList;
+import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class MediaLibraryCallback implements MediaLibraryService.MediaLibrarySession.Callback {
 
@@ -32,19 +38,24 @@ public class MediaLibraryCallback implements MediaLibraryService.MediaLibrarySes
             MediaSession.ControllerInfo browser,
             @Nullable MediaLibraryService.LibraryParams params
     ) {
-        return MediaLibraryService.MediaLibrarySession.Callback.super.onGetLibraryRoot(session, browser, params);
+        return Futures.immediateFuture(LibraryResult.ofItem(
+                MediaItemTree.getInstance().getRootItem(), params));
     }
 
-    @Override
+    @OptIn(markerClass = UnstableApi.class) @Override
     public ListenableFuture<LibraryResult<MediaItem>> onGetItem(
             MediaLibraryService.MediaLibrarySession session,
             MediaSession.ControllerInfo browser,
             String mediaId
     ) {
-        return MediaLibraryService.MediaLibrarySession.Callback.super.onGetItem(session, browser, mediaId);
+        Optional<MediaItem> optItem = MediaItemTree.getInstance().getItem(mediaId);
+        if (optItem.isEmpty()) {
+            return Futures.immediateFuture(LibraryResult.ofError(SessionError.ERROR_BAD_VALUE));
+        }
+        return Futures.immediateFuture(LibraryResult.ofItem(optItem.get(), null));
     }
 
-    @Override
+    @OptIn(markerClass = UnstableApi.class) @Override
     public ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> onGetChildren(
             MediaLibraryService.MediaLibrarySession session,
             MediaSession.ControllerInfo browser,
@@ -53,7 +64,10 @@ public class MediaLibraryCallback implements MediaLibraryService.MediaLibrarySes
             int pageSize,
             @Nullable MediaLibraryService.LibraryParams params
     ) {
-        return MediaLibraryService.MediaLibrarySession.Callback.super.onGetChildren(session, browser, parentId, page, pageSize, params);
+        List<MediaItem> optChildren = MediaItemTree.getInstance().getChildren(parentId);
+        return optChildren.isEmpty() ?
+                Futures.immediateFuture(LibraryResult.ofError(SessionError.ERROR_BAD_VALUE)) :
+                Futures.immediateFuture(LibraryResult.ofItemList(optChildren, params));
     }
 
     @Override
@@ -62,6 +76,17 @@ public class MediaLibraryCallback implements MediaLibraryService.MediaLibrarySes
             MediaSession.ControllerInfo controller,
             List<MediaItem> mediaItems
     ) {
-        return MediaLibraryService.MediaLibrarySession.Callback.super.onAddMediaItems(mediaSession, controller, mediaItems);
+        return Futures.immediateFuture(resolveMediaItems(mediaItems));
+    }
+
+    private List<MediaItem> resolveMediaItems(List<MediaItem> mediaItems) {
+        List<MediaItem> playlist = new ArrayList<>();
+        mediaItems.forEach(mediaItem -> {
+            if (!mediaItem.mediaId.isEmpty()) {
+                Optional<MediaItem> expandedItem = MediaItemTree.getInstance().expandItem(mediaItem);
+                expandedItem.ifPresent(playlist::add);
+            }
+        });
+        return playlist;
     }
 }
