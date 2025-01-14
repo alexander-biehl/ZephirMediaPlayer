@@ -1,12 +1,12 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.adapters;
 
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.placeholder.PlaceholderContent.MediaItem;
+import androidx.media3.common.MediaItem;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.alexanderbiehl.apps.zephirmediaplayer.databinding.FragmentMediaItemBinding;
 
 import java.util.List;
@@ -33,8 +33,8 @@ public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaList
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).id);
-        holder.mContentView.setText(mValues.get(position).content);
+        holder.mIdView.setText(mValues.get(position).mediaId);
+        holder.mContentView.setText(mValues.get(position).mediaMetadata.title);
     }
 
     @Override
