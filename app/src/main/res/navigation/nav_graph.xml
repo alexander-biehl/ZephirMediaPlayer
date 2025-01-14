@@ -3,26 +3,26 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/FirstFragment">
+    app:startDestination="@id/MediaListFragment">
 
     <fragment
-        android:id="@+id/FirstFragment"
+        android:id="@+id/MediaListFragment"
         android:name="com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.fragments.MediaListFragment"
         android:label="@string/first_fragment_label"
-        tools:layout="@layout/fragment_media_list">
+        tools:layout="@layout/fragment_media_item_list">
 
         <action
             android:id="@+id/action_FirstFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
+            app:destination="@id/NowPlayingFragment" />
     </fragment>
     <fragment
-        android:id="@+id/SecondFragment"
+        android:id="@+id/NowPlayingFragment"
         android:name="com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.fragments.NowPlayingFragment"
         android:label="@string/second_fragment_label"
         tools:layout="@layout/fragment_now_playing">
 
         <action
             android:id="@+id/action_SecondFragment_to_FirstFragment"
-            app:destination="@id/FirstFragment" />
+            app:destination="@id/MediaListFragment" />
     </fragment>
 </navigation>

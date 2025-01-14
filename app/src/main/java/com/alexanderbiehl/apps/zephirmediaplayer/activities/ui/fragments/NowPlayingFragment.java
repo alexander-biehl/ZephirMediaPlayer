@@ -10,11 +10,11 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.R;
-import com.alexanderbiehl.apps.zephirmediaplayer.databinding.FragmentSecondBinding;
+import com.alexanderbiehl.apps.zephirmediaplayer.databinding.FragmentNowPlayingBinding;
 
 public class NowPlayingFragment extends Fragment {
 
-    private FragmentSecondBinding binding;
+    private FragmentNowPlayingBinding binding;
 
     @Override
     public View onCreateView(
@@ -22,7 +22,7 @@ public class NowPlayingFragment extends Fragment {
             Bundle savedInstanceState
     ) {
 
-        binding = FragmentSecondBinding.inflate(inflater, container, false);
+        binding = FragmentNowPlayingBinding.inflate(inflater, container, false);
         return binding.getRoot();
 
     }
