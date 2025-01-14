@@ -75,7 +75,10 @@ public class MainActivity extends AppCompatActivity {
         MediaBrowser.releaseFuture(browserFuture);
         if (this.mediaBrowser.isPlaying()) {
             this.mediaBrowser.stop();
+        }
+        if (this.mediaBrowser != null) {
             this.mediaBrowser.release();
+            this.mediaBrowser = null;
         }
         super.onStop();
     }
