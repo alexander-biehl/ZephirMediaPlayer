@@ -1,13 +1,21 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.activities;
 
+import android.content.ComponentName;
 import android.os.Bundle;
 
+import com.alexanderbiehl.apps.zephirmediaplayer.service.Media3Service;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.util.Log;
 import android.view.View;
 
+import androidx.core.content.ContextCompat;
+import androidx.media3.common.MediaItem;
+import androidx.media3.session.LibraryResult;
+import androidx.media3.session.MediaBrowser;
+import androidx.media3.session.SessionToken;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -16,11 +24,17 @@ import androidx.navigation.ui.NavigationUI;
 import com.alexanderbiehl.apps.zephirmediaplayer.databinding.ActivityMainBinding;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.R;
+import com.google.common.util.concurrent.ListenableFuture;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = MainActivity.class.getSimpleName();
+
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
+
+    private MediaBrowser mediaBrowser;
+    private ListenableFuture<MediaBrowser> browserFuture;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,9 +60,59 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        SessionToken sessionToken =
+                new SessionToken(this,
+                        new ComponentName(this, Media3Service.class));
+        browserFuture =
+                new MediaBrowser.Builder(this, sessionToken).buildAsync();
+        browserFuture.addListener(() -> {
+            if (browserFuture.isDone()) {
+                try {
+                    mediaBrowser = browserFuture.get();
+                    getRoot();
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        }, ContextCompat.getMainExecutor(this));
+    }
+
+    @Override
+    protected void onStop() {
+        MediaBrowser.releaseFuture(browserFuture);
+        if (this.mediaBrowser.isPlaying()) {
+            this.mediaBrowser.stop();
+            this.mediaBrowser.release();
+        }
+        super.onStop();
+    }
+
+    @Override
     public boolean onSupportNavigateUp() {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         return NavigationUI.navigateUp(navController, appBarConfiguration)
                 || super.onSupportNavigateUp();
+    }
+
+    private void getRoot() {
+        ListenableFuture<LibraryResult<MediaItem>> rootFuture =
+                mediaBrowser.getLibraryRoot(null);
+        rootFuture.addListener(() -> {
+            if (rootFuture.isDone()) {
+                try {
+                    LibraryResult<MediaItem> result = rootFuture.get();
+                    MediaItem root = result.value;
+                    displayResult(root);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }, ContextCompat.getMainExecutor(this));
+    }
+
+    private void displayResult(MediaItem item) {
+        Log.d(TAG, "Got element: " + item.toString());
     }
 }

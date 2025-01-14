@@ -5,9 +5,7 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.provider.BaseColumns;
 import android.provider.MediaStore;
-import android.support.v4.media.MediaMetadataCompat;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -16,7 +14,6 @@ import androidx.media3.common.MediaMetadata;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class MediaLoader {
 
@@ -50,42 +47,48 @@ public class MediaLoader {
                 Log.d(TAG, "No media on device");
             } else {
                 // cache the column numbers
-                int mediaIdColumn = cursor.getColumnIndexOrThrow(BaseColumns._ID);
+                int mediaIdColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns._ID);
                 int albumColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ALBUM);
                 int artistColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ARTIST);
                 int titleColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.TITLE);
 
                 do {
-                    final String mediaId = cursor.getString(mediaIdColumn);
-                    final long _id = Long.getLong(mediaId);
+                    final long id = cursor.getLong(mediaIdColumn);
+//                    final String mediaId = cursor.getString(mediaIdColumn);
+//                    final long _id = Long.getLong(mediaId);
                     final String album = cursor.getString(albumColumn);
                     final String artist = cursor.getString(artistColumn);
                     final String title = cursor.getString(titleColumn);
                     final Uri uri = ContentUris.withAppendedId(
                             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                            _id
+                            id
                     );
 
-                    media.add(
-                            new MediaItem.Builder()
-                                    .setMediaId(mediaId)
-                                    .setUri(uri)
-                                    .setMediaMetadata(
-                                            new MediaMetadata.Builder()
-                                                    .setTitle(title)
-                                                    .setArtist(artist)
-                                                    .setAlbumTitle(album)
-                                                    .build()
-                                    )
-                                    .build()
-//                            new MediaMetadataCompat.Builder()
-//                                    .putLong(BaseColumns._ID, _id)
-//                                    .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, mediaId)
-//                                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, album)
-//                                    .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist)
-//                                    .putString(MediaMetadataCompat.METADATA_KEY_TITLE, title)
-//                                    .build()
-                    );
+                    try {
+                        media.add(
+                                new MediaItem.Builder()
+                                        .setMediaId(String.valueOf(id))
+                                        .setUri(uri)
+                                        .setMediaMetadata(
+                                                new MediaMetadata.Builder()
+                                                        .setTitle(title)
+                                                        .setArtist(artist)
+                                                        .setAlbumTitle(album)
+                                                        .build()
+                                        )
+                                        .build()
+                                //                            new MediaMetadataCompat.Builder()
+                                //                                    .putLong(BaseColumns._ID, _id)
+                                //                                    .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, mediaId)
+                                //                                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, album)
+                                //                                    .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist)
+                                //                                    .putString(MediaMetadataCompat.METADATA_KEY_TITLE, title)
+                                //                                    .build()
+                        );
+                    } catch (Exception e) {
+                        Log.e(TAG, "EXCEPTION: " + e);
+                        throw new RuntimeException(e);
+                    }
                 } while (cursor.moveToNext());
             }
         }
