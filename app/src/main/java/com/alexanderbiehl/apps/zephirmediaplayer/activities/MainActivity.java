@@ -112,5 +112,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Log.d(TAG, "displayResult item was: " + item);
         }
+        // TODO send to MediaListFragment for display
     }
 }
