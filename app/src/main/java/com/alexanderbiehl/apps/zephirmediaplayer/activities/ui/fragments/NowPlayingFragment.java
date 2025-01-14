@@ -16,6 +16,8 @@ public class NowPlayingFragment extends Fragment {
 
     private FragmentNowPlayingBinding binding;
 
+
+
     @Override
     public View onCreateView(
             @NonNull LayoutInflater inflater, ViewGroup container,
