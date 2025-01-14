@@ -2,16 +2,10 @@ package com.alexanderbiehl.apps.zephirmediaplayer.activities;
 
 import android.content.ComponentName;
 import android.os.Bundle;
-
-import com.alexanderbiehl.apps.zephirmediaplayer.service.Media3Service;
-import com.google.android.material.snackbar.Snackbar;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.util.Log;
-import android.view.View;
-
 import androidx.core.content.ContextCompat;
 import androidx.media3.common.MediaItem;
 import androidx.media3.session.LibraryResult;
@@ -22,9 +16,10 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.alexanderbiehl.apps.zephirmediaplayer.databinding.ActivityMainBinding;
-
 import com.alexanderbiehl.apps.zephirmediaplayer.R;
+import com.alexanderbiehl.apps.zephirmediaplayer.databinding.ActivityMainBinding;
+import com.alexanderbiehl.apps.zephirmediaplayer.service.Media3Service;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.common.util.concurrent.ListenableFuture;
 
 public class MainActivity extends AppCompatActivity {
@@ -50,14 +45,9 @@ public class MainActivity extends AppCompatActivity {
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
-        binding.fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAnchorView(R.id.fab)
-                        .setAction("Action", null).show();
-            }
-        });
+        binding.fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                .setAnchorView(R.id.fab)
+                .setAction("Action", null).show());
     }
 
     @Override
@@ -117,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
         if (item == null) {
             Log.d(TAG, "displayResult item was null");
         } else {
-            Log.d(TAG, "displayResult item was: " + item.toString());
+            Log.d(TAG, "displayResult item was: " + item);
         }
     }
 }
