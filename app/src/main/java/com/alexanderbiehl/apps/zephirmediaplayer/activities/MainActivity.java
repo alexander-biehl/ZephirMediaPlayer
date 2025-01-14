@@ -6,6 +6,7 @@ import android.os.Bundle;
 import com.alexanderbiehl.apps.zephirmediaplayer.service.Media3Service;
 import com.google.android.material.snackbar.Snackbar;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.util.Log;
@@ -112,7 +113,11 @@ public class MainActivity extends AppCompatActivity {
         }, ContextCompat.getMainExecutor(this));
     }
 
-    private void displayResult(MediaItem item) {
-        Log.d(TAG, "Got element: " + item.toString());
+    private void displayResult(@Nullable MediaItem item) {
+        if (item == null) {
+            Log.d(TAG, "displayResult item was null");
+        } else {
+            Log.d(TAG, "displayResult item was: " + item.toString());
+        }
     }
 }
