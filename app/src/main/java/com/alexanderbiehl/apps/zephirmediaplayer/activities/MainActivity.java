@@ -1,5 +1,7 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.activities;
 
+import static com.alexanderbiehl.apps.zephirmediaplayer.Constants.MEDIA_KEY;
+
 import android.content.ComponentName;
 import android.os.Bundle;
 import android.util.Log;
@@ -7,6 +9,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.MediaItem;
 import androidx.media3.session.LibraryResult;
 import androidx.media3.session.MediaBrowser;
@@ -17,6 +20,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.R;
+import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.viewmodel.MediaViewModel;
 import com.alexanderbiehl.apps.zephirmediaplayer.databinding.ActivityMainBinding;
 import com.alexanderbiehl.apps.zephirmediaplayer.service.Media3Service;
 import com.google.android.material.snackbar.Snackbar;
@@ -31,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
     private MediaBrowser mediaBrowser;
     private ListenableFuture<MediaBrowser> browserFuture;
+    public MediaViewModel mediaViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+
+        mediaViewModel = new ViewModelProvider(this).get(MediaViewModel.class);
 
         binding.fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAnchorView(R.id.fab)
@@ -111,6 +118,9 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "displayResult item was null");
         } else {
             Log.d(TAG, "displayResult item was: " + item);
+//            Bundle bundle = new Bundle();
+//            bundle.putString(MEDIA_KEY, item.mediaId);
+            mediaViewModel.setCurrentMedia(item);
         }
         // TODO send to MediaListFragment for display
     }
