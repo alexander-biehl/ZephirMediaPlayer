@@ -3,13 +3,16 @@ package com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.fragments;
 import android.content.ComponentName;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.MediaItem;
+import androidx.media3.session.LibraryResult;
 import androidx.media3.session.MediaBrowser;
 import androidx.media3.session.SessionToken;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -20,15 +23,19 @@ import com.alexanderbiehl.apps.zephirmediaplayer.R;
 import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.adapters.MediaListRecyclerViewAdapter;
 import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.viewmodel.MediaViewModel;
 import com.alexanderbiehl.apps.zephirmediaplayer.service.Media3Service;
+import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * A fragment representing a list of Items.
  */
 public class MediaListFragment extends Fragment {
+
+    private static final String TAG = MediaListFragment.class.getSimpleName();
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
@@ -81,7 +88,22 @@ public class MediaListFragment extends Fragment {
 
         this.mediaViewModel = new ViewModelProvider(requireActivity()).get(MediaViewModel.class);
         this.mediaViewModel.getCurrentMedia().observe(requireActivity(), item -> {
-
+            if (mediaBrowser != null) {
+                ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> childrenFuture = mediaBrowser.getChildren(
+                        item.mediaId,
+                        0,
+                        Integer.MAX_VALUE,
+                        null
+                );
+                childrenFuture.addListener(() -> {
+                    try {
+                        subMediaList.addAll(childrenFuture.get().value);
+                        Log.d(TAG, "Got media list of " + subMediaList.size() + " items.");
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }, ContextCompat.getMainExecutor(requireActivity()));
+            }
         });
 
         // Set the adapter
@@ -99,6 +121,18 @@ public class MediaListFragment extends Fragment {
     }
 
     private void initializeBrowser() {
-        // TODO
+        SessionToken sessionToken =
+                new SessionToken(requireContext(), new ComponentName(requireActivity(), Media3Service.class));
+        browserFuture =
+                new MediaBrowser.Builder(requireActivity(), sessionToken).buildAsync();
+        browserFuture.addListener(() -> {
+            if (browserFuture.isDone()) {
+                try {
+                    mediaBrowser = browserFuture.get();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }, ContextCompat.getMainExecutor(requireActivity()));
     }
 }
