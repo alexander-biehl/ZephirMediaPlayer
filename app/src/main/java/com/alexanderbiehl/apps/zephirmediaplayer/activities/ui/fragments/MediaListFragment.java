@@ -45,6 +45,7 @@ public class MediaListFragment extends Fragment {
     private MediaBrowser mediaBrowser;
     private List<MediaItem> subMediaList;
     private MediaViewModel mediaViewModel;
+    private MediaListRecyclerViewAdapter mediaAdapter;
 
     private int mColumnCount = 1;
 
@@ -86,6 +87,19 @@ public class MediaListFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_media_item_list, container, false);
 
+        // Set the adapter
+        if (view instanceof RecyclerView) {
+            Context context = view.getContext();
+            RecyclerView recyclerView = (RecyclerView) view;
+            if (mColumnCount <= 1) {
+                recyclerView.setLayoutManager(new LinearLayoutManager(context));
+            } else {
+                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+            }
+            mediaAdapter = new MediaListRecyclerViewAdapter(subMediaList);
+            recyclerView.setAdapter(mediaAdapter);
+        }
+
         this.mediaViewModel = new ViewModelProvider(requireActivity()).get(MediaViewModel.class);
         this.mediaViewModel.getCurrentMedia().observe(requireActivity(), item -> {
             if (mediaBrowser != null) {
@@ -97,7 +111,9 @@ public class MediaListFragment extends Fragment {
                 );
                 childrenFuture.addListener(() -> {
                     try {
+                        subMediaList.clear();
                         subMediaList.addAll(childrenFuture.get().value);
+                        mediaAdapter.notifyDataSetChanged();
                         Log.d(TAG, "Got media list of " + subMediaList.size() + " items.");
                     } catch (Exception e) {
                         throw new RuntimeException(e);
@@ -106,17 +122,6 @@ public class MediaListFragment extends Fragment {
             }
         });
 
-        // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-            recyclerView.setAdapter(new MediaListRecyclerViewAdapter(new ArrayList<>()));
-        }
         return view;
     }
 

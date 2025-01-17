@@ -120,7 +120,7 @@ public class MediaItemTree {
                 ARTIST_ID,
                 new MediaItemNode(
                         buildMediaItem(
-                                "Root Folder",
+                                "Artist Folder",
                                 ARTIST_ID,
                                 false,
                                 true,
