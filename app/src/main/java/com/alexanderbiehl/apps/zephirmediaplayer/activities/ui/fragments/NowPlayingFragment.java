@@ -1,5 +1,7 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.fragments;
 
+import static com.alexanderbiehl.apps.zephirmediaplayer.Constants.MEDIA_KEY;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +9,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.media3.ui.PlayerView;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.R;
@@ -15,6 +18,7 @@ import com.alexanderbiehl.apps.zephirmediaplayer.databinding.FragmentNowPlayingB
 public class NowPlayingFragment extends Fragment {
 
     private FragmentNowPlayingBinding binding;
+    private PlayerView playerView;
 
 
 
@@ -23,7 +27,7 @@ public class NowPlayingFragment extends Fragment {
             @NonNull LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
-
+        String mediaId = getArguments().getString(MEDIA_KEY);
         binding = FragmentNowPlayingBinding.inflate(inflater, container, false);
         return binding.getRoot();
 

@@ -1,5 +1,7 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.fragments;
 
+import static com.alexanderbiehl.apps.zephirmediaplayer.Constants.MEDIA_KEY;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.os.Bundle;
@@ -15,6 +17,7 @@ import androidx.media3.common.MediaItem;
 import androidx.media3.session.LibraryResult;
 import androidx.media3.session.MediaBrowser;
 import androidx.media3.session.SessionToken;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,7 +31,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 /**
  * A fragment representing a list of Items.
@@ -43,9 +45,10 @@ public class MediaListFragment extends Fragment {
 
     private ListenableFuture<MediaBrowser> browserFuture;
     private MediaBrowser mediaBrowser;
-    private List<MediaItem> subMediaList;
+    private final List<MediaItem> subMediaList;
     private MediaViewModel mediaViewModel;
     private MediaListRecyclerViewAdapter mediaAdapter;
+    private RecyclerView recyclerView;
 
     private int mColumnCount = 1;
 
@@ -90,25 +93,27 @@ public class MediaListFragment extends Fragment {
         // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
+            recyclerView = (RecyclerView) view;
             if (mColumnCount <= 1) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            mediaAdapter = new MediaListRecyclerViewAdapter(subMediaList);
+
+            mediaAdapter = new MediaListRecyclerViewAdapter(subMediaList, new MediaListViewClickHandler());
             recyclerView.setAdapter(mediaAdapter);
         }
 
         this.mediaViewModel = new ViewModelProvider(requireActivity()).get(MediaViewModel.class);
         this.mediaViewModel.getCurrentMedia().observe(requireActivity(), item -> {
             if (mediaBrowser != null) {
-                ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> childrenFuture = mediaBrowser.getChildren(
-                        item.mediaId,
-                        0,
-                        Integer.MAX_VALUE,
-                        null
-                );
+                ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> childrenFuture =
+                        mediaBrowser.getChildren(
+                                item.mediaId,
+                                0,
+                                Integer.MAX_VALUE,
+                                null
+                        );
                 childrenFuture.addListener(() -> {
                     try {
                         subMediaList.clear();
@@ -139,5 +144,17 @@ public class MediaListFragment extends Fragment {
                 }
             }
         }, ContextCompat.getMainExecutor(requireActivity()));
+    }
+
+    private class MediaListViewClickHandler implements MediaListRecyclerViewAdapter.OnClickHandler {
+
+        @Override
+        public void onClick(int position, MediaItem item) {
+            MediaItem selectedItem = subMediaList.get(position);
+            Bundle bundle = new Bundle();
+            bundle.putString(MEDIA_KEY, selectedItem.mediaId);
+            NavHostFragment.findNavController(MediaListFragment.this)
+                    .navigate(R.id.action_FirstFragment_to_SecondFragment, bundle);
+        }
     }
 }

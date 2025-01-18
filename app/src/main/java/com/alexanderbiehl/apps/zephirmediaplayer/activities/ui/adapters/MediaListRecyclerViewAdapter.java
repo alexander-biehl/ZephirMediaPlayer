@@ -1,6 +1,7 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.adapters;
 
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -18,9 +19,11 @@ import java.util.List;
 public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaListRecyclerViewAdapter.ViewHolder> {
 
     private final List<MediaItem> mValues;
+    private final OnClickHandler clickListener;
 
-    public MediaListRecyclerViewAdapter(List<MediaItem> items) {
+    public MediaListRecyclerViewAdapter(List<MediaItem> items, final OnClickHandler listener) {
         mValues = items;
+        clickListener = listener;
     }
 
     @Override
@@ -35,6 +38,12 @@ public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaList
         holder.mItem = mValues.get(position);
         holder.mIdView.setText(mValues.get(position).mediaId);
         holder.mContentView.setText(mValues.get(position).mediaMetadata.title);
+
+        holder.itemView.setOnClickListener(view -> {
+            if (clickListener != null) {
+                clickListener.onClick(position, mValues.get(position));
+            }
+        });
     }
 
     @Override
@@ -51,11 +60,24 @@ public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaList
             super(binding.getRoot());
             mIdView = binding.itemNumber;
             mContentView = binding.content;
+
+            itemView.setOnClickListener(view -> {
+                if (clickListener != null) {
+                    int pos = getBindingAdapterPosition();
+                    clickListener.onClick(pos, mValues.get(pos));
+                }
+            });
         }
+
+
 
         @Override
         public String toString() {
             return super.toString() + " '" + mContentView.getText() + "'";
         }
+    }
+
+    public interface OnClickHandler {
+        void onClick(int position, MediaItem item);
     }
 }
