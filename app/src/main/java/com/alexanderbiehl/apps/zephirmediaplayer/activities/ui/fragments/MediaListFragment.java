@@ -171,6 +171,14 @@ public class MediaListFragment extends Fragment {
             try {
                 subMediaList.clear();
                 subMediaList.addAll(childrenFuture.get().value);
+                subMediaList.sort((a,b) -> {
+                    if (a.mediaMetadata.trackNumber != null && b.mediaMetadata.trackNumber != null) {
+                        return a.mediaMetadata.trackNumber - b.mediaMetadata.trackNumber;
+                    } else {
+                        return a.mediaMetadata.title.toString().compareTo(
+                                b.mediaMetadata.title.toString());
+                    }
+                });
                 mediaAdapter.notifyDataSetChanged();
                 Log.d(TAG, "Got media list of " + subMediaList.size() + " items.");
             } catch (Exception e) {

@@ -55,6 +55,7 @@ public class MediaItemTree {
                 mediaType,
                 "",
                 "",
+                null,
                 null
         );
     }
@@ -67,6 +68,7 @@ public class MediaItemTree {
             @MediaMetadata.MediaType int mediaType,
             String album,
             String artist,
+            Integer order,
             Uri sourceUri
     ) {
         MediaMetadata metadata = new MediaMetadata.Builder()
@@ -76,6 +78,7 @@ public class MediaItemTree {
                 .setIsBrowsable(isBrowsable)
                 .setIsPlayable(isPlayable)
                 .setMediaType(mediaType)
+                .setTrackNumber(order)
                 .build();
 
         return new MediaItem.Builder()
@@ -156,6 +159,7 @@ public class MediaItemTree {
                                 MediaMetadata.MEDIA_TYPE_MUSIC,
                                 item.mediaMetadata.albumTitle.toString(),
                                 item.mediaMetadata.artist.toString(),
+                                item.mediaMetadata.trackNumber,
                                 ContentUris.withAppendedId(
                                         MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                                         Long.parseLong(item.mediaId)

@@ -18,6 +18,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -93,6 +94,10 @@ public class MediaLibraryCallback implements MediaLibraryService.MediaLibrarySes
                 expandedItem.ifPresent(playlist::add);
             }
         });
+        // sort by track number
+        // may want to update this later for a multi-level sort, i.e. sort by artist, then album,
+        // then track number
+        // playlist.sort(Comparator.comparingInt(a -> a.mediaMetadata.trackNumber));
         return playlist;
     }
 }
