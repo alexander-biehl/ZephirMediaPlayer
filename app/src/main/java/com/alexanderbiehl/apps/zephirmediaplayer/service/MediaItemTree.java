@@ -108,7 +108,7 @@ public class MediaItemTree {
                 ALBUM_ID,
                 new MediaItemNode(
                         buildMediaItem(
-                                "Album Folder",
+                                "Albums",
                                 ALBUM_ID,
                                 false,
                                 true,
@@ -120,7 +120,7 @@ public class MediaItemTree {
                 ARTIST_ID,
                 new MediaItemNode(
                         buildMediaItem(
-                                "Artist Folder",
+                                "Artists",
                                 ARTIST_ID,
                                 false,
                                 true,
@@ -128,6 +128,8 @@ public class MediaItemTree {
                         )
                 )
         );
+
+        // TODO add playlists folder
 
         treeNodes.get(ROOT_ID).addChild(ALBUM_ID);
         treeNodes.get(ROOT_ID).addChild(ARTIST_ID);

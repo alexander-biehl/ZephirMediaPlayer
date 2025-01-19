@@ -23,7 +23,8 @@ public class MediaLoader {
             MediaStore.Audio.AudioColumns._ID,
             MediaStore.Audio.AudioColumns.TITLE,
             MediaStore.Audio.AudioColumns.ALBUM,
-            MediaStore.Audio.AudioColumns.ARTIST
+            MediaStore.Audio.AudioColumns.ARTIST,
+            MediaStore.Audio.AudioColumns.CD_TRACK_NUMBER
     };
     private static final String BASE_SELECTION = String.format("%s = ?",
             MediaStore.Audio.AudioColumns.IS_MUSIC);
@@ -51,11 +52,10 @@ public class MediaLoader {
                 int albumColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ALBUM);
                 int artistColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ARTIST);
                 int titleColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.TITLE);
+                int orderColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.CD_TRACK_NUMBER);
 
                 do {
                     final long id = cursor.getLong(mediaIdColumn);
-//                    final String mediaId = cursor.getString(mediaIdColumn);
-//                    final long _id = Long.getLong(mediaId);
                     final String album = cursor.getString(albumColumn);
                     final String artist = cursor.getString(artistColumn);
                     final String title = cursor.getString(titleColumn);
@@ -63,6 +63,7 @@ public class MediaLoader {
                             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                             id
                     );
+                    final int order = cursor.getInt(orderColumn);
 
                     try {
                         media.add(
@@ -74,16 +75,10 @@ public class MediaLoader {
                                                         .setTitle(title)
                                                         .setArtist(artist)
                                                         .setAlbumTitle(album)
+                                                        .setTrackNumber(order)
                                                         .build()
                                         )
                                         .build()
-                                //                            new MediaMetadataCompat.Builder()
-                                //                                    .putLong(BaseColumns._ID, _id)
-                                //                                    .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, mediaId)
-                                //                                    .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, album)
-                                //                                    .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist)
-                                //                                    .putString(MediaMetadataCompat.METADATA_KEY_TITLE, title)
-                                //                                    .build()
                         );
                     } catch (Exception e) {
                         Log.e(TAG, "EXCEPTION: " + e);
