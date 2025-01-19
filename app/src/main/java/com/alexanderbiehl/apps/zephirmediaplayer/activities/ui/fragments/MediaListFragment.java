@@ -86,6 +86,16 @@ public class MediaListFragment extends Fragment {
     }
 
     @Override
+    public void onStop() {
+        MediaBrowser.releaseFuture(browserFuture);
+        if (this.mediaBrowser != null) {
+            this.mediaBrowser.release();
+            this.mediaBrowser = null;
+        }
+        super.onStop();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_media_item_list, container, false);
@@ -107,23 +117,11 @@ public class MediaListFragment extends Fragment {
         this.mediaViewModel = new ViewModelProvider(requireActivity()).get(MediaViewModel.class);
         this.mediaViewModel.getCurrentMedia().observe(requireActivity(), item -> {
             if (mediaBrowser != null) {
-                ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> childrenFuture =
-                        mediaBrowser.getChildren(
-                                item.mediaId,
-                                0,
-                                Integer.MAX_VALUE,
-                                null
-                        );
-                childrenFuture.addListener(() -> {
-                    try {
-                        subMediaList.clear();
-                        subMediaList.addAll(childrenFuture.get().value);
-                        mediaAdapter.notifyDataSetChanged();
-                        Log.d(TAG, "Got media list of " + subMediaList.size() + " items.");
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                }, ContextCompat.getMainExecutor(requireActivity()));
+                if (Boolean.TRUE.equals(item.mediaMetadata.isBrowsable)) {
+                    openSubFolder(item);
+                } else if (Boolean.TRUE.equals(item.mediaMetadata.isPlayable)) {
+                    handlePlay(item);
+                }
             }
         });
 
@@ -132,7 +130,13 @@ public class MediaListFragment extends Fragment {
 
     private void initializeBrowser() {
         SessionToken sessionToken =
-                new SessionToken(requireContext(), new ComponentName(requireActivity(), Media3Service.class));
+                new SessionToken(
+                        requireContext(),
+                        new ComponentName(
+                                requireActivity(),
+                                Media3Service.class
+                        )
+                );
         browserFuture =
                 new MediaBrowser.Builder(requireActivity(), sessionToken).buildAsync();
         browserFuture.addListener(() -> {
@@ -146,15 +150,48 @@ public class MediaListFragment extends Fragment {
         }, ContextCompat.getMainExecutor(requireActivity()));
     }
 
+    private void handlePlay(MediaItem item) {
+        int position = subMediaList.indexOf(item);
+        List<MediaItem> playQueue = subMediaList.subList(position, subMediaList.size());
+        mediaBrowser.addMediaItems(playQueue);
+        mediaBrowser.prepare();
+        mediaBrowser.play();
+        mediaViewModel.setQueue(playQueue);
+    }
+
+    private void openSubFolder(MediaItem item) {
+        ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> childrenFuture =
+                mediaBrowser.getChildren(
+                        item.mediaId,
+                        0,
+                        Integer.MAX_VALUE,
+                        null
+                );
+        childrenFuture.addListener(() -> {
+            try {
+                subMediaList.clear();
+                subMediaList.addAll(childrenFuture.get().value);
+                mediaAdapter.notifyDataSetChanged();
+                Log.d(TAG, "Got media list of " + subMediaList.size() + " items.");
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }, ContextCompat.getMainExecutor(requireActivity()));
+    }
+
     private class MediaListViewClickHandler implements MediaListRecyclerViewAdapter.OnClickHandler {
+
+        // TODO implement a longClick callback to handle adding additional items to queue
+        // instead of drilling down
 
         @Override
         public void onClick(int position, MediaItem item) {
             MediaItem selectedItem = subMediaList.get(position);
-            Bundle bundle = new Bundle();
-            bundle.putString(MEDIA_KEY, selectedItem.mediaId);
-            NavHostFragment.findNavController(MediaListFragment.this)
-                    .navigate(R.id.action_FirstFragment_to_SecondFragment, bundle);
+            // Bundle bundle = new Bundle();
+            // bundle.putString(MEDIA_KEY, selectedItem.mediaId);
+            mediaViewModel.setCurrentMedia(selectedItem);
+//            NavHostFragment.findNavController(MediaListFragment.this)
+//                    .navigate(R.id.action_FirstFragment_to_SecondFragment);
         }
     }
 }

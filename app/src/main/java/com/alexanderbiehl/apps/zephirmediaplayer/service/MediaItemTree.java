@@ -148,7 +148,7 @@ public class MediaItemTree {
                 new MediaItemNode(
                         buildMediaItem(
                                 item.mediaMetadata.title.toString(),
-                                item.mediaId,
+                                idInTree,
                                 true,
                                 false,
                                 MediaMetadata.MEDIA_TYPE_MUSIC,

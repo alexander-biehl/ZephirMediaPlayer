@@ -80,9 +80,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         MediaBrowser.releaseFuture(browserFuture);
-        if (this.mediaBrowser.isPlaying()) {
-            this.mediaBrowser.stop();
-        }
         if (this.mediaBrowser != null) {
             this.mediaBrowser.release();
             this.mediaBrowser = null;
