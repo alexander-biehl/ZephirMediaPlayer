@@ -39,9 +39,8 @@ public class MediaListFragment extends Fragment {
 
     private static final String TAG = MediaListFragment.class.getSimpleName();
 
-    // TODO: Customize parameter argument names
+
     private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
 
     private ListenableFuture<MediaBrowser> browserFuture;
     private MediaBrowser mediaBrowser;
@@ -196,11 +195,7 @@ public class MediaListFragment extends Fragment {
         @Override
         public void onClick(int position, MediaItem item) {
             MediaItem selectedItem = subMediaList.get(position);
-            // Bundle bundle = new Bundle();
-            // bundle.putString(MEDIA_KEY, selectedItem.mediaId);
             mediaViewModel.setCurrentMedia(selectedItem);
-//            NavHostFragment.findNavController(MediaListFragment.this)
-//                    .navigate(R.id.action_FirstFragment_to_SecondFragment);
         }
     }
 }

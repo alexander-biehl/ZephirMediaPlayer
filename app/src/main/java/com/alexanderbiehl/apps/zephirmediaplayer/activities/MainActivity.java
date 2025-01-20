@@ -115,10 +115,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "displayResult item was null");
         } else {
             Log.d(TAG, "displayResult item was: " + item);
-//            Bundle bundle = new Bundle();
-//            bundle.putString(MEDIA_KEY, item.mediaId);
             mediaViewModel.setCurrentMedia(item);
         }
-        // TODO send to MediaListFragment for display
     }
 }
