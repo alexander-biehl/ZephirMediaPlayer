@@ -160,6 +160,7 @@ public class MediaListFragment extends Fragment {
     }
 
     private void openSubFolder(MediaItem item) {
+
         ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> childrenFuture =
                 mediaBrowser.getChildren(
                         item.mediaId,

@@ -21,6 +21,7 @@ public class MediaItemTree {
     private static final String ROOT_ID = "[rootID]";
     private static final String ALBUM_ID = "[albumID]";
     private static final String ARTIST_ID = "[artistID]";
+    // private static final String ARTIST_ALBUM_ID = "[artistID][albumID]";
     private static final String ALBUM_PREFIX = "[album]";
     private static final String ARTIST_PREFIX = "[artist]";
     private static final String ITEM_PREFIX = "[item]";
@@ -131,11 +132,24 @@ public class MediaItemTree {
                         )
                 )
         );
+//        treeNodes.put(
+//                ARTIST_ALBUM_ID,
+//                new MediaItemNode(
+//                        buildMediaItem(
+//                                "Artists / Albums",
+//                                ARTIST_ALBUM_ID,
+//                                false,
+//                                true,
+//                                MediaMetadata.MEDIA_TYPE_FOLDER_ARTISTS
+//                        )
+//                )
+//        );
 
         // TODO add playlists folder
 
         treeNodes.get(ROOT_ID).addChild(ALBUM_ID);
         treeNodes.get(ROOT_ID).addChild(ARTIST_ID);
+        // treeNodes.get(ROOT_ID).addChild(ARTIST_ALBUM_ID);
 
         for (MediaItem item : media) {
             addNodeToTree(item);
@@ -146,6 +160,7 @@ public class MediaItemTree {
         final String idInTree = ITEM_PREFIX + item.mediaId;
         final String albumFolderIdInTree = ALBUM_PREFIX + item.mediaMetadata.albumTitle;
         final String artistFolderIdInTree = ARTIST_PREFIX + item.mediaMetadata.artist;
+        final String artistAlbumsIdInTree = ARTIST_PREFIX + ALBUM_PREFIX + item.mediaMetadata.artist;
 
         // store node in tree
         treeNodes.put(
@@ -188,6 +203,7 @@ public class MediaItemTree {
 
         // if artist isn't already in tree
         if (!treeNodes.containsKey(artistFolderIdInTree)) {
+            // add artist to tree
             treeNodes.put(
                     artistFolderIdInTree,
                     new MediaItemNode(
@@ -201,8 +217,27 @@ public class MediaItemTree {
                     )
             );
             treeNodes.get(ARTIST_ID).addChild(artistFolderIdInTree);
+            // treeNodes.get(ARTIST_ALBUM_ID).addChild(artistFolderIdInTree);
         }
-        treeNodes.get(artistFolderIdInTree).addChild(idInTree);
+        // treeNodes.get(artistFolderIdInTree).addChild(idInTree);
+
+        // if album for artist reference isn't already in tree
+        if (!treeNodes.containsKey(artistAlbumsIdInTree)) {
+            treeNodes.put(
+                    artistAlbumsIdInTree,
+                    new MediaItemNode(
+                            buildMediaItem(
+                                    item.mediaMetadata.albumTitle.toString(),
+                                    artistAlbumsIdInTree,
+                                    true,
+                                    true,
+                                    MediaMetadata.MEDIA_TYPE_ALBUM
+                            )
+                    )
+            );
+            treeNodes.get(artistFolderIdInTree).addChild(artistAlbumsIdInTree);
+        }
+        treeNodes.get(artistAlbumsIdInTree).addChild(idInTree);
     }
 
     public Optional<MediaItem> getItem(String id) {
