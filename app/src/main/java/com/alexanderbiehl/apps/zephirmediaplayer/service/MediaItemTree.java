@@ -157,6 +157,8 @@ public class MediaItemTree {
     }
 
     private void addNodeToTree(MediaItem item) {
+        // TODO logic is not working correctly for 2 artists, 1 song each from 2 albums
+
         final String idInTree = ITEM_PREFIX + item.mediaId;
         final String albumFolderIdInTree = ALBUM_PREFIX + item.mediaMetadata.albumTitle;
         final String artistFolderIdInTree = ARTIST_PREFIX + item.mediaMetadata.artist;
