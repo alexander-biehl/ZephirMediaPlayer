@@ -104,10 +104,12 @@ public class MediaListFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_media_item_list, container, false);
 
+        recyclerView = view.findViewById(R.id.list);
+
         // Set the adapter
-        if (view instanceof RecyclerView) {
+        if (recyclerView != null) {
             Context context = view.getContext();
-            recyclerView = (RecyclerView) view;
+
             if (mColumnCount <= 1) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {

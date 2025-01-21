@@ -3,6 +3,7 @@ package com.alexanderbiehl.apps.zephirmediaplayer.activities;
 import static com.alexanderbiehl.apps.zephirmediaplayer.Constants.MEDIA_KEY;
 
 import android.content.ComponentName;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -55,6 +56,10 @@ public class MainActivity extends AppCompatActivity {
         binding.fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAnchorView(R.id.fab)
                 .setAction("Action", null).show());
+
+//        if (Build.VERSION.SDK_INT >= 33) {
+//            checkSelfPermission()
+//        }
     }
 
     @Override
