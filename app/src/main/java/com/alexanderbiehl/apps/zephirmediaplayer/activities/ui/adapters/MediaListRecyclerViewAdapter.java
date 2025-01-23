@@ -14,7 +14,6 @@ import java.util.List;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link MediaItem}.
- * TODO: Replace the implementation with code for your data type.
  */
 public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaListRecyclerViewAdapter.ViewHolder> {
 

@@ -1,5 +1,9 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.fragments;
 
+import static androidx.media3.common.Player.EVENT_MEDIA_ITEM_TRANSITION;
+import static androidx.media3.common.Player.EVENT_MEDIA_METADATA_CHANGED;
+import static androidx.media3.common.Player.EVENT_TIMELINE_CHANGED;
+
 import android.content.ComponentName;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,6 +15,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.MediaItem;
+import androidx.media3.common.Player;
 import androidx.media3.session.MediaController;
 import androidx.media3.session.SessionToken;
 import androidx.media3.ui.PlayerView;
@@ -39,12 +44,15 @@ public class NowPlayingFragment extends Fragment {
     private List<MediaItem> currentQueue;
     private NowPlayingListRecyclerAdapter listAdapter;
 
+    public NowPlayingFragment() {
+        currentQueue = new ArrayList<>();
+    }
+
 
     @Override
     public void onStart() {
         super.onStart();
         initializeController();
-        currentQueue = new ArrayList<>();
     }
 
     @Override
@@ -72,9 +80,9 @@ public class NowPlayingFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        listAdapter = new NowPlayingListRecyclerAdapter(currentQueue);
-        listAdapter.setOnClickHandler(new MediaClickHandler());
-        binding.nowPlayingList.setAdapter(listAdapter);
+        // listAdapter = new NowPlayingListRecyclerAdapter(currentQueue);
+        // listAdapter.setOnClickHandler(new MediaClickHandler());
+        // binding.nowPlayingList.setAdapter(listAdapter);
 
         binding.buttonSecond.setOnClickListener(v ->
                 NavHostFragment.findNavController(NowPlayingFragment.this)
@@ -87,11 +95,11 @@ public class NowPlayingFragment extends Fragment {
         // held by the controller
 
         this.viewModel = new ViewModelProvider(requireActivity()).get(MediaViewModel.class);
-        this.viewModel.getCurrentMedia().observe(requireActivity(), mediaItem -> {
-            // TODO handle currently playing item change
-
-        });
-        this.viewModel.getQueue().observe(requireActivity(), this::updateQueue);
+//        this.viewModel.getCurrentMedia().observe(requireActivity(), mediaItem -> {
+//            // TODO handle currently playing item change
+//
+//        });
+        // this.viewModel.getQueue().observe(requireActivity(), this::updateQueue);
     }
 
     @Override
@@ -114,8 +122,7 @@ public class NowPlayingFragment extends Fragment {
         controllerFuture.addListener(() -> {
             if (controllerFuture.isDone()) {
                 try {
-                    mediaController = controllerFuture.get();
-                    playerView.setPlayer(mediaController);
+                    setController(controllerFuture.get());
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -123,10 +130,35 @@ public class NowPlayingFragment extends Fragment {
         }, ContextCompat.getMainExecutor(requireContext()));
     }
 
-    private void updateQueue(List<MediaItem> mediaQueue) {
+    private void setController(@NonNull MediaController controller) {
+        mediaController = controller;
+        playerView.setPlayer(mediaController);
+
+        mediaController.addListener(new Player.Listener() {
+            @Override
+            public void onEvents(Player player, Player.Events events) {
+                // Player.Listener.super.onEvents(player, events);
+//                if (events.contains(EVENT_MEDIA_METADATA_CHANGED)) {
+//
+//                }
+                if (events.contains(EVENT_TIMELINE_CHANGED)) {
+                    updateQueue();
+                }
+                if (events.contains(EVENT_MEDIA_ITEM_TRANSITION)) {
+                    // listAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+        updateQueue();
+    }
+
+    private void updateQueue() {
         this.currentQueue.clear();
-        this.currentQueue.addAll(mediaQueue);
-        this.listAdapter.notifyDataSetChanged();
+        // this.currentQueue.addAll(mediaQueue);
+        for (int i = 0; i < mediaController.getMediaItemCount(); i++) {
+            this.currentQueue.add(mediaController.getMediaItemAt(i));
+        }
+        // this.listAdapter.notifyDataSetChanged();
     }
 
     private class MediaClickHandler implements NowPlayingListRecyclerAdapter.OnClickHandler {

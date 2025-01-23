@@ -65,6 +65,7 @@ public class MediaListFragment extends Fragment {
      */
     public MediaListFragment() {
         this.subMediaList = new ArrayList<>();
+        this.treeBackStack = new Stack<>();
     }
 
     // TODO: Customize parameter initialization
@@ -84,7 +85,6 @@ public class MediaListFragment extends Fragment {
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
-        treeBackStack = new Stack<>();
         requireActivity().getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -133,7 +133,11 @@ public class MediaListFragment extends Fragment {
         this.mediaViewModel = new ViewModelProvider(requireActivity()).get(MediaViewModel.class);
         this.mediaViewModel.getCurrentMedia().observe(requireActivity(), item -> {
             if (mediaBrowser != null) {
-                pushPathStack(item);
+                if (Boolean.TRUE.equals(item.mediaMetadata.isBrowsable)) {
+                    pushPathStack(item);
+                } else if (Boolean.TRUE.equals(item.mediaMetadata.isPlayable)) {
+                    handlePlay(item);
+                }
             }
         });
 
@@ -219,12 +223,7 @@ public class MediaListFragment extends Fragment {
 
     private void pushPathStack(final MediaItem item) {
         treeBackStack.push(item);
-
-        if (Boolean.TRUE.equals(item.mediaMetadata.isBrowsable)) {
-            openSubFolder(item);
-        } else if (Boolean.TRUE.equals(item.mediaMetadata.isPlayable)) {
-            handlePlay(item);
-        }
+        openSubFolder(item);
     }
 
     private class MediaListViewClickHandler implements MediaListRecyclerViewAdapter.OnClickHandler {
