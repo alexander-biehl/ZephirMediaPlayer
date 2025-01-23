@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -35,6 +36,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 /**
  * A fragment representing a list of Items.
@@ -53,6 +55,7 @@ public class MediaListFragment extends Fragment {
     private MediaListRecyclerViewAdapter mediaAdapter;
     private RecyclerView recyclerView;
     private FloatingActionButton fab;
+    private Stack<MediaItem> treeBackStack;
 
     private int mColumnCount = 1;
 
@@ -81,6 +84,13 @@ public class MediaListFragment extends Fragment {
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
+        treeBackStack = new Stack<>();
+        requireActivity().getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                popPathStack();
+            }
+        });
     }
 
     @Override
@@ -123,11 +133,7 @@ public class MediaListFragment extends Fragment {
         this.mediaViewModel = new ViewModelProvider(requireActivity()).get(MediaViewModel.class);
         this.mediaViewModel.getCurrentMedia().observe(requireActivity(), item -> {
             if (mediaBrowser != null) {
-                if (Boolean.TRUE.equals(item.mediaMetadata.isBrowsable)) {
-                    openSubFolder(item);
-                } else if (Boolean.TRUE.equals(item.mediaMetadata.isPlayable)) {
-                    handlePlay(item);
-                }
+                pushPathStack(item);
             }
         });
 
@@ -204,6 +210,21 @@ public class MediaListFragment extends Fragment {
                 throw new RuntimeException(e);
             }
         }, ContextCompat.getMainExecutor(requireActivity()));
+    }
+
+    private void popPathStack() {
+        treeBackStack.pop();
+        openSubFolder(treeBackStack.peek());
+    }
+
+    private void pushPathStack(final MediaItem item) {
+        treeBackStack.push(item);
+
+        if (Boolean.TRUE.equals(item.mediaMetadata.isBrowsable)) {
+            openSubFolder(item);
+        } else if (Boolean.TRUE.equals(item.mediaMetadata.isPlayable)) {
+            handlePlay(item);
+        }
     }
 
     private class MediaListViewClickHandler implements MediaListRecyclerViewAdapter.OnClickHandler {
