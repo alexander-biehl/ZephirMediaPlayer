@@ -148,4 +148,10 @@
         libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
         vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
     </string>
+    <string name="previous_song">Previous Song</string>
+    <string name="play_pause">Play/Pause</string>
+    <string name="next_song">Next Song</string>
+    <string name="song_view_default_text">Song</string>
+    <string name="album_view_default_text">Album</string>
+    <string name="artist_view_default_test">Artist</string>
 </resources>

@@ -218,6 +218,10 @@ public class MediaListFragment extends Fragment {
 
     private void popPathStack() {
         treeBackStack.pop();
+        if (treeBackStack.isEmpty()) {
+            requireActivity().finish();
+            return;
+        }
         openSubFolder(treeBackStack.peek());
     }
 

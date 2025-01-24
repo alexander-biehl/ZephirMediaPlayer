@@ -38,7 +38,6 @@ public class NowPlayingFragment extends Fragment {
 
     private FragmentNowPlayingBinding binding;
     private PlayerView playerView;
-    private MediaViewModel viewModel;
     private MediaController mediaController;
     private ListenableFuture<MediaController> controllerFuture;
     private List<MediaItem> currentQueue;
@@ -71,7 +70,6 @@ public class NowPlayingFragment extends Fragment {
             @NonNull LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
-        // String mediaId = getArguments().getString(MEDIA_KEY);
         binding = FragmentNowPlayingBinding.inflate(inflater, container, false);
         return binding.getRoot();
 
@@ -88,18 +86,17 @@ public class NowPlayingFragment extends Fragment {
                 NavHostFragment.findNavController(NowPlayingFragment.this)
                         .navigate(R.id.action_SecondFragment_to_FirstFragment)
         );
+        binding.mediaBackButton.setOnClickListener(v -> {
+            // TODO
+        });
+        binding.mediaNextButton.setOnClickListener(v -> {
+            // TODO
+        });
+        binding.mediaPlayPauseButton.setOnClickListener(v -> {
+            // TODO
+        });
 
         playerView = binding.playerView;
-
-        // maybe we don't need the model at all, can just reference the data
-        // held by the controller
-
-        this.viewModel = new ViewModelProvider(requireActivity()).get(MediaViewModel.class);
-//        this.viewModel.getCurrentMedia().observe(requireActivity(), mediaItem -> {
-//            // TODO handle currently playing item change
-//
-//        });
-        // this.viewModel.getQueue().observe(requireActivity(), this::updateQueue);
     }
 
     @Override
