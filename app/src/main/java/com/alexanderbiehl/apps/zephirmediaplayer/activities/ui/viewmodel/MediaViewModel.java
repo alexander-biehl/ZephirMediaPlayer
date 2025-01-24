@@ -10,8 +10,8 @@ import java.util.List;
 
 public class MediaViewModel extends ViewModel {
 
-    private MutableLiveData<MediaItem> currentMedia;
-    private MutableLiveData<List<MediaItem>> currentQueue;
+    private final MutableLiveData<MediaItem> currentMedia;
+    private final MutableLiveData<List<MediaItem>> currentQueue;
 
     public MediaViewModel() {
         this.currentMedia = new MutableLiveData<>();
