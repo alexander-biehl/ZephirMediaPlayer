@@ -6,6 +6,7 @@ import static androidx.media3.common.Player.EVENT_TIMELINE_CHANGED;
 
 import android.content.ComponentName;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -87,12 +88,15 @@ public class NowPlayingFragment extends Fragment {
                         .navigate(R.id.action_SecondFragment_to_FirstFragment)
         );
         binding.mediaBackButton.setOnClickListener(v -> {
+            Log.d(TAG, "media back button clicked");
             // TODO
         });
         binding.mediaNextButton.setOnClickListener(v -> {
+            Log.d(TAG, "media next button clicked");
             // TODO
         });
         binding.mediaPlayPauseButton.setOnClickListener(v -> {
+            Log.d(TAG, "play/pause clicked");
             // TODO
         });
 
@@ -133,7 +137,7 @@ public class NowPlayingFragment extends Fragment {
 
         mediaController.addListener(new Player.Listener() {
             @Override
-            public void onEvents(Player player, Player.Events events) {
+            public void onEvents(@NonNull Player player, @NonNull Player.Events events) {
                 // Player.Listener.super.onEvents(player, events);
 //                if (events.contains(EVENT_MEDIA_METADATA_CHANGED)) {
 //
