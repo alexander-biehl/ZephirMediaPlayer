@@ -21,10 +21,12 @@ public class MediaItemTree {
     private static final String ROOT_ID = "[rootID]";
     private static final String ALBUM_ID = "[albumID]";
     private static final String ARTIST_ID = "[artistID]";
+    private static final String PLAYLIST_ID = "playlistID]";
     // private static final String ARTIST_ALBUM_ID = "[artistID][albumID]";
     private static final String ALBUM_PREFIX = "[album]";
     private static final String ARTIST_PREFIX = "[artist]";
     private static final String ITEM_PREFIX = "[item]";
+    private static final String PLAYLIST_PREFIX = "[playlist]";
     private static MediaItemTree INSTANCE;
     private final TreeMap<String, MediaItemNode> treeNodes;
     private boolean isInitialized;
@@ -132,6 +134,18 @@ public class MediaItemTree {
                         )
                 )
         );
+        treeNodes.put(
+                PLAYLIST_ID,
+                new MediaItemNode(
+                        buildMediaItem(
+                                "Playlists",
+                                PLAYLIST_ID,
+                                false,
+                                true,
+                                MediaMetadata.MEDIA_TYPE_FOLDER_PLAYLISTS
+                        )
+                )
+        );
 //        treeNodes.put(
 //                ARTIST_ALBUM_ID,
 //                new MediaItemNode(
@@ -150,6 +164,7 @@ public class MediaItemTree {
         treeNodes.get(ROOT_ID).addChild(ALBUM_ID);
         treeNodes.get(ROOT_ID).addChild(ARTIST_ID);
         // treeNodes.get(ROOT_ID).addChild(ARTIST_ALBUM_ID);
+        treeNodes.get(ROOT_ID).addChild(PLAYLIST_ID);
 
         for (MediaItem item : media) {
             addNodeToTree(item);
