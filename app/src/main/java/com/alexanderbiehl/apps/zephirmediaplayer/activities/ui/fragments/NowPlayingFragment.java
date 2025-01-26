@@ -1,6 +1,5 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.fragments;
 
-import static androidx.media3.common.Player.EVENT_MEDIA_ITEM_TRANSITION;
 import static androidx.media3.common.Player.EVENT_MEDIA_METADATA_CHANGED;
 import static androidx.media3.common.Player.EVENT_TIMELINE_CHANGED;
 
@@ -14,8 +13,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.MediaItem;
+import androidx.media3.common.MediaMetadata;
 import androidx.media3.common.Player;
 import androidx.media3.session.MediaController;
 import androidx.media3.session.SessionToken;
@@ -23,15 +22,12 @@ import androidx.media3.ui.PlayerView;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.R;
-import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.adapters.NowPlayingListRecyclerAdapter;
-import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.viewmodel.MediaViewModel;
 import com.alexanderbiehl.apps.zephirmediaplayer.databinding.FragmentNowPlayingBinding;
 import com.alexanderbiehl.apps.zephirmediaplayer.service.Media3Service;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 public class NowPlayingFragment extends Fragment {
 
@@ -41,8 +37,7 @@ public class NowPlayingFragment extends Fragment {
     private PlayerView playerView;
     private MediaController mediaController;
     private ListenableFuture<MediaController> controllerFuture;
-    private List<MediaItem> currentQueue;
-    private NowPlayingListRecyclerAdapter listAdapter;
+    private final List<MediaItem> currentQueue;
 
     public NowPlayingFragment() {
         currentQueue = new ArrayList<>();
@@ -78,10 +73,6 @@ public class NowPlayingFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        // listAdapter = new NowPlayingListRecyclerAdapter(currentQueue);
-        // listAdapter.setOnClickHandler(new MediaClickHandler());
-        // binding.nowPlayingList.setAdapter(listAdapter);
 
         binding.buttonSecond.setOnClickListener(v ->
                 NavHostFragment.findNavController(NowPlayingFragment.this)
@@ -139,17 +130,15 @@ public class NowPlayingFragment extends Fragment {
             @Override
             public void onEvents(@NonNull Player player, @NonNull Player.Events events) {
                 // Player.Listener.super.onEvents(player, events);
-//                if (events.contains(EVENT_MEDIA_METADATA_CHANGED)) {
-//
-//                }
+                if (events.contains(EVENT_MEDIA_METADATA_CHANGED)) {
+                    updateMediaMetadataUI();
+                }
                 if (events.contains(EVENT_TIMELINE_CHANGED)) {
                     updateQueue();
                 }
-                if (events.contains(EVENT_MEDIA_ITEM_TRANSITION)) {
-                    // listAdapter.notifyDataSetChanged();
-                }
             }
         });
+        updateMediaMetadataUI();
         updateQueue();
     }
 
@@ -159,13 +148,23 @@ public class NowPlayingFragment extends Fragment {
         for (int i = 0; i < mediaController.getMediaItemCount(); i++) {
             this.currentQueue.add(mediaController.getMediaItemAt(i));
         }
-        // this.listAdapter.notifyDataSetChanged();
     }
 
-    private class MediaClickHandler implements NowPlayingListRecyclerAdapter.OnClickHandler {
-        @Override
-        public void onClick(int position, MediaItem item) {
-
+    private void updateMediaMetadataUI() {
+        if (mediaController == null || mediaController.getMediaItemCount() == 0) {
+            binding.albumTextView.setText(R.string.album_view_default_text);
+            binding.songTextView.setText(R.string.song_view_default_text);
+            binding.artistTextView.setText(R.string.artist_view_default_test);
+            return;
         }
+
+        final MediaMetadata currentMetadata = mediaController.getMediaMetadata();
+        final CharSequence title = currentMetadata.title;
+        final CharSequence artist = currentMetadata.artist;
+        final CharSequence album = currentMetadata.albumTitle;
+
+        binding.artistTextView.setText(artist);
+        binding.albumTextView.setText(album);
+        binding.songTextView.setText(title);
     }
 }
