@@ -133,22 +133,22 @@ public class NowPlayingFragment extends Fragment {
                 if (events.contains(EVENT_MEDIA_METADATA_CHANGED)) {
                     updateMediaMetadataUI();
                 }
-                if (events.contains(EVENT_TIMELINE_CHANGED)) {
-                    updateQueue();
-                }
+//                if (events.contains(EVENT_TIMELINE_CHANGED)) {
+//                    updateQueue();
+//                }
             }
         });
         updateMediaMetadataUI();
-        updateQueue();
+        // updateQueue();
     }
 
-    private void updateQueue() {
-        this.currentQueue.clear();
-        // this.currentQueue.addAll(mediaQueue);
-        for (int i = 0; i < mediaController.getMediaItemCount(); i++) {
-            this.currentQueue.add(mediaController.getMediaItemAt(i));
-        }
-    }
+//    private void updateQueue() {
+//        this.currentQueue.clear();
+//        // this.currentQueue.addAll(mediaQueue);
+//        for (int i = 0; i < mediaController.getMediaItemCount(); i++) {
+//            this.currentQueue.add(mediaController.getMediaItemAt(i));
+//        }
+//    }
 
     private void updateMediaMetadataUI() {
         if (mediaController == null || mediaController.getMediaItemCount() == 0) {
