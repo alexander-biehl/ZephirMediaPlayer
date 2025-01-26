@@ -1,97 +1,126 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.activities;
 
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
+import static com.alexanderbiehl.apps.zephirmediaplayer.Constants.MEDIA_KEY;
 
+import android.content.ComponentName;
+import android.os.Build;
+import android.os.Bundle;
+import android.util.Log;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.media3.common.MediaItem;
+import androidx.media3.session.LibraryResult;
+import androidx.media3.session.MediaBrowser;
+import androidx.media3.session.SessionToken;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.R;
+import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.viewmodel.MediaViewModel;
 import com.alexanderbiehl.apps.zephirmediaplayer.databinding.ActivityMainBinding;
+import com.alexanderbiehl.apps.zephirmediaplayer.service.Media3Service;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.common.util.concurrent.ListenableFuture;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
+
+    private MediaBrowser mediaBrowser;
+    private ListenableFuture<MediaBrowser> browserFuture;
+    public MediaViewModel mediaViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
-        //setContentView(R.layout.activity_main);
         setContentView(binding.getRoot());
-        //Toolbar toolbar = findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
+
         setSupportActionBar(binding.toolbar);
 
-        NavController navController = Navigation.findNavController(this,
-                R.id.nav_host_fragment_container);
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
-        //FloatingActionButton fab = findViewById(R.id.fab);
-        binding.fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+        mediaViewModel = new ViewModelProvider(this).get(MediaViewModel.class);
+
+//        binding.fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                .setAnchorView(R.id.fab)
+//                .setAction("Action", null).show());
+
+//        if (Build.VERSION.SDK_INT >= 33) {
+//            checkSelfPermission()
+//        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        SessionToken sessionToken =
+                new SessionToken(this,
+                        new ComponentName(this, Media3Service.class));
+        browserFuture =
+                new MediaBrowser.Builder(this, sessionToken).buildAsync();
+        browserFuture.addListener(() -> {
+            if (browserFuture.isDone()) {
+                try {
+                    mediaBrowser = browserFuture.get();
+                    getRoot();
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
             }
-        });
+        }, ContextCompat.getMainExecutor(this));
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+    protected void onStop() {
+        MediaBrowser.releaseFuture(browserFuture);
+        if (this.mediaBrowser != null) {
+            this.mediaBrowser.release();
+            this.mediaBrowser = null;
         }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    void setPausedState() {
-
-    }
-
-    @Override
-    void setPlayingState() {
-
-    }
-
-    @Override
-    void updateMetadataImpl() {
-
-    }
-
-    @Override
-    public void onMediaItemsLoaded() {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_container);
-        navController.navigate(R.id.action_Splash_to_MediaList);
+        super.onStop();
     }
 
     @Override
     public boolean onSupportNavigateUp() {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_container);
-        return NavigationUI.navigateUp(navController, appBarConfiguration) ||
-                super.onSupportNavigateUp();
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
+        return NavigationUI.navigateUp(navController, appBarConfiguration)
+                || super.onSupportNavigateUp();
+    }
+
+    private void getRoot() {
+        ListenableFuture<LibraryResult<MediaItem>> rootFuture =
+                mediaBrowser.getLibraryRoot(null);
+        rootFuture.addListener(() -> {
+            if (rootFuture.isDone()) {
+                try {
+                    LibraryResult<MediaItem> result = rootFuture.get();
+                    MediaItem root = result.value;
+                    displayResult(root);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }, ContextCompat.getMainExecutor(this));
+    }
+
+    private void displayResult(@Nullable MediaItem item) {
+        if (item == null) {
+            Log.d(TAG, "displayResult item was null");
+        } else {
+            Log.d(TAG, "displayResult item was: " + item);
+            mediaViewModel.setCurrentMedia(item);
+        }
     }
 }

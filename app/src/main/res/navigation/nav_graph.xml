@@ -2,40 +2,27 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    app:startDestination="@+id/SplashFragment"
-    android:id="@+id/nav_graph">
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/MediaListFragment">
 
     <fragment
-        android:id="@+id/MediaFragment"
-        android:name="com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.main.fragments.MediaListFragment"
-        android:label="Media List"
-        tools:layout="@layout/fragment_media">
-        <action
-            android:id="@+id/action_MediaList_to_NowPlaying"
-            app:destination="@+id/NowPlayingFragment" />
-    </fragment>
+        android:id="@+id/MediaListFragment"
+        android:name="com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.fragments.MediaListFragment"
+        android:label="@string/first_fragment_label"
+        tools:layout="@layout/fragment_media_item_list">
 
-    <fragment
-        android:id="@+id/SplashFragment"
-        android:name="com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.main.fragments.SplashFragment"
-        android:label="Splash Screen"
-        tools:layout="@layout/fragment_media">
         <action
-            android:id="@+id/action_Splash_to_MediaList"
-            app:destination="@id/MediaFragment" />
+            android:id="@+id/action_FirstFragment_to_SecondFragment"
+            app:destination="@id/NowPlayingFragment" />
     </fragment>
-
     <fragment
         android:id="@+id/NowPlayingFragment"
-        android:name="com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.main.fragments.NowPlayingFragment"
-        android:label="Now Playing"
+        android:name="com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.fragments.NowPlayingFragment"
+        android:label="@string/second_fragment_label"
         tools:layout="@layout/fragment_now_playing">
-        <action
-            android:id="@+id/action_NowPlaying_loop"
-            app:destination="@+id/NowPlayingFragment" />
-        <action
-            android:id="@+id/action_NowPlaying_to_MediaList"
-            app:destination="@id/MediaFragment" />
-    </fragment>
 
+        <action
+            android:id="@+id/action_SecondFragment_to_FirstFragment"
+            app:destination="@id/MediaListFragment" />
+    </fragment>
 </navigation>
