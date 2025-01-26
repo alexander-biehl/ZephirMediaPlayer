@@ -11,11 +11,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.OptIn;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.MediaMetadata;
 import androidx.media3.common.Player;
+import androidx.media3.common.util.UnstableApi;
 import androidx.media3.session.MediaController;
 import androidx.media3.session.SessionToken;
 import androidx.media3.ui.PlayerView;
@@ -79,16 +81,32 @@ public class NowPlayingFragment extends Fragment {
                         .navigate(R.id.action_SecondFragment_to_FirstFragment)
         );
         binding.mediaBackButton.setOnClickListener(v -> {
-            Log.d(TAG, "media back button clicked");
-            // TODO
+            if (mediaController != null && mediaController.hasPreviousMediaItem()) {
+                boolean isPlaying = mediaController.isPlaying();
+                mediaController.seekToPreviousMediaItem();
+                if (isPlaying) {
+                    mediaController.play();
+                }
+            }
         });
         binding.mediaNextButton.setOnClickListener(v -> {
-            Log.d(TAG, "media next button clicked");
-            // TODO
+            if (mediaController != null &&
+                    mediaController.hasNextMediaItem()) {
+                boolean isPlaying = mediaController.isPlaying();
+                mediaController.seekToNextMediaItem();
+                if (isPlaying) {
+                    mediaController.play();
+                }
+            }
         });
         binding.mediaPlayPauseButton.setOnClickListener(v -> {
             Log.d(TAG, "play/pause clicked");
-            // TODO
+            if (mediaController != null && mediaController.isPlaying()) {
+                mediaController.pause();
+            }
+            if (mediaController != null && !mediaController.isPlaying()) {
+                mediaController.play();
+            }
         });
 
         playerView = binding.playerView;
@@ -122,6 +140,7 @@ public class NowPlayingFragment extends Fragment {
         }, ContextCompat.getMainExecutor(requireContext()));
     }
 
+    @OptIn(markerClass = UnstableApi.class)
     private void setController(@NonNull MediaController controller) {
         mediaController = controller;
         playerView.setPlayer(mediaController);
@@ -139,6 +158,9 @@ public class NowPlayingFragment extends Fragment {
             }
         });
         updateMediaMetadataUI();
+        if (mediaController.isPlaying()) {
+            playerView.showController();
+        }
         // updateQueue();
     }
 
