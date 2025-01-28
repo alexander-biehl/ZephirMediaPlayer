@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:gravity="fill_horizontal"
+    android:orientation="horizontal"
     tools:context=".activities.ui.fragments.NowPlayingFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -23,13 +24,13 @@
         <androidx.media3.ui.PlayerView
             android:id="@+id/player_view"
             android:layout_width="match_parent"
-            android:layout_height="500dp"
+            android:layout_height="0dp"
+            app:artwork_display_mode="fill"
+            app:auto_show="true"
             app:layout_constraintBottom_toTopOf="@+id/controls_layout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:artwork_display_mode="fill"
-            app:auto_show="true"
             app:show_buffering="when_playing">
 
         </androidx.media3.ui.PlayerView>
@@ -40,80 +41,83 @@
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            android:gravity="center_vertical">
+            app:layout_constraintStart_toStartOf="parent">
 
             <TableRow
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center_horizontal">
+                android:layout_height="wrap_content">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center|fill_horizontal"
                     android:orientation="horizontal">
 
                     <TextView
                         android:id="@+id/artist_text_view"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="@string/artist_view_default_test" />
+                        android:text="@string/artist_view_default_test"
+                        android:textAlignment="center"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
                     <TextView
                         android:id="@+id/album_text_view"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="@string/album_view_default_text" />
+                        android:text="@string/album_view_default_text"
+                        android:textAlignment="center"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
                     <TextView
                         android:id="@+id/song_text_view"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="@string/song_view_default_text" />
+                        android:text="@string/song_view_default_text"
+                        android:textAlignment="center"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
                 </LinearLayout>
             </TableRow>
 
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center_horizontal">
+            <!--            <TableRow-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="match_parent"-->
+            <!--                android:gravity="center_horizontal">-->
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal">
+            <!--                <LinearLayout-->
+            <!--                    android:layout_width="match_parent"-->
+            <!--                    android:layout_height="match_parent"-->
+            <!--                    android:orientation="horizontal">-->
 
-                    <ImageButton
-                        android:id="@+id/media_back_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:contentDescription="@string/previous_song"
-                        android:src="@drawable/btn_backward" />
+            <!--                    <ImageButton-->
+            <!--                        android:id="@+id/media_back_button"-->
+            <!--                        android:layout_width="wrap_content"-->
+            <!--                        android:layout_height="match_parent"-->
+            <!--                        android:layout_weight="1"-->
+            <!--                        android:contentDescription="@string/previous_song"-->
+            <!--                        android:src="@drawable/btn_backward" />-->
 
-                    <ImageButton
-                        android:id="@+id/media_play_pause_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:contentDescription="@string/play_pause"
-                        android:src="@drawable/btn_play" />
+            <!--                    <ImageButton-->
+            <!--                        android:id="@+id/media_play_pause_button"-->
+            <!--                        android:layout_width="wrap_content"-->
+            <!--                        android:layout_height="match_parent"-->
+            <!--                        android:layout_weight="1"-->
+            <!--                        android:contentDescription="@string/play_pause"-->
+            <!--                        android:src="@drawable/btn_play" />-->
 
-                    <ImageButton
-                        android:id="@+id/media_next_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:contentDescription="@string/next_song"
-                        android:src="@drawable/btn_forward" />
-                </LinearLayout>
-            </TableRow>
+            <!--                    <ImageButton-->
+            <!--                        android:id="@+id/media_next_button"-->
+            <!--                        android:layout_width="wrap_content"-->
+            <!--                        android:layout_height="match_parent"-->
+            <!--                        android:layout_weight="1"-->
+            <!--                        android:contentDescription="@string/next_song"-->
+            <!--                        android:src="@drawable/btn_forward" />-->
+            <!--                </LinearLayout>-->
+            <!--            </TableRow>-->
         </TableLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,17 +1,16 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.fragments;
 
 import static androidx.media3.common.Player.EVENT_MEDIA_METADATA_CHANGED;
-import static androidx.media3.common.Player.EVENT_TIMELINE_CHANGED;
 
 import android.content.ComponentName;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.media3.common.MediaItem;
@@ -34,12 +33,11 @@ import java.util.List;
 public class NowPlayingFragment extends Fragment {
 
     private static final String TAG = NowPlayingFragment.class.getSimpleName();
-
+    private final List<MediaItem> currentQueue;
     private FragmentNowPlayingBinding binding;
     private PlayerView playerView;
     private MediaController mediaController;
     private ListenableFuture<MediaController> controllerFuture;
-    private final List<MediaItem> currentQueue;
 
     public NowPlayingFragment() {
         currentQueue = new ArrayList<>();
@@ -73,6 +71,7 @@ public class NowPlayingFragment extends Fragment {
 
     }
 
+    @OptIn(markerClass = UnstableApi.class)
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
@@ -80,36 +79,11 @@ public class NowPlayingFragment extends Fragment {
                 NavHostFragment.findNavController(NowPlayingFragment.this)
                         .navigate(R.id.action_SecondFragment_to_FirstFragment)
         );
-        binding.mediaBackButton.setOnClickListener(v -> {
-            if (mediaController != null && mediaController.hasPreviousMediaItem()) {
-                boolean isPlaying = mediaController.isPlaying();
-                mediaController.seekToPreviousMediaItem();
-                if (isPlaying) {
-                    mediaController.play();
-                }
-            }
-        });
-        binding.mediaNextButton.setOnClickListener(v -> {
-            if (mediaController != null &&
-                    mediaController.hasNextMediaItem()) {
-                boolean isPlaying = mediaController.isPlaying();
-                mediaController.seekToNextMediaItem();
-                if (isPlaying) {
-                    mediaController.play();
-                }
-            }
-        });
-        binding.mediaPlayPauseButton.setOnClickListener(v -> {
-            Log.d(TAG, "play/pause clicked");
-            if (mediaController != null && mediaController.isPlaying()) {
-                mediaController.pause();
-            }
-            if (mediaController != null && !mediaController.isPlaying()) {
-                mediaController.play();
-            }
-        });
 
         playerView = binding.playerView;
+        playerView.setDefaultArtwork(
+                AppCompatResources.getDrawable(requireContext(), R.drawable.zephir)
+        );
     }
 
     @Override
