@@ -1,5 +1,6 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.adapters;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
@@ -13,7 +14,6 @@ import java.util.List;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link MediaItem}.
- * TODO: Replace the implementation with code for your data type.
  */
 public class MyQueueRecyclerViewAdapter extends RecyclerView.Adapter<MyQueueRecyclerViewAdapter.ViewHolder> {
 
@@ -23,18 +23,23 @@ public class MyQueueRecyclerViewAdapter extends RecyclerView.Adapter<MyQueueRecy
         mValues = items;
     }
 
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
-        return new ViewHolder(FragmentQueueItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
-
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new ViewHolder(
+                FragmentQueueItemBinding.inflate(
+                        LayoutInflater.from(parent.getContext()),
+                        parent,
+                        false
+                )
+        );
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).id);
-        holder.mContentView.setText(mValues.get(position).content);
+        holder.mIdView.setText(String.valueOf(mValues.get(position).mediaMetadata.trackNumber));
+        holder.mContentView.setText(mValues.get(position).mediaMetadata.title);
     }
 
     @Override
