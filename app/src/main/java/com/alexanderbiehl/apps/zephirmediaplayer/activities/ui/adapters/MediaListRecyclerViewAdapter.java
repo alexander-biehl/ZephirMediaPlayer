@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.media3.common.MediaItem;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,10 +26,16 @@ public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaList
         clickListener = listener;
     }
 
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
-        return new ViewHolder(FragmentMediaItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return new ViewHolder(
+                FragmentMediaItemBinding.inflate(
+                        LayoutInflater.from(parent.getContext()),
+                        parent,
+                        false
+                )
+        );
 
     }
 
@@ -42,6 +49,12 @@ public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaList
             if (clickListener != null) {
                 clickListener.onClick(position, mValues.get(position));
             }
+        });
+        holder.itemView.setOnLongClickListener(l -> {
+            if (clickListener != null) {
+                clickListener.onLongClick(position, mValues.get(position));
+            }
+            return true;
         });
     }
 
@@ -66,9 +79,14 @@ public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaList
                     clickListener.onClick(pos, mValues.get(pos));
                 }
             });
+            itemView.setOnLongClickListener(l -> {
+                if (clickListener != null) {
+                    int pos = getBindingAdapterPosition();
+                    clickListener.onLongClick(pos, mValues.get(pos));
+                }
+                return true;
+            });
         }
-
-
 
         @Override
         public String toString() {
@@ -78,5 +96,7 @@ public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaList
 
     public interface OnClickHandler {
         void onClick(int position, MediaItem item);
+
+        void onLongClick(int position, MediaItem item);
     }
 }

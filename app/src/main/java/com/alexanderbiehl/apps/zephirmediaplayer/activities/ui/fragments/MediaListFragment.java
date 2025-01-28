@@ -59,6 +59,12 @@ public class MediaListFragment extends Fragment {
 
     private int mColumnCount = 1;
 
+    // TODO's
+    /*
+    * add a context menu to each list item so that we can add to queue
+    *
+    * */
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -216,6 +222,21 @@ public class MediaListFragment extends Fragment {
         }, ContextCompat.getMainExecutor(requireActivity()));
     }
 
+    private void addChildItemsToQueue(@NonNull MediaItem parent) {
+        ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> childrenFuture =
+                mediaBrowser.getChildren(
+                        parent.mediaId,
+                        0,
+                        Integer.MAX_VALUE,
+                        null
+                );
+        childrenFuture.addListener(() -> {
+            // TODO how do we handle issue when a parent of a parent is clicked?
+            // could recursively get all the children and add them to the final queue?
+
+        }, ContextCompat.getMainExecutor(requireContext()));
+    }
+
     private void popPathStack() {
         treeBackStack.pop();
         if (treeBackStack.isEmpty()) {
@@ -232,13 +253,15 @@ public class MediaListFragment extends Fragment {
 
     private class MediaListViewClickHandler implements MediaListRecyclerViewAdapter.OnClickHandler {
 
-        // TODO implement a longClick callback to handle adding additional items to queue
-        // instead of drilling down
-
         @Override
         public void onClick(int position, MediaItem item) {
             MediaItem selectedItem = subMediaList.get(position);
             mediaViewModel.setCurrentMedia(selectedItem);
+        }
+
+        @Override
+        public void onLongClick(int position, MediaItem item) {
+            addChildItemsToQueue(item);
         }
     }
 }

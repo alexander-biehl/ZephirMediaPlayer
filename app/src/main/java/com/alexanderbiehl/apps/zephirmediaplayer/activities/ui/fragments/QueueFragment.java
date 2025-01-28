@@ -25,7 +25,13 @@ public class QueueFragment extends Fragment {
 
     private static final String ARG_COLUMN_COUNT = "column-count";
     private final List<MediaItem> currentQueue;
-    private int mColumnCount = 2;
+    private int mColumnCount = 1;
+
+    // TODO's
+    /*
+    * add mediacontroller so we can display all the items in the current queue
+    * add context menu so we can remove items from queue
+    * */
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
