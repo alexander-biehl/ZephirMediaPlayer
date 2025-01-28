@@ -84,6 +84,7 @@ public class NowPlayingFragment extends Fragment {
         playerView.setDefaultArtwork(
                 AppCompatResources.getDrawable(requireContext(), R.drawable.zephir)
         );
+        playerView.setControllerAutoShow(true);
     }
 
     @Override
@@ -122,7 +123,6 @@ public class NowPlayingFragment extends Fragment {
         mediaController.addListener(new Player.Listener() {
             @Override
             public void onEvents(@NonNull Player player, @NonNull Player.Events events) {
-                // Player.Listener.super.onEvents(player, events);
                 if (events.contains(EVENT_MEDIA_METADATA_CHANGED)) {
                     updateMediaMetadataUI();
                 }
@@ -131,10 +131,8 @@ public class NowPlayingFragment extends Fragment {
 //                }
             }
         });
+
         updateMediaMetadataUI();
-        if (mediaController.isPlaying()) {
-            playerView.showController();
-        }
         // updateQueue();
     }
 
