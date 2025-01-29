@@ -79,6 +79,10 @@ public class NowPlayingFragment extends Fragment {
                 NavHostFragment.findNavController(NowPlayingFragment.this)
                         .navigate(R.id.action_SecondFragment_to_FirstFragment)
         );
+        binding.goToQueueFab.setOnClickListener(v ->
+                NavHostFragment.findNavController(NowPlayingFragment.this)
+                        .navigate(R.id.action_NowPlayingFragment_to_QueueFragment)
+        );
 
         playerView = binding.playerView;
         playerView.setDefaultArtwork(

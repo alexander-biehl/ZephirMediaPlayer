@@ -38,7 +38,7 @@ public class MyQueueRecyclerViewAdapter extends RecyclerView.Adapter<MyQueueRecy
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(String.valueOf(mValues.get(position).mediaMetadata.trackNumber));
+        holder.mIdView.setText(String.valueOf(position));
         holder.mContentView.setText(mValues.get(position).mediaMetadata.title);
     }
 

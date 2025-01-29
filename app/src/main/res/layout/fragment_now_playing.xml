@@ -12,6 +12,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+
+            android:id="@+id/go_to_queue_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:contentDescription="@string/navigate_to_now_playing_queue"
+            android:src="@drawable/btn_playlist"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <Button
             android:id="@+id/button_second"
             android:layout_width="wrap_content"

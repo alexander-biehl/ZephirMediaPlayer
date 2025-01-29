@@ -24,5 +24,19 @@
         <action
             android:id="@+id/action_SecondFragment_to_FirstFragment"
             app:destination="@id/MediaListFragment" />
+        <action
+            android:id="@+id/action_NowPlayingFragment_to_QueueFragment"
+            app:destination="@id/QueueFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/QueueFragment"
+        android:name="com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.fragments.QueueFragment"
+        android:label="Queue Fragment"
+        tools:layout="@layout/fragment_queue" >
+
+        <action
+            android:id="@+id/action_QueueFragment_to_NowPlayingFragment"
+            app:destination="@id/NowPlayingFragment" />
     </fragment>
 </navigation>

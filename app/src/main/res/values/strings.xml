@@ -154,4 +154,5 @@
     <string name="song_view_default_text">Song</string>
     <string name="album_view_default_text">Album</string>
     <string name="artist_view_default_test">Artist</string>
+    <string name="navigate_to_now_playing_queue">Navigate to Now Playing Queue</string>
 </resources>
