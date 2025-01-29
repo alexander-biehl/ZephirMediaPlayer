@@ -6,9 +6,13 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -136,6 +140,8 @@ public class MediaListFragment extends Fragment {
             recyclerView.setAdapter(mediaAdapter);
         }
 
+        registerForContextMenu(recyclerView);
+
         this.mediaViewModel = new ViewModelProvider(requireActivity()).get(MediaViewModel.class);
         this.mediaViewModel.getCurrentMedia().observe(requireActivity(), item -> {
             if (mediaBrowser != null) {
@@ -160,6 +166,29 @@ public class MediaListFragment extends Fragment {
             NavHostFragment.findNavController(this)
                     .navigate(R.id.action_FirstFragment_to_SecondFragment);
         });
+    }
+
+    @Override
+    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, @Nullable ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = requireActivity().getMenuInflater();
+        inflater.inflate(R.menu.menu_media_item, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.add_to_queue:
+                Log.d(TAG, "Add to queue clicked!");
+                addMediaItemToQueue(mediaAdapter.getContextMenuItem());
+                return true;
+            case R.id.add_to_playlist:
+                Log.d(TAG, "Add to playlist clicked!");
+                addMediaItemToPlaylist(mediaAdapter.getContextMenuItem());
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
     }
 
     private void initializeBrowser() {
@@ -191,6 +220,9 @@ public class MediaListFragment extends Fragment {
         mediaBrowser.prepare();
         mediaBrowser.play();
         mediaViewModel.setQueue(playQueue);
+        // navigate to Now Playing
+        NavHostFragment.findNavController(this)
+                .navigate(R.id.action_FirstFragment_to_SecondFragment);
     }
 
     private void openSubFolder(MediaItem item) {
@@ -237,6 +269,25 @@ public class MediaListFragment extends Fragment {
         }, ContextCompat.getMainExecutor(requireContext()));
     }
 
+    private void addMediaItemToQueue(@NonNull MediaItem item) {
+        if (item.mediaMetadata.isBrowsable) {
+            Log.d(TAG, "Item is browsable, adding child items to queue");
+            addChildItemsToQueue(item);
+        } else if (item.mediaMetadata.isPlayable) {
+            Log.d(TAG, "Item is playable, adding to queue");
+            if (mediaBrowser != null) {
+                mediaBrowser.addMediaItem(
+                        mediaBrowser.getMediaItemCount() - 1,
+                        item
+                );
+            }
+        }
+    }
+
+    private void addMediaItemToPlaylist(@NonNull MediaItem item) {
+
+    }
+
     private void popPathStack() {
         treeBackStack.pop();
         if (treeBackStack.isEmpty()) {
@@ -259,9 +310,9 @@ public class MediaListFragment extends Fragment {
             mediaViewModel.setCurrentMedia(selectedItem);
         }
 
-        @Override
-        public void onLongClick(int position, MediaItem item) {
-            addChildItemsToQueue(item);
-        }
+//        @Override
+//        public void onLongClick(int position, MediaItem item) {
+//            addChildItemsToQueue(item);
+//        }
     }
 }

@@ -1,8 +1,10 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.adapters;
 
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -21,9 +23,23 @@ public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaList
     private final List<MediaItem> mValues;
     private final OnClickHandler clickListener;
 
+    private int longPresPosition;
+
     public MediaListRecyclerViewAdapter(List<MediaItem> items, final OnClickHandler listener) {
         mValues = items;
         clickListener = listener;
+    }
+
+    public void setLongPresPosition(int pos) {
+        longPresPosition = pos;
+    }
+
+    public int getLongPresPosition() {
+        return longPresPosition;
+    }
+
+    public MediaItem getContextMenuItem() {
+        return mValues.get(longPresPosition);
     }
 
     @NonNull
@@ -50,17 +66,27 @@ public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaList
                 clickListener.onClick(position, mValues.get(position));
             }
         });
-        holder.itemView.setOnLongClickListener(l -> {
-            if (clickListener != null) {
-                clickListener.onLongClick(position, mValues.get(position));
-            }
-            return true;
-        });
+//        holder.itemView.setOnLongClickListener(l -> {
+//            if (clickListener != null) {
+//                clickListener.onLongClick(position, mValues.get(position));
+//            }
+//            return true;
+//        });
+//        holder.itemView.setOnLongClickListener(v -> {
+//            setLongPresPosition(holder.getBindingAdapterPosition());
+//
+//        });
     }
 
     @Override
     public int getItemCount() {
         return mValues.size();
+    }
+
+    public interface OnClickHandler {
+        void onClick(int position, MediaItem item);
+
+        // void onLongClick(int position, MediaItem item);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -79,11 +105,16 @@ public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaList
                     clickListener.onClick(pos, mValues.get(pos));
                 }
             });
+//            itemView.setOnLongClickListener(l -> {
+//                if (clickListener != null) {
+//                    int pos = getBindingAdapterPosition();
+//                    clickListener.onLongClick(pos, mValues.get(pos));
+//                }
+//                return true;
+//            });
             itemView.setOnLongClickListener(l -> {
-                if (clickListener != null) {
-                    int pos = getBindingAdapterPosition();
-                    clickListener.onLongClick(pos, mValues.get(pos));
-                }
+                setLongPresPosition(getBindingAdapterPosition());
+                itemView.showContextMenu();
                 return true;
             });
         }
@@ -92,11 +123,5 @@ public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaList
         public String toString() {
             return super.toString() + " '" + mContentView.getText() + "'";
         }
-    }
-
-    public interface OnClickHandler {
-        void onClick(int position, MediaItem item);
-
-        void onLongClick(int position, MediaItem item);
     }
 }
