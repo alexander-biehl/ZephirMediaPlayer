@@ -1,13 +1,18 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.data.dao;
 
 import androidx.room.Dao;
-import androidx.room.Insert;
+import androidx.room.Query;
 
+import com.alexanderbiehl.apps.zephirmediaplayer.data.dao.base.DoaBase;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.Song;
 
 @Dao
-public interface SongDao {
+public interface SongDao extends DoaBase<Song> {
 
-    @Insert
-    void insert(Song song);
+    @Query(value = "SELECT * FROM song")
+    Song[] getAllSongs();
+
+    @Query(value = "SELECT * FROM song WHERE id = :id")
+    Song getById(long id);
+
 }
