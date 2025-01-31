@@ -13,8 +13,8 @@ public interface DoaBase<T extends EntityBase> {
     @Insert
     void insert(T entity);
 
-    @Insert
-    void insertAll(T... entities);
+//    @Insert
+//    void insertAll(T... entities);
 
     @Update
     void update(T entity);
