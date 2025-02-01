@@ -15,4 +15,6 @@ public interface SongDao extends DoaBase<Song> {
     @Query(value = "SELECT * FROM song WHERE id = :id")
     Song getById(long id);
 
+    @Query("SELECT * FROM song WHERE media_id = :mediaId")
+    Song getByMediaId(String mediaId);
 }

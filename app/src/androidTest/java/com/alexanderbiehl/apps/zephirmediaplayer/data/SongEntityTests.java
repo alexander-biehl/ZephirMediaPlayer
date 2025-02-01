@@ -47,4 +47,34 @@ public class SongEntityTests {
         assertNotNull(songs[0].id);
         assertEquals("Test", songs[0].title);
     }
+
+    @Test
+    public void testCreateAndQueryByMediaId() throws Exception {
+        Song song = new Song();
+        final String mediaId = "001";
+        song.title = "test";
+        song.mediaId = mediaId;
+        songDao.insert(song);
+
+        Song dbSong = songDao.getByMediaId(mediaId);
+        assertNotNull(dbSong);
+        assertEquals("test", dbSong.title);
+        assertEquals(mediaId, dbSong.mediaId);
+    }
+
+    @Test
+    public void testSongDelete() throws Exception {
+        Song song = new Song();
+        final String mediaID = "001";
+        song.title = "Test";
+        song.mediaId = mediaID;
+        songDao.insert(song);
+
+        song = songDao.getByMediaId(mediaID);
+        song.title = "test2";
+        songDao.update(song);
+
+        Song updatedSong = songDao.getById(song.id);
+        assertEquals("test2", updatedSong.title);
+    }
 }
