@@ -2,7 +2,6 @@ package com.alexanderbiehl.apps.zephirmediaplayer.data;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 
@@ -21,7 +20,7 @@ import org.junit.runner.RunWith;
 
 import java.io.IOException;
 
-// @RunWith(AndroidJUnit4.class)
+@RunWith(AndroidJUnit4.class)
 public class SongEntityTests {
     private SongDao songDao;
     private AppDatabase db;
