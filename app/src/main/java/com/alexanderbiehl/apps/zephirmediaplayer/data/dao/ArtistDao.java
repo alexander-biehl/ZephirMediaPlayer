@@ -15,4 +15,8 @@ public interface ArtistDao extends DoaBase<Artist> {
     @Query(value = "SELECT * FROM artist WHERE id = :id")
     Artist getById(long id);
 
+    @Query("SELECT * FROM artist WHERE media_id = :mediaId")
+    Artist getByMediaId(final String mediaId);
+
+
 }

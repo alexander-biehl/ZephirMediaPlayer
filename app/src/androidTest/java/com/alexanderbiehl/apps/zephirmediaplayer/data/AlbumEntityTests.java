@@ -85,11 +85,10 @@ public class AlbumEntityTests {
         songDao.insert(songOne);
         songDao.insert(songTwo);
 
-        List<AlbumSongs> albumSongs = dao.getAlbumSongsByMediaId(TestUtils.albumOneMediaId);
+        AlbumSongs albumSongs = dao.getAlbumSongsByMediaId(TestUtils.albumOneMediaId);
 
-        assertEquals(1, albumSongs.size());
-        AlbumSongs albumOneSongs = albumSongs.get(0);
-        assertEquals(a.id, albumOneSongs.album.id);
-        assertEquals(2, albumOneSongs.songs.size());
+        assertNotNull(albumSongs);
+        assertEquals(a.id, albumSongs.album.id);
+        assertEquals(2, albumSongs.songs.size());
     }
 }

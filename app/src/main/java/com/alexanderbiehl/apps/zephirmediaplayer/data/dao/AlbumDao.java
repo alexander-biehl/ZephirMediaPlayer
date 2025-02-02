@@ -30,5 +30,5 @@ public interface AlbumDao extends DoaBase<Album> {
 
     @Transaction
     @Query("SELECT * FROM album WHERE media_id = :mediaId")
-    List<AlbumSongs> getAlbumSongsByMediaId(final String mediaId);
+    AlbumSongs getAlbumSongsByMediaId(final String mediaId);
 }
