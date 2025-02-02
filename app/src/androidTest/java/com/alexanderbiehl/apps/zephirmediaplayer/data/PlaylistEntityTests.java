@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 @RunWith(AndroidJUnit4.class)
 public class PlaylistEntityTests {
@@ -56,21 +57,20 @@ public class PlaylistEntityTests {
         Song two = TestUtils.createSongTwo();
         long[] songIds = songDao.insertAll(one, two);
 
-        PlaylistSongM2M ps1 = new PlaylistSongM2M();
-        ps1.playlistId = p.id;
-        ps1.songId = songIds[0];
-        ps1.order = 0;
+        PlaylistSongM2M pls1 = new PlaylistSongM2M();
+        pls1.playlistId = rowId;
+        pls1.songId = songIds[0];
+        pls1.order = 0;
+        PlaylistSongM2M pls2 = new PlaylistSongM2M();
+        pls2.playlistId = rowId;
+        pls2.songId = songIds[1];
+        pls2.order = 1;
 
-        PlaylistSongM2M ps2 = new PlaylistSongM2M();
-        ps2.playlistId = p.id;
-        ps2.songId = songIds[1];
-        ps2.order = 1;
+        dao.insertPlaylistSongs(pls1, pls2);
 
-        dao.addToPlaylist(ps1, ps2);
-
-        PlaylistSongs ps = dao.getPlaylistSongsById(p.id);
-        assertNotNull(ps);
-        assertEquals(p.id, ps.playlist.id);
-        assertEquals(2, ps.songs.size());
+        PlaylistSongs pls = dao.getPlaylistSongsById(rowId);
+        assertNotNull(pls);
+        assertEquals(Long.valueOf(rowId), pls.playlist.id);
+        assertEquals(2, pls.songs.size());
     }
 }
