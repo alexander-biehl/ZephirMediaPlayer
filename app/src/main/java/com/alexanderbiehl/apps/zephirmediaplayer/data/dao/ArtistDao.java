@@ -2,6 +2,7 @@ package com.alexanderbiehl.apps.zephirmediaplayer.data.dao;
 
 import androidx.room.Dao;
 import androidx.room.Query;
+import androidx.room.Transaction;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.data.dao.base.DoaBase;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.Artist;
@@ -19,6 +20,7 @@ public interface ArtistDao extends DoaBase<Artist> {
     @Query("SELECT * FROM artist WHERE media_id = :mediaId")
     Artist getByMediaId(final String mediaId);
 
+    @Transaction
     @Query("SELECT * FROM artist WHERE media_id = :mediaId")
     ArtistAlbums getArtistAlbumsByMediaId(final String mediaId);
 }

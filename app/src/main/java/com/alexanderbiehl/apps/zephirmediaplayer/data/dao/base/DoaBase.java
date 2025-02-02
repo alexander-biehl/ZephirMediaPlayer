@@ -11,7 +11,7 @@ import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.base.EntityBase;
 public interface DoaBase<T extends EntityBase> {
 
     @Insert
-    void insert(T entity);
+    long insert(T entity);
 
 //    @Insert
 //    void insertAll(T... entities);
