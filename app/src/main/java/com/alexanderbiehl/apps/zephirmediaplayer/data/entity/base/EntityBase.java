@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey;
 @Entity
 public abstract class EntityBase {
     @PrimaryKey(autoGenerate = true)
-    public long id;
+    public Long id;
     @ColumnInfo(name = "media_id")
     public String mediaId;
 }

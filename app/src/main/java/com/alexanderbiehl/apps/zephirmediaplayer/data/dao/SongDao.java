@@ -13,7 +13,7 @@ public interface SongDao extends DoaBase<Song> {
     Song[] getAllSongs();
 
     @Query(value = "SELECT * FROM song WHERE id = :id")
-    Song getById(long id);
+    Song getById(final Long id);
 
     @Query("SELECT * FROM song WHERE media_id = :mediaId")
     Song getByMediaId(String mediaId);
