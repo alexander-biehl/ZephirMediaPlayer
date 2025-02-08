@@ -11,10 +11,10 @@ public class MainApp extends Application {
     /**
      * Get number of available cores
      */
-    private static int NUMBER_OF_CORES = Runtime.getRuntime().availableProcessors();
+    private static final int NUMBER_OF_CORES = Runtime.getRuntime().availableProcessors();
 
     // Create a thread pool manager
-    ExecutorService executorService = Executors.newFixedThreadPool(NUMBER_OF_CORES);
+    private final ExecutorService executorService = Executors.newFixedThreadPool(NUMBER_OF_CORES);
 
     @Override
     public void onCreate() {
