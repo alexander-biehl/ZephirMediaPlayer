@@ -1,7 +1,5 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.data.model;
 
-import android.net.Uri;
-
 import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.SongEntity;
 
 public class Song {
@@ -9,37 +7,24 @@ public class Song {
     private Long id;
     private String mediaId;
     private String title;
-    private String artist;
-    private String album;
     private Integer trackNumber;
     private String sourceUri;
 
-    public Long getId() {
-        return id;
+    public Song(
+            Long id,
+            String mediaId,
+            String title,
+            Integer trackNumber,
+            String sourceUri
+    ) {
+        this.id = id;
+        this.mediaId = mediaId;
+        this.title = title;
+        this.trackNumber = trackNumber;
+        this.sourceUri = sourceUri;
     }
 
-    public String getMediaId() {
-        return mediaId;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getArtist() {
-        return artist;
-    }
-
-    public String getAlbum() {
-        return album;
-    }
-
-    public Integer getTrackNumber() {
-        return trackNumber;
-    }
-
-    public String getSourceUri() {
-        return sourceUri;
+    private Song() {
     }
 
     public static Song from(SongEntity entity) {
@@ -50,5 +35,45 @@ public class Song {
         s.sourceUri = entity.sourceUri;
         s.trackNumber = Integer.valueOf(entity.trackNumber);
         return s;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getMediaId() {
+        return mediaId;
+    }
+
+    public void setMediaId(String mediaId) {
+        this.mediaId = mediaId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public Integer getTrackNumber() {
+        return trackNumber;
+    }
+
+    public void setTrackNumber(Integer trackNumber) {
+        this.trackNumber = trackNumber;
+    }
+
+    public String getSourceUri() {
+        return sourceUri;
+    }
+
+    public void setSourceUri(String sourceUri) {
+        this.sourceUri = sourceUri;
     }
 }

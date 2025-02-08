@@ -1,4 +1,4 @@
-package com.alexanderbiehl.apps.zephirmediaplayer.datasources.media;
+package com.alexanderbiehl.apps.zephirmediaplayer.datasources;
 
 import androidx.media3.common.MediaItem;
 

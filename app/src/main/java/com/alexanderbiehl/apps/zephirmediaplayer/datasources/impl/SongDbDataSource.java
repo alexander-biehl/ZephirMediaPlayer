@@ -1,11 +1,11 @@
-package com.alexanderbiehl.apps.zephirmediaplayer.datasources.song.impl;
+package com.alexanderbiehl.apps.zephirmediaplayer.datasources.impl;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.common.RepositoryCallback;
 import com.alexanderbiehl.apps.zephirmediaplayer.common.Result;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.dao.SongDao;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.SongEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.model.Song;
-import com.alexanderbiehl.apps.zephirmediaplayer.datasources.song.SongDataSource;
+import com.alexanderbiehl.apps.zephirmediaplayer.datasources.SongDataSource;
 
 import java.util.ArrayList;
 import java.util.List;

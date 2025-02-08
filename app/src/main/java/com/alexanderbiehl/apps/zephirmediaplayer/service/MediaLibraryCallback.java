@@ -16,7 +16,7 @@ import androidx.media3.session.SessionError;
 import com.alexanderbiehl.apps.zephirmediaplayer.MainApp;
 import com.alexanderbiehl.apps.zephirmediaplayer.common.Result;
 import com.alexanderbiehl.apps.zephirmediaplayer.dataloaders.MediaLoader;
-import com.alexanderbiehl.apps.zephirmediaplayer.datasources.media.impl.MediaLocalDataSource;
+import com.alexanderbiehl.apps.zephirmediaplayer.datasources.impl.MediaLocalDataSource;
 import com.alexanderbiehl.apps.zephirmediaplayer.repositories.MediaRepository;
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.Futures;
