@@ -1,6 +1,8 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.service;
 
 import android.content.Context;
+import android.provider.MediaStore;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,7 +14,12 @@ import androidx.media3.session.MediaLibraryService;
 import androidx.media3.session.MediaSession;
 import androidx.media3.session.SessionError;
 
+import com.alexanderbiehl.apps.zephirmediaplayer.MainApp;
+import com.alexanderbiehl.apps.zephirmediaplayer.common.RepositoryCallback;
+import com.alexanderbiehl.apps.zephirmediaplayer.common.Result;
 import com.alexanderbiehl.apps.zephirmediaplayer.dataloaders.MediaLoader;
+import com.alexanderbiehl.apps.zephirmediaplayer.datasources.MediaLocalDataSource;
+import com.alexanderbiehl.apps.zephirmediaplayer.repositories.MediaRepository;
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -24,13 +31,25 @@ import java.util.Optional;
 
 public class MediaLibraryCallback implements MediaLibraryService.MediaLibrarySession.Callback {
 
+    private static final String TAG = MediaLibraryCallback.class.getSimpleName();
     private final Context context;
 
-    public MediaLibraryCallback(@NonNull Context context) {
+    public MediaLibraryCallback(@NonNull final Context context, @NonNull final MainApp mainApp) {
         this.context = context;
-        MediaItemTree.getInstance().initialize(
-                MediaLoader.getMedia(this.context)
-        );
+        MediaRepository repo = new MediaRepository(
+                new MediaLocalDataSource(
+                        new MediaLoader(),
+                        mainApp.getExec(),
+                        context
+                ));
+        repo.getMedia((result) -> {
+            if (result instanceof Result.Success) {
+                MediaItemTree.getInstance().initialize(((Result.Success<List<MediaItem>>) result).data);
+            } else {
+                Log.e(TAG, "There was an error receiving media: " +
+                        ((Result.Error<?>)result).ex.toString());
+            }
+        });
     }
 
     @NonNull

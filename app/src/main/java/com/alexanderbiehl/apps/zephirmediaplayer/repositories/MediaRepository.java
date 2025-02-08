@@ -1,19 +1,14 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.repositories;
 
-import android.app.Application;
-import android.content.Context;
-import android.support.v4.media.MediaMetadataCompat;
-import android.util.Log;
-
 import androidx.media3.common.MediaItem;
 
-import com.alexanderbiehl.apps.zephirmediaplayer.MainApp;
-import com.alexanderbiehl.apps.zephirmediaplayer.dataloaders.MediaLoader;
+import com.alexanderbiehl.apps.zephirmediaplayer.common.RepositoryCallback;
+import com.alexanderbiehl.apps.zephirmediaplayer.common.Result;
 import com.alexanderbiehl.apps.zephirmediaplayer.datasources.MediaDataSource;
+import com.google.common.collect.ImmutableList;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Executor;
 
 /**
  * This class represents the Single Source of Truth for Media Data. How it
@@ -35,7 +30,8 @@ public class MediaRepository {
      * Retrieves the list of media items from the underlying data source
      * @return List<MediaItem>
      */
-    public List<MediaItem> getMedia() {
-        return dataSource.getMedia();
+    public void getMedia(RepositoryCallback<List<MediaItem>> callback) {
+        this.dataSource.getMedia(callback);
     }
+
 }

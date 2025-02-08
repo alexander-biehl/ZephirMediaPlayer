@@ -11,6 +11,8 @@ import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.session.MediaLibraryService;
 import androidx.media3.session.MediaSession;
 
+import com.alexanderbiehl.apps.zephirmediaplayer.MainApp;
+
 public class Media3Service extends MediaLibraryService {
 
     private MediaLibrarySession mediaLibrarySession;
@@ -18,11 +20,12 @@ public class Media3Service extends MediaLibraryService {
     @Override
     public void onCreate() {
         super.onCreate();
+
         ExoPlayer player = new ExoPlayer.Builder(this).build();
         mediaLibrarySession = new MediaLibrarySession.Builder(
                 this,
                 player,
-                new MediaLibraryCallback(this)
+                new MediaLibraryCallback(this, (MainApp)getApplication())
         ).build();
     }
 

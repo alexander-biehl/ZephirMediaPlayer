@@ -33,7 +33,7 @@ public class MediaLoader {
             "1" // TRUE
     };
 
-    public static List<MediaItem> getMedia(@NonNull Context ctx) {
+    public List<MediaItem> getMedia(@NonNull Context ctx) {
         List<MediaItem> media = new ArrayList<>();
 
         ContentResolver resolver = ctx.getContentResolver();
