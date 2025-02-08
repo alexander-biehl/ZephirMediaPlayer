@@ -1,7 +1,6 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.service;
 
 import android.content.Context;
-import android.provider.MediaStore;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -15,7 +14,6 @@ import androidx.media3.session.MediaSession;
 import androidx.media3.session.SessionError;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.MainApp;
-import com.alexanderbiehl.apps.zephirmediaplayer.common.RepositoryCallback;
 import com.alexanderbiehl.apps.zephirmediaplayer.common.Result;
 import com.alexanderbiehl.apps.zephirmediaplayer.dataloaders.MediaLoader;
 import com.alexanderbiehl.apps.zephirmediaplayer.datasources.MediaLocalDataSource;
@@ -25,33 +23,56 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
 public class MediaLibraryCallback implements MediaLibraryService.MediaLibrarySession.Callback {
 
+    public static final int LIBRARY_UNINITIALIZED = 1;
+
     private static final String TAG = MediaLibraryCallback.class.getSimpleName();
     private final Context context;
+    private final MainApp mainApp;
+
+    private boolean isInitialized;
 
     public MediaLibraryCallback(@NonNull final Context context, @NonNull final MainApp mainApp) {
         this.context = context;
+        this.mainApp = mainApp;
+        this.isInitialized = false;
+        initializeData();
+    }
+
+    private void initializeData() {
         MediaRepository repo = new MediaRepository(
                 new MediaLocalDataSource(
                         new MediaLoader(),
-                        mainApp.getExec(),
+                        this.mainApp.getExec(),
                         context
                 ));
+
         repo.getMedia((result) -> {
             if (result instanceof Result.Success) {
                 MediaItemTree.getInstance().initialize(((Result.Success<List<MediaItem>>) result).data);
+                isInitialized = true;
             } else {
                 Log.e(TAG, "There was an error receiving media: " +
-                        ((Result.Error<?>)result).ex.toString());
+                        ((Result.Error<?>) result).ex.toString());
             }
         });
     }
 
+    /**
+     * Synchronized method to check if we are initialized
+     *
+     * @return true if initialized.
+     */
+    private synchronized boolean getIsInitialized() {
+        return this.isInitialized;
+    }
+
+
+    @OptIn(markerClass = UnstableApi.class)
     @NonNull
     @Override
     public ListenableFuture<LibraryResult<MediaItem>> onGetLibraryRoot(
@@ -59,8 +80,13 @@ public class MediaLibraryCallback implements MediaLibraryService.MediaLibrarySes
             @NonNull MediaSession.ControllerInfo browser,
             @Nullable MediaLibraryService.LibraryParams params
     ) {
-        return Futures.immediateFuture(LibraryResult.ofItem(
-                MediaItemTree.getInstance().getRootItem(), params));
+        if (getIsInitialized()) {
+            return Futures.immediateFuture(LibraryResult.ofItem(
+                    MediaItemTree.getInstance().getRootItem(), params));
+        } else {
+            Log.d(TAG, "Library wasn't ready yet");
+            return Futures.immediateFuture(LibraryResult.ofError(SessionError.ERROR_INVALID_STATE));
+        }
     }
 
     @NonNull

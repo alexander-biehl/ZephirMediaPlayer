@@ -99,6 +99,10 @@ public class MainActivity extends AppCompatActivity {
                 || super.onSupportNavigateUp();
     }
 
+    private void checkInitialized() {
+
+    }
+
     private void getRoot() {
         ListenableFuture<LibraryResult<MediaItem>> rootFuture =
                 mediaBrowser.getLibraryRoot(null);
@@ -121,6 +125,9 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Log.d(TAG, "displayResult item was: " + item);
             mediaViewModel.setCurrentMedia(item);
+            NavController navController =
+                    Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
+            navController.navigate(R.id.action_SplashFragment_to_MediaListFragment);
         }
     }
 }
