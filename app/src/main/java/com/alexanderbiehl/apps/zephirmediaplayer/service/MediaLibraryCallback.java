@@ -28,8 +28,6 @@ import java.util.Optional;
 
 public class MediaLibraryCallback implements MediaLibraryService.MediaLibrarySession.Callback {
 
-    public static final int LIBRARY_UNINITIALIZED = 1;
-
     private static final String TAG = MediaLibraryCallback.class.getSimpleName();
     private final Context context;
     private final MainApp mainApp;
