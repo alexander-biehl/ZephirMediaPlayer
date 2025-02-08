@@ -1,4 +1,4 @@
-package com.alexanderbiehl.apps.zephirmediaplayer.datasources;
+package com.alexanderbiehl.apps.zephirmediaplayer.datasources.media.impl;
 
 import android.content.Context;
 
@@ -7,6 +7,7 @@ import androidx.media3.common.MediaItem;
 import com.alexanderbiehl.apps.zephirmediaplayer.common.RepositoryCallback;
 import com.alexanderbiehl.apps.zephirmediaplayer.common.Result;
 import com.alexanderbiehl.apps.zephirmediaplayer.dataloaders.MediaLoader;
+import com.alexanderbiehl.apps.zephirmediaplayer.datasources.media.MediaDataSource;
 
 import java.util.List;
 import java.util.concurrent.Executor;
