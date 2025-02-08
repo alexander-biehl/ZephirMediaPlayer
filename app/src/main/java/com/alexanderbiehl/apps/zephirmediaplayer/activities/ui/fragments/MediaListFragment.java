@@ -143,15 +143,7 @@ public class MediaListFragment extends Fragment {
         registerForContextMenu(recyclerView);
 
         this.mediaViewModel = new ViewModelProvider(requireActivity()).get(MediaViewModel.class);
-        this.mediaViewModel.getCurrentMedia().observe(requireActivity(), item -> {
-            if (mediaBrowser != null) {
-                if (Boolean.TRUE.equals(item.mediaMetadata.isBrowsable)) {
-                    pushPathStack(item);
-                } else if (Boolean.TRUE.equals(item.mediaMetadata.isPlayable)) {
-                    handlePlay(item);
-                }
-            }
-        });
+
 
         return view;
     }
@@ -206,11 +198,24 @@ public class MediaListFragment extends Fragment {
             if (browserFuture.isDone()) {
                 try {
                     mediaBrowser = browserFuture.get();
+                    observeViewModel();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             }
         }, ContextCompat.getMainExecutor(requireActivity()));
+    }
+
+    private void observeViewModel() {
+        this.mediaViewModel.getCurrentMedia().observe(requireActivity(), item -> {
+            if (mediaBrowser != null) {
+                if (Boolean.TRUE.equals(item.mediaMetadata.isBrowsable)) {
+                    pushPathStack(item);
+                } else if (Boolean.TRUE.equals(item.mediaMetadata.isPlayable)) {
+                    handlePlay(item);
+                }
+            }
+        });
     }
 
     private void handlePlay(MediaItem item) {
