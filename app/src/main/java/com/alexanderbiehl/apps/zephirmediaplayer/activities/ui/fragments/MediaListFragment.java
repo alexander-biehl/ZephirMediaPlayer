@@ -275,10 +275,10 @@ public class MediaListFragment extends Fragment {
     }
 
     private void addMediaItemToQueue(@NonNull MediaItem item) {
-        if (item.mediaMetadata.isBrowsable) {
+        if (Boolean.TRUE.equals(item.mediaMetadata.isBrowsable)) {
             Log.d(TAG, "Item is browsable, adding child items to queue");
             addChildItemsToQueue(item);
-        } else if (item.mediaMetadata.isPlayable) {
+        } else if (Boolean.TRUE.equals(item.mediaMetadata.isPlayable)) {
             Log.d(TAG, "Item is playable, adding to queue");
             if (mediaBrowser != null) {
                 mediaBrowser.addMediaItem(
