@@ -183,7 +183,7 @@ public class MediaListFragment extends Fragment {
                 addMediaItemToQueue(mediaAdapter.getContextMenuItem());
                 return true;
             case R.id.add_to_playlist:
-                Log.d(TAG, "Add to playlist clicked!");
+                Log.d(TAG, "Add to playlistEntity clicked!");
                 addMediaItemToPlaylist(mediaAdapter.getContextMenuItem());
                 return true;
             default:

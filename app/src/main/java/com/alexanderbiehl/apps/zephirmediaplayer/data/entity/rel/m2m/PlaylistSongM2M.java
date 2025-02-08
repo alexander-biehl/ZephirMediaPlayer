@@ -4,8 +4,8 @@ import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.Index;
 
-import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.Playlist;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.Song;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.PlaylistEntity;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.SongEntity;
 
 @Entity(primaryKeys = {"playlistId", "songId"},
         indices = {
@@ -14,11 +14,11 @@ import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.Song;
         tableName = "playlist_song_m2m",
         foreignKeys = {
                 @ForeignKey(
-                        entity = Playlist.class,
+                        entity = PlaylistEntity.class,
                         parentColumns = "id",
                         childColumns = "playlistId"),
                 @ForeignKey(
-                        entity = Song.class,
+                        entity = SongEntity.class,
                         parentColumns = "id",
                         childColumns = "songId"
                 )})

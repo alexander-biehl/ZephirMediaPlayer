@@ -23,10 +23,10 @@ public class MediaItemTree {
     private static final String ARTIST_ID = "[artistID]";
     private static final String PLAYLIST_ID = "playlistID]";
     // private static final String ARTIST_ALBUM_ID = "[artistID][albumID]";
-    private static final String ALBUM_PREFIX = "[album]";
-    private static final String ARTIST_PREFIX = "[artist]";
+    private static final String ALBUM_PREFIX = "[albumEntity]";
+    private static final String ARTIST_PREFIX = "[artistEntity]";
     private static final String ITEM_PREFIX = "[item]";
-    private static final String PLAYLIST_PREFIX = "[playlist]";
+    private static final String PLAYLIST_PREFIX = "[playlistEntity]";
     private static MediaItemTree INSTANCE;
     private final TreeMap<String, MediaItemNode> treeNodes;
     private boolean isInitialized;
@@ -97,7 +97,7 @@ public class MediaItemTree {
         }
         this.isInitialized = true;
 
-        // create root and folders for album/artist
+        // create root and folders for albumEntity/artistEntity
         treeNodes.put(
                 ROOT_ID,
                 new MediaItemNode(
@@ -172,7 +172,7 @@ public class MediaItemTree {
     }
 
     private void addNodeToTree(MediaItem item) {
-        // TODO logic is not working correctly for 2 artists, 1 song each from 2 albums
+        // TODO logic is not working correctly for 2 artists, 1 song each from 2 albumEntities
 
         final String idInTree = ITEM_PREFIX + item.mediaId;
         final String albumFolderIdInTree = ALBUM_PREFIX + item.mediaMetadata.albumTitle;
@@ -200,7 +200,7 @@ public class MediaItemTree {
                 )
         );
 
-        // if album isn't already in tree
+        // if albumEntity isn't already in tree
         if (!treeNodes.containsKey(albumFolderIdInTree)) {
             treeNodes.put(
                     albumFolderIdInTree,
@@ -218,9 +218,9 @@ public class MediaItemTree {
         }
         treeNodes.get(albumFolderIdInTree).addChild(idInTree);
 
-        // if artist isn't already in tree
+        // if artistEntity isn't already in tree
         if (!treeNodes.containsKey(artistFolderIdInTree)) {
-            // add artist to tree
+            // add artistEntity to tree
             treeNodes.put(
                     artistFolderIdInTree,
                     new MediaItemNode(
@@ -238,7 +238,7 @@ public class MediaItemTree {
         }
         // treeNodes.get(artistFolderIdInTree).addChild(idInTree);
 
-        // if album for artist reference isn't already in tree
+        // if albumEntity for artistEntity reference isn't already in tree
         if (!treeNodes.containsKey(artistAlbumsIdInTree)) {
             treeNodes.put(
                     artistAlbumsIdInTree,

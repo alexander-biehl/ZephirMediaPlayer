@@ -7,21 +7,17 @@ import com.alexanderbiehl.apps.zephirmediaplayer.data.dao.AlbumDao;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.dao.ArtistDao;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.dao.PlaylistDao;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.dao.SongDao;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.Album;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.Artist;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.Playlist;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.Song;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.rel.AlbumSongs;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.rel.ArtistAlbums;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.rel.ArtistSongs;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.rel.PlaylistSongs;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.AlbumEntity;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.ArtistEntity;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.PlaylistEntity;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.SongEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.rel.m2m.PlaylistSongM2M;
 
 @Database(entities = {
-        Song.class,
-        Artist.class,
-        Album.class,
-        Playlist.class,
+        SongEntity.class,
+        ArtistEntity.class,
+        AlbumEntity.class,
+        PlaylistEntity.class,
         PlaylistSongM2M.class
 }, version = 1)
 public abstract class AppDatabase extends RoomDatabase {

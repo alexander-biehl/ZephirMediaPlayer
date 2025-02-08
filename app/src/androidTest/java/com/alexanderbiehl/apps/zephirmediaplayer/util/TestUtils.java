@@ -1,8 +1,8 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.util;
 
-import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.Album;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.Artist;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.Song;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.AlbumEntity;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.ArtistEntity;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.SongEntity;
 
 public class TestUtils {
 
@@ -14,40 +14,40 @@ public class TestUtils {
 
     public static final String artistMediaId = "000100";
 
-    public static Song createSongOne() {
-        Song s = new Song();
+    public static SongEntity createSongOne() {
+        SongEntity s = new SongEntity();
         s.mediaId = songOneMediaId;
-        s.title = "Song One";
+        s.title = "SongEntity One";
         s.trackNumber = "1";
         return s;
     }
 
-    public static Song createSongTwo() {
-        Song s = new Song();
+    public static SongEntity createSongTwo() {
+        SongEntity s = new SongEntity();
         s.mediaId = songTwoMediaId;
-        s.title = "Song Two";
+        s.title = "SongEntity Two";
         s.trackNumber = "2";
         return s;
     }
 
-    public static Album createAlbumOne() {
-        Album a = new Album();
+    public static AlbumEntity createAlbumOne() {
+        AlbumEntity a = new AlbumEntity();
         a.mediaId = albumOneMediaId;
-        a.title = "Album One";
+        a.title = "AlbumEntity One";
         return a;
     }
 
-    public static Album createAlbumTwo() {
-        Album a = new Album();
+    public static AlbumEntity createAlbumTwo() {
+        AlbumEntity a = new AlbumEntity();
         a.mediaId = albumTwoMediaId;
-        a.title = "Album Two";
+        a.title = "AlbumEntity Two";
         return a;
     }
 
-    public static Artist createArtist() {
-        Artist a = new Artist();
+    public static ArtistEntity createArtist() {
+        ArtistEntity a = new ArtistEntity();
         a.mediaId = artistMediaId;
-        a.title = "Artist One";
+        a.title = "ArtistEntity One";
         return a;
     }
 }

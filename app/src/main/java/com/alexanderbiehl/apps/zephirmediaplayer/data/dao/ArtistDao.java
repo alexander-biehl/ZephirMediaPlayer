@@ -5,22 +5,22 @@ import androidx.room.Query;
 import androidx.room.Transaction;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.data.dao.base.DoaBase;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.Artist;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.ArtistEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.rel.ArtistAlbums;
 
 @Dao
-public interface ArtistDao extends DoaBase<Artist> {
+public interface ArtistDao extends DoaBase<ArtistEntity> {
 
-    @Query(value = "SELECT * FROM artist")
-    Artist[] getArtists();
+    @Query(value = "SELECT * FROM artists")
+    ArtistEntity[] getArtists();
 
-    @Query(value = "SELECT * FROM artist WHERE id = :id")
-    Artist getById(long id);
+    @Query(value = "SELECT * FROM artists WHERE id = :id")
+    ArtistEntity getById(long id);
 
-    @Query("SELECT * FROM artist WHERE media_id = :mediaId")
-    Artist getByMediaId(final String mediaId);
+    @Query("SELECT * FROM artists WHERE media_id = :mediaId")
+    ArtistEntity getByMediaId(final String mediaId);
 
     @Transaction
-    @Query("SELECT * FROM artist WHERE media_id = :mediaId")
+    @Query("SELECT * FROM artists WHERE media_id = :mediaId")
     ArtistAlbums getArtistAlbumsByMediaId(final String mediaId);
 }

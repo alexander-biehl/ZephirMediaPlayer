@@ -5,20 +5,20 @@ import androidx.room.Insert;
 import androidx.room.Query;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.data.dao.base.DoaBase;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.Song;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.SongEntity;
 
 @Dao
-public interface SongDao extends DoaBase<Song> {
+public interface SongDao extends DoaBase<SongEntity> {
 
-    @Query(value = "SELECT * FROM song")
-    Song[] getAllSongs();
+    @Query(value = "SELECT * FROM songs")
+    SongEntity[] getAllSongs();
 
-    @Query(value = "SELECT * FROM song WHERE id = :id")
-    Song getById(final Long id);
+    @Query(value = "SELECT * FROM songs WHERE id = :id")
+    SongEntity getById(final Long id);
 
-    @Query("SELECT * FROM song WHERE media_id = :mediaId")
-    Song getByMediaId(String mediaId);
+    @Query("SELECT * FROM songs WHERE media_id = :mediaId")
+    SongEntity getByMediaId(String mediaId);
 
     @Insert
-    long[] insertAll(Song... songs);
+    long[] insertAll(SongEntity... songEntities);
 }

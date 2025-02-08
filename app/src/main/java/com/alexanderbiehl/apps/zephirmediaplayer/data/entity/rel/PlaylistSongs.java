@@ -4,15 +4,15 @@ import androidx.room.Embedded;
 import androidx.room.Junction;
 import androidx.room.Relation;
 
-import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.Playlist;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.Song;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.PlaylistEntity;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.SongEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.rel.m2m.PlaylistSongM2M;
 
 import java.util.List;
 
 public class PlaylistSongs {
     @Embedded
-    public Playlist playlist;
+    public PlaylistEntity playlistEntity;
     @Relation(
             parentColumn = "id",
             entityColumn = "id",
@@ -22,5 +22,5 @@ public class PlaylistSongs {
                     entityColumn = "songId"
             )
     )
-    public List<Song> songs;
+    public List<SongEntity> songEntities;
 }

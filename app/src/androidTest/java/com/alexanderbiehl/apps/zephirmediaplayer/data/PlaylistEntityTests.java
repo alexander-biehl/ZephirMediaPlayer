@@ -12,8 +12,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.dao.PlaylistDao;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.dao.SongDao;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.database.AppDatabase;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.Playlist;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.Song;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.PlaylistEntity;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.SongEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.rel.PlaylistSongs;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.rel.m2m.PlaylistSongM2M;
 import com.alexanderbiehl.apps.zephirmediaplayer.util.TestUtils;
@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 @RunWith(AndroidJUnit4.class)
 public class PlaylistEntityTests {
@@ -49,12 +48,12 @@ public class PlaylistEntityTests {
 
     @Test
     public void testCreateAndGetPlaylist() throws IOException {
-        Playlist p = new Playlist();
-        p.title = "Playlist One";
+        PlaylistEntity p = new PlaylistEntity();
+        p.title = "PlaylistEntity One";
         long rowId = dao.insert(p);
 
-        Song one = TestUtils.createSongOne();
-        Song two = TestUtils.createSongTwo();
+        SongEntity one = TestUtils.createSongOne();
+        SongEntity two = TestUtils.createSongTwo();
         long[] songIds = songDao.insertAll(one, two);
 
         PlaylistSongM2M pls1 = new PlaylistSongM2M();
@@ -70,7 +69,7 @@ public class PlaylistEntityTests {
 
         PlaylistSongs pls = dao.getPlaylistSongsById(rowId);
         assertNotNull(pls);
-        assertEquals(Long.valueOf(rowId), pls.playlist.id);
-        assertEquals(2, pls.songs.size());
+        assertEquals(Long.valueOf(rowId), pls.playlistEntity.id);
+        assertEquals(2, pls.songEntities.size());
     }
 }

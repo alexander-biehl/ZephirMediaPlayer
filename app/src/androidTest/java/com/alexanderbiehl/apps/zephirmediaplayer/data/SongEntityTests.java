@@ -11,7 +11,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.data.dao.SongDao;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.database.AppDatabase;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.Song;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.SongEntity;
 
 import org.junit.After;
 import org.junit.Before;
@@ -39,42 +39,42 @@ public class SongEntityTests {
 
     @Test
     public void testCreateAndQuerySong() throws Exception {
-        Song song = new Song();
-        song.title = "Test";
-        songDao.insert(song);
-        Song[] songs = songDao.getAllSongs();
-        assertEquals(1, songs.length);
-        assertNotNull(songs[0].id);
-        assertEquals("Test", songs[0].title);
+        SongEntity songEntity = new SongEntity();
+        songEntity.title = "Test";
+        songDao.insert(songEntity);
+        SongEntity[] songEntities = songDao.getAllSongs();
+        assertEquals(1, songEntities.length);
+        assertNotNull(songEntities[0].id);
+        assertEquals("Test", songEntities[0].title);
     }
 
     @Test
     public void testCreateAndQueryByMediaId() throws Exception {
-        Song song = new Song();
+        SongEntity songEntity = new SongEntity();
         final String mediaId = "001";
-        song.title = "test";
-        song.mediaId = mediaId;
-        songDao.insert(song);
+        songEntity.title = "test";
+        songEntity.mediaId = mediaId;
+        songDao.insert(songEntity);
 
-        Song dbSong = songDao.getByMediaId(mediaId);
-        assertNotNull(dbSong);
-        assertEquals("test", dbSong.title);
-        assertEquals(mediaId, dbSong.mediaId);
+        SongEntity dbSongEntity = songDao.getByMediaId(mediaId);
+        assertNotNull(dbSongEntity);
+        assertEquals("test", dbSongEntity.title);
+        assertEquals(mediaId, dbSongEntity.mediaId);
     }
 
     @Test
     public void testSongDelete() throws Exception {
-        Song song = new Song();
+        SongEntity songEntity = new SongEntity();
         final String mediaID = "001";
-        song.title = "Test";
-        song.mediaId = mediaID;
-        songDao.insert(song);
+        songEntity.title = "Test";
+        songEntity.mediaId = mediaID;
+        songDao.insert(songEntity);
 
-        song = songDao.getByMediaId(mediaID);
-        song.title = "test2";
-        songDao.update(song);
+        songEntity = songDao.getByMediaId(mediaID);
+        songEntity.title = "test2";
+        songDao.update(songEntity);
 
-        Song updatedSong = songDao.getById(song.id);
-        assertEquals("test2", updatedSong.title);
+        SongEntity updatedSongEntity = songDao.getById(songEntity.id);
+        assertEquals("test2", updatedSongEntity.title);
     }
 }

@@ -95,9 +95,9 @@ public class MediaLibraryCallback implements MediaLibraryService.MediaLibrarySes
             }
         });
         // sort by track number
-        // may want to update this later for a multi-level sort, i.e. sort by artist, then album,
+        // may want to update this later for a multi-level sort, i.e. sort by artistEntity, then albumEntity,
         // then track number
-        // playlist.sort(Comparator.comparingInt(a -> a.mediaMetadata.trackNumber));
+        // playlistEntity.sort(Comparator.comparingInt(a -> a.mediaMetadata.trackNumber));
         return playlist;
     }
 }

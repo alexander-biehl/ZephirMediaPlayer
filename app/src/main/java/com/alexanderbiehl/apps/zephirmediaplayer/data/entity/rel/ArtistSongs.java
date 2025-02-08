@@ -3,18 +3,18 @@ package com.alexanderbiehl.apps.zephirmediaplayer.data.entity.rel;
 import androidx.room.Embedded;
 import androidx.room.Relation;
 
-import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.Artist;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.Song;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.ArtistEntity;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.SongEntity;
 
 import java.util.List;
 
 public class ArtistSongs {
 
     @Embedded
-    public Artist artist;
+    public ArtistEntity artistEntity;
     @Relation(
             parentColumn = "id",
             entityColumn = "songArtistId"
     )
-    public List<Song> songs;
+    public List<SongEntity> songEntities;
 }
