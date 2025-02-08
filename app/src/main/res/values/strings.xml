@@ -155,4 +155,6 @@
     <string name="album_view_default_text">Album</string>
     <string name="artist_view_default_test">Artist</string>
     <string name="navigate_to_now_playing_queue">Navigate to Now Playing Queue</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
