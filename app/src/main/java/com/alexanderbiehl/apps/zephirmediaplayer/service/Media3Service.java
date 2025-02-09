@@ -21,6 +21,11 @@ public class Media3Service extends MediaLibraryService {
     public void onCreate() {
         super.onCreate();
 
+        // TODO create a new Service class that will handle First Time Load of
+        // reading the music data and adding it to the db
+        // then can replace this implementation with one that just reads from the DB
+        // then we can also utilize the other service to resync the DB with the local store if necessary
+
         ExoPlayer player = new ExoPlayer.Builder(this).build();
         mediaLibrarySession = new MediaLibrarySession.Builder(
                 this,

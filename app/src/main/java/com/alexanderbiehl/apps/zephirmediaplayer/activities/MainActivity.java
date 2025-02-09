@@ -53,10 +53,6 @@ public class MainActivity extends AppCompatActivity {
 
         mediaViewModel = new ViewModelProvider(this).get(MediaViewModel.class);
 
-//        binding.fab.setOnClickListener(view -> Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                .setAnchorView(R.id.fab)
-//                .setAction("Action", null).show());
-
 //        if (Build.VERSION.SDK_INT >= 33) {
 //            checkSelfPermission()
 //        }
