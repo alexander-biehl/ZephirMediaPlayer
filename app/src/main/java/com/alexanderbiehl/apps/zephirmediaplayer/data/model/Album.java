@@ -2,16 +2,24 @@ package com.alexanderbiehl.apps.zephirmediaplayer.data.model;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.ArtistEntity;
 
-public class Artist {
+public class Album {
 
     private Long id;
     private String mediaId;
     private String title;
+    private String artist;
 
-    public Artist(Long id, String mediaId, String title) {
+    public Album(Long id, String mediaId, String title) {
         this.id = id;
         this.mediaId = mediaId;
         this.title = title;
+    }
+
+    public Album(Long id, String mediaId, String title, String artist) {
+        this.id = id;
+        this.mediaId = mediaId;
+        this.title = title;
+        this.artist = artist;
     }
 
     public Long getId() {
@@ -38,8 +46,16 @@ public class Artist {
         this.title = title;
     }
 
-    public static Artist from(ArtistEntity entity) {
-        return new Artist(
+    public String getArtist() {
+        return artist;
+    }
+
+    public void setArtist(String artist) {
+        this.artist = artist;
+    }
+
+    public static Album from(ArtistEntity entity) {
+        return new Album(
                 entity.id,
                 entity.mediaId,
                 entity.title

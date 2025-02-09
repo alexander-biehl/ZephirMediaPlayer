@@ -27,16 +27,6 @@ public class Song {
     private Song() {
     }
 
-    public static Song from(SongEntity entity) {
-        Song s = new Song();
-        s.id = entity.id;
-        s.mediaId = entity.mediaId;
-        s.title = entity.title;
-        s.sourceUri = entity.sourceUri;
-        s.trackNumber = Integer.valueOf(entity.trackNumber);
-        return s;
-    }
-
     public Long getId() {
         return id;
     }
@@ -75,5 +65,15 @@ public class Song {
 
     public void setSourceUri(String sourceUri) {
         this.sourceUri = sourceUri;
+    }
+
+    public static Song from(SongEntity entity) {
+        Song s = new Song();
+        s.id = entity.id;
+        s.mediaId = entity.mediaId;
+        s.title = entity.title;
+        s.sourceUri = entity.sourceUri;
+        s.trackNumber = Integer.valueOf(entity.trackNumber);
+        return s;
     }
 }
