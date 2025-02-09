@@ -6,17 +6,6 @@ import com.alexanderbiehl.apps.zephirmediaplayer.data.model.Song;
 
 import java.util.List;
 
-public interface SongDataSource {
+public interface SongDataSource extends AbstractDataSource<SongEntity, Song> {
 
-    void getSong(Long id, Long mediaId, RepositoryCallback<Song> callback);
-
-    void getSongs(RepositoryCallback<List<Song>> callback);
-
-    void createSong(SongEntity song, RepositoryCallback<Long> callback);
-
-    void updateSong(SongEntity song, RepositoryCallback<Void> callback);
-
-    void deleteSong(SongEntity song, RepositoryCallback<Void> callback);
-
-    void deleteSong(Long id, RepositoryCallback<Void> callback);
 }

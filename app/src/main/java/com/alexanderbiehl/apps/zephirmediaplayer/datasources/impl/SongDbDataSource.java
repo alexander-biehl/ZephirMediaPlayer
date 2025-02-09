@@ -25,15 +25,14 @@ public class SongDbDataSource implements SongDataSource {
     }
 
     @Override
-    public void getSong(Long id, Long mediaId, RepositoryCallback<Song> callback) {
+    public void getById(Long id, RepositoryCallback<Song> callback) {
         this.executor.execute(() -> {
             SongEntity e = null;
             if (id != null) {
                 e = songDao.getById(id);
-            } else if (mediaId != null) {
-                e = songDao.getByMediaId(String.valueOf(mediaId));
             } else {
-                callback.onComplete(new Result.Error<>(new Exception("id and mediaId missing")));
+                callback.onComplete(new Result.Error<>(new Exception("id missing")));
+                return;
             }
             Result<Song> result;
             if (e != null) {
@@ -46,7 +45,26 @@ public class SongDbDataSource implements SongDataSource {
     }
 
     @Override
-    public void getSongs(RepositoryCallback<List<Song>> callback) {
+    public void getByMediaId(String mediaId, RepositoryCallback<Song> callback) {
+        this.executor.execute(() -> {
+            SongEntity e = null;
+            if (mediaId != null) {
+                e = songDao.getByMediaId(mediaId);
+            } else {
+                callback.onComplete(new Result.Error<>(new Exception("mediaId is missing")));
+                return;
+            }
+            Result<Song> result;
+            if (e != null) {
+                result = new Result.Success<>(Song.from(e));
+            } else {
+                result = new Result.Error<>(new Exception("No result for given mediaId"));
+            }
+            callback.onComplete(result);
+        });
+    }
+
+    public void getAll(RepositoryCallback<List<Song>> callback) {
         this.executor.execute(() -> {
             List<Song> songs = new ArrayList<>();
             SongEntity[] entities = songDao.getAllSongs();
@@ -64,7 +82,7 @@ public class SongDbDataSource implements SongDataSource {
     }
 
     @Override
-    public void createSong(SongEntity song, RepositoryCallback<Long> callback) {
+    public void create(SongEntity song, RepositoryCallback<Long> callback) {
         this.executor.execute(() -> {
             long id = songDao.insert(song);
             Result<Long> result = new Result.Success<>(id);
@@ -73,7 +91,7 @@ public class SongDbDataSource implements SongDataSource {
     }
 
     @Override
-    public void updateSong(SongEntity song, RepositoryCallback<Void> callback) {
+    public void update(SongEntity song, RepositoryCallback<Void> callback) {
         this.executor.execute(() -> {
             songDao.update(song);
             callback.onComplete(new Result.Success<>());
@@ -81,7 +99,7 @@ public class SongDbDataSource implements SongDataSource {
     }
 
     @Override
-    public void deleteSong(SongEntity song, RepositoryCallback<Void> callback) {
+    public void delete(SongEntity song, RepositoryCallback<Void> callback) {
         this.executor.execute(() -> {
             songDao.delete(song);
             callback.onComplete(new Result.Success<>());
@@ -89,7 +107,7 @@ public class SongDbDataSource implements SongDataSource {
     }
 
     @Override
-    public void deleteSong(Long id, RepositoryCallback<Void> callback) {
+    public void delete(Long id, RepositoryCallback<Void> callback) {
         this.executor.execute(() -> {
             SongEntity song = songDao.getById(id);
             Result<Void> result;
