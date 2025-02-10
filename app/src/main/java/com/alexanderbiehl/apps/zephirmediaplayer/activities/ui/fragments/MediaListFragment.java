@@ -281,8 +281,10 @@ public class MediaListFragment extends Fragment {
         } else if (Boolean.TRUE.equals(item.mediaMetadata.isPlayable)) {
             Log.d(TAG, "Item is playable, adding to queue");
             if (mediaBrowser != null) {
+                int mediaItemCount = mediaBrowser.getMediaItemCount();
+                int position = mediaItemCount != 0 ? mediaItemCount - 1 : 0;
                 mediaBrowser.addMediaItem(
-                        mediaBrowser.getMediaItemCount() - 1,
+                        position,
                         item
                 );
             }
