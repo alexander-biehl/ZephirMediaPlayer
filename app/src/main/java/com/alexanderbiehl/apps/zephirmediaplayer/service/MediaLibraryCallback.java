@@ -137,10 +137,6 @@ public class MediaLibraryCallback implements MediaLibraryService.MediaLibrarySes
                 expandedItem.ifPresent(playlist::add);
             }
         });
-        // sort by track number
-        // may want to update this later for a multi-level sort, i.e. sort by artistEntity, then albumEntity,
-        // then track number
-        // playlistEntity.sort(Comparator.comparingInt(a -> a.mediaMetadata.trackNumber));
         return playlist;
     }
 }
