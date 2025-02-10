@@ -3,10 +3,12 @@ package com.alexanderbiehl.apps.zephirmediaplayer.activities;
 import static com.alexanderbiehl.apps.zephirmediaplayer.Constants.MEDIA_KEY;
 
 import android.content.ComponentName;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -24,6 +26,7 @@ import com.alexanderbiehl.apps.zephirmediaplayer.R;
 import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.viewmodel.MediaViewModel;
 import com.alexanderbiehl.apps.zephirmediaplayer.databinding.ActivityMainBinding;
 import com.alexanderbiehl.apps.zephirmediaplayer.service.Media3Service;
+import com.alexanderbiehl.apps.zephirmediaplayer.utilities.StorageUtilities;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.common.util.concurrent.ListenableFuture;
 
@@ -61,6 +64,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (StorageUtilities.verifyStoragePermission(this)) {
+                initiateBrowserConnection();
+            }
+        }
+    }
+
+    private void initiateBrowserConnection() {
         SessionToken sessionToken =
                 new SessionToken(this,
                         new ComponentName(this, Media3Service.class));
@@ -95,10 +106,6 @@ public class MainActivity extends AppCompatActivity {
                 || super.onSupportNavigateUp();
     }
 
-    private void checkInitialized() {
-
-    }
-
     private void getRoot() {
         ListenableFuture<LibraryResult<MediaItem>> rootFuture =
                 mediaBrowser.getLibraryRoot(null);
@@ -124,6 +131,22 @@ public class MainActivity extends AppCompatActivity {
             NavController navController =
                     Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
             navController.navigate(R.id.action_SplashFragment_to_MediaListFragment);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == StorageUtilities.REQUEST_CODE) {
+            if (grantResults.length > 0 &&
+            grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d(TAG, "Storage permissions granted");
+                initiateBrowserConnection();
+            } else {
+                Log.d(TAG, "Permissions not granted");
+            }
+        } else {
+            Log.e(TAG, "Request code did not match");
         }
     }
 }
