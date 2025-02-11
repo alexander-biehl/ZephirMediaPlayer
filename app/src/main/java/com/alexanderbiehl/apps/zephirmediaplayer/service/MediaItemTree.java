@@ -172,7 +172,7 @@ public class MediaItemTree {
     }
 
     private void addNodeToTree(MediaItem item) {
-        // TODO logic is not working correctly for 2 artists, 1 song each from 2 albumEntities
+        // TODO logic is not working correctly for 2 artists, 1 song each from 2 albums
 
         final String idInTree = ITEM_PREFIX + item.mediaId;
         final String albumFolderIdInTree = ALBUM_PREFIX + item.mediaMetadata.albumTitle;
@@ -238,7 +238,7 @@ public class MediaItemTree {
         }
         // treeNodes.get(artistFolderIdInTree).addChild(idInTree);
 
-        // if albumEntity for artistEntity reference isn't already in tree
+        // if album for artist reference isn't already in tree
         if (!treeNodes.containsKey(artistAlbumsIdInTree)) {
             treeNodes.put(
                     artistAlbumsIdInTree,
