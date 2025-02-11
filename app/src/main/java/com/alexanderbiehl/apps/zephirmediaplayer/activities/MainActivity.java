@@ -1,7 +1,5 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.activities;
 
-import static com.alexanderbiehl.apps.zephirmediaplayer.Constants.MEDIA_KEY;
-
 import android.content.ComponentName;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -27,19 +25,16 @@ import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.viewmodel.MediaVi
 import com.alexanderbiehl.apps.zephirmediaplayer.databinding.ActivityMainBinding;
 import com.alexanderbiehl.apps.zephirmediaplayer.service.Media3Service;
 import com.alexanderbiehl.apps.zephirmediaplayer.utilities.StorageUtilities;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.common.util.concurrent.ListenableFuture;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-
+    public MediaViewModel mediaViewModel;
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
-
     private MediaBrowser mediaBrowser;
     private ListenableFuture<MediaBrowser> browserFuture;
-    public MediaViewModel mediaViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,10 +50,6 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
         mediaViewModel = new ViewModelProvider(this).get(MediaViewModel.class);
-
-//        if (Build.VERSION.SDK_INT >= 33) {
-//            checkSelfPermission()
-//        }
     }
 
     @Override
@@ -139,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == StorageUtilities.REQUEST_CODE) {
             if (grantResults.length > 0 &&
-            grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Log.d(TAG, "Storage permissions granted");
                 initiateBrowserConnection();
             } else {
