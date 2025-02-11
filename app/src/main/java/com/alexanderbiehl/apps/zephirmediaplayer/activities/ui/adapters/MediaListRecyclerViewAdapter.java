@@ -58,7 +58,7 @@ public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaList
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).mediaId);
+        // holder.mIdView.setText(mValues.get(position).mediaId);
         holder.mContentView.setText(mValues.get(position).mediaMetadata.title);
 
         holder.itemView.setOnClickListener(view -> {
@@ -90,13 +90,13 @@ public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaList
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public final TextView mIdView;
+        // public final TextView mIdView;
         public final TextView mContentView;
         public MediaItem mItem;
 
         public ViewHolder(FragmentMediaItemBinding binding) {
             super(binding.getRoot());
-            mIdView = binding.itemNumber;
+            // mIdView = binding.itemNumber;
             mContentView = binding.content;
 
             itemView.setOnClickListener(view -> {
