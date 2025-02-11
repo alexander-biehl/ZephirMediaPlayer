@@ -1,7 +1,6 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.service;
 
 import android.content.Context;
-import android.provider.MediaStore;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -24,7 +23,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Callable;
@@ -97,11 +95,13 @@ public class MediaLibraryCallback implements MediaLibraryService.MediaLibrarySes
             @NonNull MediaSession.ControllerInfo browser,
             @NonNull String mediaId
     ) {
-        Optional<MediaItem> optItem = MediaItemTree.getInstance().getItem(mediaId);
-        return optItem.map(mediaItem ->
-                        Futures.immediateFuture(LibraryResult.ofItem(mediaItem, null)))
-                .orElseGet(() ->
-                        Futures.immediateFuture(LibraryResult.ofError(SessionError.ERROR_BAD_VALUE)));
+        return Futures.submit(() -> {
+            Optional<MediaItem> optItem = MediaItemTree.getInstance().getItem(mediaId);
+            return optItem.map(mediaItem ->
+                            LibraryResult.ofItem(mediaItem, null))
+                    .orElseGet(() ->
+                            LibraryResult.ofError(SessionError.ERROR_BAD_VALUE));
+        }, this.mainApp.getExec());
     }
 
     @NonNull
@@ -116,7 +116,7 @@ public class MediaLibraryCallback implements MediaLibraryService.MediaLibrarySes
             @Nullable MediaLibraryService.LibraryParams params
     ) {
         return Futures.submit(() -> {
-            List <MediaItem> optChildren = MediaItemTree.getInstance().getChildren(parentId);
+            List<MediaItem> optChildren = MediaItemTree.getInstance().getChildren(parentId);
             return optChildren.isEmpty() ?
                     LibraryResult.ofError(SessionError.ERROR_BAD_VALUE) :
                     LibraryResult.ofItemList(optChildren, params);
@@ -130,7 +130,6 @@ public class MediaLibraryCallback implements MediaLibraryService.MediaLibrarySes
             @NonNull MediaSession.ControllerInfo controller,
             @NonNull List<MediaItem> mediaItems
     ) {
-        // return Futures.immediateFuture(resolveMediaItems(mediaItems));
         return Futures.submit(() -> {
             return resolveMediaItems(mediaItems);
         }, this.mainApp.getExec());
