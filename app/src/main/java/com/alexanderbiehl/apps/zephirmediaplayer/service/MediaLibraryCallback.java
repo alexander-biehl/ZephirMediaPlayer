@@ -25,7 +25,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.Callable;
 
 public class MediaLibraryCallback implements MediaLibraryService.MediaLibrarySession.Callback {
 
@@ -33,12 +32,10 @@ public class MediaLibraryCallback implements MediaLibraryService.MediaLibrarySes
     private final Context context;
     private final MainApp mainApp;
 
-    private boolean isInitialized;
 
     public MediaLibraryCallback(@NonNull final Context context, @NonNull final MainApp mainApp) {
         this.context = context;
         this.mainApp = mainApp;
-        this.isInitialized = false;
         initializeData();
     }
 
@@ -53,21 +50,11 @@ public class MediaLibraryCallback implements MediaLibraryService.MediaLibrarySes
         repo.getMedia((result) -> {
             if (result instanceof Result.Success) {
                 MediaItemTree.getInstance().initialize(((Result.Success<List<MediaItem>>) result).data);
-                isInitialized = true;
             } else {
                 Log.e(TAG, "There was an error receiving media: " +
                         ((Result.Error<?>) result).ex.toString());
             }
         });
-    }
-
-    /**
-     * Synchronized method to check if we are initialized
-     *
-     * @return true if initialized.
-     */
-    private synchronized boolean getIsInitialized() {
-        return this.isInitialized;
     }
 
 
@@ -79,12 +66,9 @@ public class MediaLibraryCallback implements MediaLibraryService.MediaLibrarySes
             @NonNull MediaSession.ControllerInfo browser,
             @Nullable MediaLibraryService.LibraryParams params
     ) {
-        return Futures.submit(new Callable<LibraryResult<MediaItem>>() {
-            @Override
-            public LibraryResult<MediaItem> call() throws Exception {
-                return LibraryResult.ofItem(MediaItemTree.getInstance().getRootItem(), params);
-            }
-        }, this.mainApp.getExec());
+        return Futures.submit(() ->
+                        LibraryResult.ofItem(MediaItemTree.getInstance().getRootItem(), params),
+                this.mainApp.getExec());
     }
 
     @NonNull
