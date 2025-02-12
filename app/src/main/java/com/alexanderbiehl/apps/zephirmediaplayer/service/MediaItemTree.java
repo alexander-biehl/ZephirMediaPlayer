@@ -177,7 +177,8 @@ public class MediaItemTree {
         final String idInTree = ITEM_PREFIX + item.mediaId;
         final String albumFolderIdInTree = ALBUM_PREFIX + item.mediaMetadata.albumTitle;
         final String artistFolderIdInTree = ARTIST_PREFIX + item.mediaMetadata.artist;
-        final String artistAlbumsIdInTree = ARTIST_PREFIX + ALBUM_PREFIX + item.mediaMetadata.artist;
+        final String artistAlbumsIdInTree = ARTIST_PREFIX + item.mediaMetadata.artist +
+                ALBUM_PREFIX + item.mediaMetadata.albumTitle;
 
         // store node in tree
         treeNodes.put(
