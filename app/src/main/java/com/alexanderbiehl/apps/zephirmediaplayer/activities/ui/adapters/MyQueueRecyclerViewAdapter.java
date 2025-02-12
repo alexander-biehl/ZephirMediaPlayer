@@ -1,13 +1,13 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.adapters;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.media3.common.MediaItem;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.alexanderbiehl.apps.zephirmediaplayer.databinding.FragmentQueueItemBinding;
 
 import java.util.List;
@@ -47,7 +47,7 @@ public class MyQueueRecyclerViewAdapter extends RecyclerView.Adapter<MyQueueRecy
         return mValues.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         public final TextView mIdView;
         public final TextView mContentView;
         public MediaItem mItem;
