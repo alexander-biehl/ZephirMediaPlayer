@@ -1,7 +1,5 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.fragments;
 
-import static com.alexanderbiehl.apps.zephirmediaplayer.Constants.MEDIA_KEY;
-
 import android.content.ComponentName;
 import android.content.Context;
 import android.os.Bundle;
@@ -12,7 +10,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -24,7 +21,6 @@ import androidx.media3.common.MediaItem;
 import androidx.media3.session.LibraryResult;
 import androidx.media3.session.MediaBrowser;
 import androidx.media3.session.SessionToken;
-import androidx.navigation.fragment.FragmentNavigator;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -51,23 +47,21 @@ public class MediaListFragment extends Fragment {
 
 
     private static final String ARG_COLUMN_COUNT = "column-count";
-
+    private final List<MediaItem> subMediaList;
+    private final Stack<MediaItem> treeBackStack;
     private ListenableFuture<MediaBrowser> browserFuture;
     private MediaBrowser mediaBrowser;
-    private final List<MediaItem> subMediaList;
     private MediaViewModel mediaViewModel;
     private MediaListRecyclerViewAdapter mediaAdapter;
     private RecyclerView recyclerView;
     private FloatingActionButton fab;
-    private Stack<MediaItem> treeBackStack;
-
     private int mColumnCount = 1;
 
     // TODO's
     /*
-    * add a context menu to each list item so that we can add to queue
-    *
-    * */
+     * add a context menu to each list item so that we can add to queue
+     *
+     * */
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -101,6 +95,18 @@ public class MediaListFragment extends Fragment {
                 popPathStack();
             }
         });
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        // override the default Menu back button to instead pop the stack of MediaItems
+        if (item.getItemId() == android.R.id.home) {
+            Log.d(TAG, "Back clicked!");
+            popPathStack();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -138,12 +144,10 @@ public class MediaListFragment extends Fragment {
 
             mediaAdapter = new MediaListRecyclerViewAdapter(subMediaList, new MediaListViewClickHandler());
             recyclerView.setAdapter(mediaAdapter);
+            registerForContextMenu(recyclerView);
         }
 
-        registerForContextMenu(recyclerView);
-
         this.mediaViewModel = new ViewModelProvider(requireActivity()).get(MediaViewModel.class);
-
 
         return view;
     }
@@ -164,6 +168,11 @@ public class MediaListFragment extends Fragment {
     public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, @Nullable ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater inflater = requireActivity().getMenuInflater();
+        // TODO check if browsable & playable, display options accordingly
+        if (v instanceof RecyclerView) {
+            MediaItem item = ((MediaListRecyclerViewAdapter) ((RecyclerView) v).getAdapter()).getContextMenuItem();
+            Log.d(TAG, "Item: " + item.toString());
+        }
         inflater.inflate(R.menu.menu_media_item, menu);
     }
 
@@ -182,6 +191,7 @@ public class MediaListFragment extends Fragment {
                 return super.onContextItemSelected(item);
         }
     }
+
 
     private void initializeBrowser() {
         SessionToken sessionToken =
@@ -243,7 +253,7 @@ public class MediaListFragment extends Fragment {
             try {
                 subMediaList.clear();
                 subMediaList.addAll(childrenFuture.get().value);
-                subMediaList.sort((a,b) -> {
+                subMediaList.sort((a, b) -> {
                     if (a.mediaMetadata.trackNumber != null && b.mediaMetadata.trackNumber != null) {
                         return a.mediaMetadata.trackNumber - b.mediaMetadata.trackNumber;
                     } else {
@@ -316,10 +326,5 @@ public class MediaListFragment extends Fragment {
             MediaItem selectedItem = subMediaList.get(position);
             mediaViewModel.setCurrentMedia(selectedItem);
         }
-
-//        @Override
-//        public void onLongClick(int position, MediaItem item) {
-//            addChildItemsToQueue(item);
-//        }
     }
 }
