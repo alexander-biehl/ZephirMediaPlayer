@@ -53,8 +53,6 @@ public class QueueFragment extends Fragment {
         currentQueue = new ArrayList<>();
     }
 
-    // TODO: Customize parameter initialization
-    @SuppressWarnings("unused")
     public static QueueFragment newInstance(int columnCount) {
         QueueFragment fragment = new QueueFragment();
         Bundle args = new Bundle();
