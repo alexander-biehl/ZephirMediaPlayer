@@ -114,9 +114,7 @@ public class MediaLibraryCallback implements MediaLibraryService.MediaLibrarySes
             @NonNull MediaSession.ControllerInfo controller,
             @NonNull List<MediaItem> mediaItems
     ) {
-        return Futures.submit(() -> {
-            return resolveMediaItems(mediaItems);
-        }, this.mainApp.getExec());
+        return Futures.submit(() -> resolveMediaItems(mediaItems), this.mainApp.getExec());
     }
 
     private List<MediaItem> resolveMediaItems(List<MediaItem> mediaItems) {
