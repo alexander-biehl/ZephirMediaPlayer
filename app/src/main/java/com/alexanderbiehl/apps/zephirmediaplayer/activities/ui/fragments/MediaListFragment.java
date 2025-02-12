@@ -104,6 +104,7 @@ public class MediaListFragment extends Fragment {
         if (item.getItemId() == android.R.id.home) {
             Log.d(TAG, "Back clicked!");
             popPathStack();
+            // make sure we return true to indicate that the action was successful
             return true;
         }
         return super.onOptionsItemSelected(item);
