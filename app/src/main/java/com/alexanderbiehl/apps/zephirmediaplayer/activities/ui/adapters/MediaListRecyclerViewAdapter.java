@@ -58,7 +58,6 @@ public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaList
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        // holder.mIdView.setText(mValues.get(position).mediaId);
         holder.mContentView.setText(mValues.get(position).mediaMetadata.title);
 
         holder.itemView.setOnClickListener(view -> {
@@ -66,16 +65,6 @@ public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaList
                 clickListener.onClick(position, mValues.get(position));
             }
         });
-//        holder.itemView.setOnLongClickListener(l -> {
-//            if (clickListener != null) {
-//                clickListener.onLongClick(position, mValues.get(position));
-//            }
-//            return true;
-//        });
-//        holder.itemView.setOnLongClickListener(v -> {
-//            setLongPresPosition(holder.getBindingAdapterPosition());
-//
-//        });
     }
 
     @Override
@@ -85,18 +74,15 @@ public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaList
 
     public interface OnClickHandler {
         void onClick(int position, MediaItem item);
-
-        // void onLongClick(int position, MediaItem item);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        // public final TextView mIdView;
         public final TextView mContentView;
         public MediaItem mItem;
 
         public ViewHolder(FragmentMediaItemBinding binding) {
             super(binding.getRoot());
-            // mIdView = binding.itemNumber;
+
             mContentView = binding.content;
 
             itemView.setOnClickListener(view -> {
@@ -105,13 +91,6 @@ public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaList
                     clickListener.onClick(pos, mValues.get(pos));
                 }
             });
-//            itemView.setOnLongClickListener(l -> {
-//                if (clickListener != null) {
-//                    int pos = getBindingAdapterPosition();
-//                    clickListener.onLongClick(pos, mValues.get(pos));
-//                }
-//                return true;
-//            });
             itemView.setOnLongClickListener(l -> {
                 setLongPresPosition(getBindingAdapterPosition());
                 itemView.showContextMenu();
