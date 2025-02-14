@@ -36,6 +36,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Stack;
 
 /**
@@ -303,7 +304,7 @@ public class MediaListFragment extends Fragment {
     }
 
     private void addMediaItemToPlaylist(@NonNull MediaItem item) {
-
+        //TODO
     }
 
     private void popPathStack() {
