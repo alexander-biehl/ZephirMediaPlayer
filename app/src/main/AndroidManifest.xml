@@ -37,6 +37,9 @@
             </intent-filter>
         </service>
 
+        <service
+            android:name=".service.MediaStoreSyncService" />
+
         <receiver
             android:name="androidx.media.session.MediaButtonReceiver"
             android:exported="true">
