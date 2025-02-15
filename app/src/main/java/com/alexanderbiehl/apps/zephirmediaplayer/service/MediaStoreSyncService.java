@@ -10,6 +10,8 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleService;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.MainApp;
+import com.alexanderbiehl.apps.zephirmediaplayer.common.RepositoryCallback;
+import com.alexanderbiehl.apps.zephirmediaplayer.common.Result;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.database.AppDatabase;
 import com.alexanderbiehl.apps.zephirmediaplayer.observers.MediaStoreContentObserver;
 
@@ -33,7 +35,7 @@ public class MediaStoreSyncService extends LifecycleService {
                 observer
         );
         // execute first time sync
-        this.observer.executeSync();
+        this.observer.executeSync(result -> ((MainApp) getApplication()).setStoreIsSynced(true));
     }
 
     @Override

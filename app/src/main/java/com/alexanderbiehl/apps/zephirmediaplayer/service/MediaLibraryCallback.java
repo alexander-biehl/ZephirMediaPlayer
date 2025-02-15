@@ -6,6 +6,8 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
+import androidx.databinding.Observable;
+import androidx.databinding.ObservableBoolean;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.session.LibraryResult;
@@ -26,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class MediaLibraryCallback implements MediaLibraryService.MediaLibrarySession.Callback {
+public class MediaLibraryCallback extends Observable.OnPropertyChangedCallback implements MediaLibraryService.MediaLibrarySession.Callback {
 
     private static final String TAG = MediaLibraryCallback.class.getSimpleName();
     private final Context context;
@@ -36,7 +38,12 @@ public class MediaLibraryCallback implements MediaLibraryService.MediaLibrarySes
     public MediaLibraryCallback(@NonNull final Context context, @NonNull final MainApp mainApp) {
         this.context = context;
         this.mainApp = mainApp;
-        initializeData();
+        // this.mainApp.getStoreIsSynced().addOnPropertyChangedCallback(this);
+        if (this.mainApp.getStoreIsSynced().get()) {
+            initializeData();
+        } else {
+            this.mainApp.getStoreIsSynced().addOnPropertyChangedCallback(this);
+        }
     }
 
     private void initializeData() {
@@ -129,4 +136,10 @@ public class MediaLibraryCallback implements MediaLibraryService.MediaLibrarySes
     }
 
 
+    @Override
+    public void onPropertyChanged(Observable sender, int propertyId) {
+        initializeData();
+        // remove the listener since it's only for the initial load
+        this.mainApp.getStoreIsSynced().removeOnPropertyChangedCallback(this);
+    }
 }

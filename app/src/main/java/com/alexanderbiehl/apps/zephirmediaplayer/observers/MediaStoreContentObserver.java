@@ -8,6 +8,8 @@ import android.os.Handler;
 import androidx.media3.common.MediaItem;
 import androidx.media3.extractor.ExtractorUtil;
 
+import com.alexanderbiehl.apps.zephirmediaplayer.common.RepositoryCallback;
+import com.alexanderbiehl.apps.zephirmediaplayer.common.Result;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.dao.base.DoaBase;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.database.AppDatabase;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.AlbumEntity;
@@ -31,6 +33,7 @@ public class MediaStoreContentObserver extends ContentObserver {
     private final Executor executorService;
     private final Context context;
 
+
     public MediaStoreContentObserver(
             Handler handler,
             Executor executorService,
@@ -45,14 +48,14 @@ public class MediaStoreContentObserver extends ContentObserver {
     @Override
     public void onChange(boolean selfChange) {
         super.onChange(selfChange);
-        executeSync();
+        executeSync(null);
     }
 
-    public void executeSync() {
-        this.executorService.execute(this::syncMediaStore);
+    public void executeSync(RepositoryCallback<Void> callback) {
+        this.executorService.execute(() -> syncMediaStore(callback));
     }
 
-    private void syncMediaStore() {
+    private void syncMediaStore(RepositoryCallback<Void> callback) {
         MediaRepository mediaRepository = new MediaRepository(
                 new MediaLocalDataSource(
                         new MediaLoader(),
@@ -86,6 +89,10 @@ public class MediaStoreContentObserver extends ContentObserver {
             if (db.songDao().getByMediaId(entity.mediaId) == null) {
                 db.songDao().insert(entity);
             }
+        }
+
+        if (callback != null) {
+            callback.onComplete(new Result.Success<>());
         }
     }
 

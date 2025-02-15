@@ -3,6 +3,8 @@ package com.alexanderbiehl.apps.zephirmediaplayer;
 import android.app.Application;
 import android.content.Intent;
 
+import androidx.databinding.ObservableBoolean;
+
 import com.alexanderbiehl.apps.zephirmediaplayer.service.MediaStoreSyncService;
 
 import java.util.concurrent.Executor;
@@ -19,10 +21,12 @@ public class MainApp extends Application {
     // Create a thread pool manager
     private final ExecutorService executorService = Executors.newFixedThreadPool(NUMBER_OF_CORES);
 
+    private ObservableBoolean storeIsSynced;
+
     @Override
     public void onCreate() {
         super.onCreate();
-        // Let's see if creating it from here works
+        storeIsSynced = new ObservableBoolean(false);
         Intent mediaObserverServiceIntent = new Intent(this, MediaStoreSyncService.class);
         startService(mediaObserverServiceIntent);
     }
@@ -38,5 +42,14 @@ public class MainApp extends Application {
     // Note: don't need to make this synchronized since executorService is Final
     public Executor getExec() {
         return executorService;
+    }
+
+    public void setStoreIsSynced(boolean isSynced) {
+        storeIsSynced.set(isSynced);
+        storeIsSynced.notifyChange();
+    }
+
+    public ObservableBoolean getStoreIsSynced() {
+        return storeIsSynced;
     }
 }
