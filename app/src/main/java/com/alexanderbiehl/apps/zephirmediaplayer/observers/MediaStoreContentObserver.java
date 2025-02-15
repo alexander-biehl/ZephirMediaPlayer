@@ -8,6 +8,7 @@ import android.os.Handler;
 import androidx.media3.common.MediaItem;
 import androidx.media3.extractor.ExtractorUtil;
 
+import com.alexanderbiehl.apps.zephirmediaplayer.data.dao.base.DoaBase;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.database.AppDatabase;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.AlbumEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.ArtistEntity;
@@ -59,24 +60,33 @@ public class MediaStoreContentObserver extends ContentObserver {
                         context
                 )
         );
+        // want to make a synchronous call here because we are already running on a background thread
         List<MediaItem> items = mediaRepository.getMediaSynchronous();
 
         List<ArtistEntity> artistEntities = EntityExtractor.extractArtistEntities(items);
         Map<String, Long> artistIdMap = new HashMap<>();
         for (ArtistEntity entity : artistEntities) {
-            Long id = db.artistDao().insert(entity);
+            ArtistEntity _entity = db.artistDao().getByMediaId(entity.mediaId);
+
+            Long id = _entity != null ? _entity.id : db.artistDao().insert(entity);
             artistIdMap.put(entity.title, id);
         }
 
         List<AlbumEntity> albumEntities = EntityExtractor.extractAlbumEntities(items, artistIdMap);
         Map<String,Long> albumIdMap = new HashMap<>();
         for (AlbumEntity entity : albumEntities) {
-            albumIdMap.put(entity.title, db.albumDao().insert(entity));
+            AlbumEntity _entity = db.albumDao().getByMediaId(entity.mediaId);
+
+            Long id = _entity != null ? _entity.id : db.albumDao().insert(entity);
+            albumIdMap.put(entity.title, id);
         }
 
         List<SongEntity> songEntities = EntityExtractor.extractSongEntities(items, artistIdMap, albumIdMap);
-        db.songDao().insertAll(songEntities);
+        for (SongEntity entity : songEntities) {
+            if (db.songDao().getByMediaId(entity.mediaId) == null) {
+                db.songDao().insert(entity);
+            }
+        }
     }
-
 
 }

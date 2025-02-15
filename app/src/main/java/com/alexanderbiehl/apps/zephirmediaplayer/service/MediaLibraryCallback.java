@@ -15,8 +15,8 @@ import androidx.media3.session.SessionError;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.MainApp;
 import com.alexanderbiehl.apps.zephirmediaplayer.common.Result;
-import com.alexanderbiehl.apps.zephirmediaplayer.dataloaders.MediaLoader;
-import com.alexanderbiehl.apps.zephirmediaplayer.datasources.impl.MediaLocalDataSource;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.database.AppDatabase;
+import com.alexanderbiehl.apps.zephirmediaplayer.datasources.impl.MediaDbDataSource;
 import com.alexanderbiehl.apps.zephirmediaplayer.repositories.MediaRepository;
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.Futures;
@@ -41,11 +41,11 @@ public class MediaLibraryCallback implements MediaLibraryService.MediaLibrarySes
 
     private void initializeData() {
         MediaRepository repo = new MediaRepository(
-                new MediaLocalDataSource(
-                        new MediaLoader(),
-                        this.mainApp.getExec(),
-                        context
-                ));
+                new MediaDbDataSource(
+                        AppDatabase.getDatabase(context),
+                        mainApp.getExec()
+                )
+        );
 
         repo.getMedia((result) -> {
             if (result instanceof Result.Success) {
