@@ -25,6 +25,7 @@ public class MediaRepository {
 
     /**
      * Retrieves the list of media items from the underlying data source
+     *
      * @return List<MediaItem>
      */
     public void getMedia(RepositoryCallback<List<MediaItem>> callback) {
@@ -32,7 +33,7 @@ public class MediaRepository {
     }
 
     public List<MediaItem> getMediaSynchronous() {
-        return this.dataSource.
+        return this.dataSource.getMediaSynchronous();
     }
 
 }
