@@ -1,25 +1,44 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.observers;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.database.ContentObserver;
 import android.os.Handler;
 
-import com.alexanderbiehl.apps.zephirmediaplayer.data.database.AppDatabase;
+import androidx.media3.common.MediaItem;
+import androidx.media3.extractor.ExtractorUtil;
 
+import com.alexanderbiehl.apps.zephirmediaplayer.data.database.AppDatabase;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.AlbumEntity;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.ArtistEntity;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.SongEntity;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.util.EntityExtractor;
+import com.alexanderbiehl.apps.zephirmediaplayer.dataloaders.MediaLoader;
+import com.alexanderbiehl.apps.zephirmediaplayer.datasources.impl.MediaLocalDataSource;
+import com.alexanderbiehl.apps.zephirmediaplayer.repositories.MediaRepository;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class MediaStoreContentObserver extends ContentObserver {
 
-    private final ContentResolver contentResolver;
     private final AppDatabase db;
-    private final ExecutorService executorService;
+    private final Executor executorService;
+    private final Context context;
 
-    public MediaStoreContentObserver(Handler handler, ContentResolver contentResolver, AppDatabase db) {
+    public MediaStoreContentObserver(
+            Handler handler,
+            Executor executorService,
+            AppDatabase db,
+            Context context) {
         super(handler);
-        this.contentResolver = contentResolver;
         this.db = db;
-        this.executorService = Executors.newSingleThreadExecutor();
+        this.executorService = executorService;
+        this.context = context;
     }
 
     @Override
@@ -28,12 +47,35 @@ public class MediaStoreContentObserver extends ContentObserver {
         executeSync();
     }
 
-    private void executeSync() {
+    public void executeSync() {
         this.executorService.execute(this::syncMediaStore);
     }
 
     private void syncMediaStore() {
-        // TODO
+        MediaRepository mediaRepository = new MediaRepository(
+                new MediaLocalDataSource(
+                        new MediaLoader(),
+                        executorService,
+                        context
+                )
+        );
+        List<MediaItem> items = mediaRepository.getMediaSynchronous();
+
+        List<ArtistEntity> artistEntities = EntityExtractor.extractArtistEntities(items);
+        Map<String, Long> artistIdMap = new HashMap<>();
+        for (ArtistEntity entity : artistEntities) {
+            Long id = db.artistDao().insert(entity);
+            artistIdMap.put(entity.title, id);
+        }
+
+        List<AlbumEntity> albumEntities = EntityExtractor.extractAlbumEntities(items, artistIdMap);
+        Map<String,Long> albumIdMap = new HashMap<>();
+        for (AlbumEntity entity : albumEntities) {
+            albumIdMap.put(entity.title, db.albumDao().insert(entity));
+        }
+
+        List<SongEntity> songEntities = EntityExtractor.extractSongEntities(items, artistIdMap, albumIdMap);
+        db.songDao().insertAll(songEntities);
     }
 
 

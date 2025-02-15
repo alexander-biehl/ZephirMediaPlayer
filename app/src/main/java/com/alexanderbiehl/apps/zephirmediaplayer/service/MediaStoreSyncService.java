@@ -23,7 +23,6 @@ public class MediaStoreSyncService extends LifecycleService {
         AppDatabase db = AppDatabase.getDatabase(this);
         this.observer = new MediaStoreContentObserver(
                 new Handler(),
-                getContentResolver(),
                 ((MainApp) getApplication()).getExec(),
                 db,
                 this
