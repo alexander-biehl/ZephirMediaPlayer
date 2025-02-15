@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleService;
 
+import com.alexanderbiehl.apps.zephirmediaplayer.MainApp;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.database.AppDatabase;
 import com.alexanderbiehl.apps.zephirmediaplayer.observers.MediaStoreContentObserver;
 
@@ -20,12 +21,20 @@ public class MediaStoreSyncService extends LifecycleService {
     public void onCreate() {
         super.onCreate();
         AppDatabase db = AppDatabase.getDatabase(this);
-        this.observer = new MediaStoreContentObserver(new Handler(), getContentResolver(), db);
+        this.observer = new MediaStoreContentObserver(
+                new Handler(),
+                getContentResolver(),
+                ((MainApp) getApplication()).getExec(),
+                db,
+                this
+        );
         getContentResolver().registerContentObserver(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 true,
                 observer
         );
+        // execute first time sync
+        this.observer.executeSync();
     }
 
     @Override
