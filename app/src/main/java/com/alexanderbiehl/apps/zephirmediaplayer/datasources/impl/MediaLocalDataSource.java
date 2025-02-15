@@ -9,6 +9,7 @@ import com.alexanderbiehl.apps.zephirmediaplayer.common.Result;
 import com.alexanderbiehl.apps.zephirmediaplayer.dataloaders.MediaLoader;
 import com.alexanderbiehl.apps.zephirmediaplayer.datasources.MediaDataSource;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executor;
 
@@ -45,5 +46,10 @@ public class MediaLocalDataSource implements MediaDataSource {
             List<MediaItem> items = mediaLoader.getMedia(context);
             callback.onComplete(new Result.Success<>(items));
         });
+    }
+
+    @Override
+    public List<MediaItem> getMediaSynchronous() {
+        return Collections.emptyList();
     }
 }

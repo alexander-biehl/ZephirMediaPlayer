@@ -5,6 +5,7 @@ import androidx.media3.common.MediaItem;
 import com.alexanderbiehl.apps.zephirmediaplayer.common.RepositoryCallback;
 import com.alexanderbiehl.apps.zephirmediaplayer.datasources.MediaDataSource;
 
+import java.util.Collections;
 import java.util.List;
 
 public class MediaDbDataSource implements MediaDataSource {
@@ -15,5 +16,10 @@ public class MediaDbDataSource implements MediaDataSource {
     @Override
     public void getMedia(RepositoryCallback<List<MediaItem>> callback) {
 
+    }
+
+    @Override
+    public List<MediaItem> getMediaSynchronous() {
+        return Collections.emptyList();
     }
 }

@@ -9,4 +9,6 @@ import java.util.List;
 public interface MediaDataSource {
 
     void getMedia(RepositoryCallback<List<MediaItem>> callback);
+
+    List<MediaItem> getMediaSynchronous();
 }
