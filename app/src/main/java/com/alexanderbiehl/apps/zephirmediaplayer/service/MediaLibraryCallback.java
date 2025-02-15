@@ -55,6 +55,9 @@ public class MediaLibraryCallback extends Observable.OnPropertyChangedCallback i
 
         repo.getMedia((result) -> {
             if (result instanceof Result.Success) {
+                // TODO this implementation does not work with large amounts of media
+                // TODO instead of loading everything at once, load all data into the db,
+                // TODO and then just query what we need from db
                 MediaItemTree.getInstance().initialize(((Result.Success<List<MediaItem>>) result).data);
             } else {
                 Log.e(TAG, "There was an error receiving media: " +
