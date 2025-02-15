@@ -9,6 +9,8 @@ import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.AlbumEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.ArtistEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.SongEntity;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -18,16 +20,23 @@ public class EntityExtractor {
     public static List<ArtistEntity> extractArtistEntities(List<MediaItem> items) {
         return items
                 .stream()
-                .map((e) -> new ArtistEntity(e.mediaMetadata.artist.toString()))
+                .map(e -> e.mediaMetadata.artist)
+                .distinct()
+                .map(artist -> new ArtistEntity(artist.toString()))
                 .collect(Collectors.toList());
     }
 
     public static List<AlbumEntity> extractAlbumEntities(List<MediaItem> items, Map<String, Long> artistIdMap) {
-        return items
-                .stream()
-                .map(e -> e.mediaMetadata.albumTitle.toString())
-                .map(a -> new AlbumEntity(a, artistIdMap.get(a)))
-                .collect(Collectors.toList());
+        List<AlbumEntity> entities = new ArrayList<>();
+        Map<String, AlbumEntity> entityMap = new HashMap<>();
+        for (MediaItem item : items) {
+            String album = item.mediaMetadata.albumTitle.toString();
+            String artist = item.mediaMetadata.artist.toString();
+            if (!entityMap.containsKey(album)) {
+                entityMap.put(album, new AlbumEntity(album, artistIdMap.get(artist)));
+            }
+        }
+        return entityMap.entrySet().stream().map(entry -> entry.getValue()).collect(Collectors.toList());
     }
 
     public static List<SongEntity> extractSongEntities(

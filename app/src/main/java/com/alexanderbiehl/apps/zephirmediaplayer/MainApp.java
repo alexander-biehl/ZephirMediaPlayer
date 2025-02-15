@@ -1,6 +1,9 @@
 package com.alexanderbiehl.apps.zephirmediaplayer;
 
 import android.app.Application;
+import android.content.Intent;
+
+import com.alexanderbiehl.apps.zephirmediaplayer.service.MediaStoreSyncService;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
@@ -19,6 +22,9 @@ public class MainApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        // Let's see if creating it from here works
+        Intent mediaObserverServiceIntent = new Intent(this, MediaStoreSyncService.class);
+        startService(mediaObserverServiceIntent);
     }
 
     @Override
