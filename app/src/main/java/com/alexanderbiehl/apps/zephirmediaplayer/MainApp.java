@@ -21,12 +21,11 @@ public class MainApp extends Application {
     // Create a thread pool manager
     private final ExecutorService executorService = Executors.newFixedThreadPool(NUMBER_OF_CORES);
 
-    private ObservableBoolean storeIsSynced;
+    private final ObservableBoolean storeIsSynced = new ObservableBoolean(false);;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        storeIsSynced = new ObservableBoolean(false);
         Intent mediaObserverServiceIntent = new Intent(this, MediaStoreSyncService.class);
         startService(mediaObserverServiceIntent);
     }
@@ -45,11 +44,13 @@ public class MainApp extends Application {
     }
 
     public void setStoreIsSynced(boolean isSynced) {
-        storeIsSynced.set(isSynced);
-        storeIsSynced.notifyChange();
+        synchronized (storeIsSynced) {
+            storeIsSynced.set(isSynced);
+            storeIsSynced.notifyChange();
+        }
     }
 
-    public ObservableBoolean getStoreIsSynced() {
+    public synchronized ObservableBoolean getStoreIsSynced() {
         return storeIsSynced;
     }
 }
