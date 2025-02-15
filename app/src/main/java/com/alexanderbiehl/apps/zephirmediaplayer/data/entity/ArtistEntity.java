@@ -12,9 +12,10 @@ public class ArtistEntity extends EntityBase {
     public String title;
 
     @Ignore
-    public ArtistEntity(String artist) {
+    public ArtistEntity(String artist, String mediaId) {
         super();
-        title = artist;
+        this.title = artist;
+        this.mediaId = mediaId;
     }
 
     public ArtistEntity() {

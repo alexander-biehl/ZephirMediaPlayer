@@ -15,9 +15,10 @@ public class AlbumEntity extends EntityBase {
     public long albumArtistId;
 
     @Ignore
-    public AlbumEntity(String title, Long artistId) {
+    public AlbumEntity(String title, String mediaId, Long artistId) {
         super();
         this.title = title;
+        this.mediaId = mediaId;
         this.albumArtistId = artistId;
     }
 

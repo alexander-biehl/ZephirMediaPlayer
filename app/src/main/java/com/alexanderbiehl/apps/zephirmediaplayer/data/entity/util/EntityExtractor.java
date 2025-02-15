@@ -18,25 +18,30 @@ import java.util.stream.Collectors;
 public class EntityExtractor {
 
     public static List<ArtistEntity> extractArtistEntities(List<MediaItem> items) {
-        return items
-                .stream()
-                .map(e -> e.mediaMetadata.artist)
-                .distinct()
-                .map(artist -> new ArtistEntity(artist.toString()))
-                .collect(Collectors.toList());
+
+        Map<String, ArtistEntity> entityMap = new HashMap<>();
+        for (MediaItem item : items) {
+            String artist = item.mediaMetadata.artist.toString();
+            String mediaId = item.mediaId;
+            if (!entityMap.containsKey(artist)) {
+                entityMap.put(artist, new ArtistEntity(artist, mediaId));
+            }
+        }
+        return new ArrayList<>(entityMap.values());
     }
 
     public static List<AlbumEntity> extractAlbumEntities(List<MediaItem> items, Map<String, Long> artistIdMap) {
-        List<AlbumEntity> entities = new ArrayList<>();
+
         Map<String, AlbumEntity> entityMap = new HashMap<>();
         for (MediaItem item : items) {
             String album = item.mediaMetadata.albumTitle.toString();
             String artist = item.mediaMetadata.artist.toString();
+            String mediaId = item.mediaId;
             if (!entityMap.containsKey(album)) {
-                entityMap.put(album, new AlbumEntity(album, artistIdMap.get(artist)));
+                entityMap.put(album, new AlbumEntity(album, mediaId, artistIdMap.get(artist)));
             }
         }
-        return entityMap.entrySet().stream().map(entry -> entry.getValue()).collect(Collectors.toList());
+        return new ArrayList<>(entityMap.values());
     }
 
     public static List<SongEntity> extractSongEntities(
@@ -48,6 +53,7 @@ public class EntityExtractor {
                 .stream()
                 .map(e -> new SongEntity(
                         e.mediaMetadata.title.toString(),
+                        e.mediaId,
                         String.valueOf(e.mediaMetadata.trackNumber),
                         ContentUris.withAppendedId(
                                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,

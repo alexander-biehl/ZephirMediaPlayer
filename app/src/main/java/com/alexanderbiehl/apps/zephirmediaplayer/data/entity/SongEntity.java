@@ -24,12 +24,13 @@ public class SongEntity extends EntityBase {
     }
 
     @Ignore
-    public SongEntity(String title, String trackNumber, String sourceUri, Long artistId, Long albumId) {
+    public SongEntity(String title, String mediaId, String trackNumber, String sourceUri, Long artistId, Long albumId) {
         super();
         this.title = title;
         this.trackNumber = trackNumber;
         this.sourceUri = sourceUri;
         this.songArtistId = artistId;
         this.songAlbumId = albumId;
+        this.mediaId = mediaId;
     }
 }
