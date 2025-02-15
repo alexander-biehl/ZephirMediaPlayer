@@ -50,6 +50,6 @@ public class MediaLocalDataSource implements MediaDataSource {
 
     @Override
     public List<MediaItem> getMediaSynchronous() {
-        return Collections.emptyList();
+        return mediaLoader.getMedia(context);
     }
 }

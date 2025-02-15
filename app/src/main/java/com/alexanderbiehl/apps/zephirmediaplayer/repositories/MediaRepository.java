@@ -31,4 +31,8 @@ public class MediaRepository {
         this.dataSource.getMedia(callback);
     }
 
+    public List<MediaItem> getMediaSynchronous() {
+        return this.dataSource.
+    }
+
 }
