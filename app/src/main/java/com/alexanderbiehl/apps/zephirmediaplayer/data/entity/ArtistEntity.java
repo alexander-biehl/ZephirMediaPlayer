@@ -9,4 +9,9 @@ import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.base.EntityBase;
 public class ArtistEntity extends EntityBase {
     @ColumnInfo(name = "title")
     public String title;
+
+    public ArtistEntity(String artist) {
+        super();
+        title = artist;
+    }
 }

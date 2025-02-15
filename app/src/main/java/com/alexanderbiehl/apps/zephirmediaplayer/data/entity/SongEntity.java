@@ -17,4 +17,12 @@ public class SongEntity extends EntityBase {
 
     public long songArtistId;
     public long songAlbumId;
+
+    public SongEntity(String title, String trackNumber, String sourceUri, Long artistId, Long albumId) {
+        this.title = title;
+        this.trackNumber = trackNumber;
+        this.sourceUri = sourceUri;
+        this.songArtistId = artistId;
+        this.songAlbumId = albumId;
+    }
 }

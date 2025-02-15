@@ -13,4 +13,13 @@ public class AlbumEntity extends EntityBase {
 
     public long albumArtistId;
 
+    public AlbumEntity(String title, Long artistId) {
+        this.title = title;
+        this.albumArtistId = artistId;
+    }
+
+    public AlbumEntity(String title) {
+        this.title = title;
+    }
+
 }
