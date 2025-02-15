@@ -15,12 +15,11 @@ import com.alexanderbiehl.apps.zephirmediaplayer.observers.MediaStoreContentObse
 public class MediaStoreSyncService extends LifecycleService {
 
     private MediaStoreContentObserver observer;
-    private AppDatabase db;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        this.db =AppDatabase.getDatabase(this);
+        AppDatabase db = AppDatabase.getDatabase(this);
         this.observer = new MediaStoreContentObserver(new Handler(), getContentResolver(), db);
         getContentResolver().registerContentObserver(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
