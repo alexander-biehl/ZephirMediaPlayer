@@ -7,7 +7,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
 import androidx.databinding.Observable;
-import androidx.databinding.ObservableBoolean;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.session.LibraryResult;
@@ -38,7 +37,7 @@ public class MediaLibraryCallback extends Observable.OnPropertyChangedCallback i
     public MediaLibraryCallback(@NonNull final Context context, @NonNull final MainApp mainApp) {
         this.context = context;
         this.mainApp = mainApp;
-        // this.mainApp.getStoreIsSynced().addOnPropertyChangedCallback(this);
+
         if (this.mainApp.getStoreIsSynced().get()) {
             initializeData();
         } else {
