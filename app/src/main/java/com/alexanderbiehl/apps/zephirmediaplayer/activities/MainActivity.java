@@ -1,6 +1,7 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.activities;
 
 import android.content.ComponentName;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -10,6 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.databinding.Observable;
+import androidx.databinding.ObservableBoolean;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.MediaItem;
 import androidx.media3.session.LibraryResult;
@@ -20,10 +23,12 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.alexanderbiehl.apps.zephirmediaplayer.MainApp;
 import com.alexanderbiehl.apps.zephirmediaplayer.R;
 import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.viewmodel.MediaViewModel;
 import com.alexanderbiehl.apps.zephirmediaplayer.databinding.ActivityMainBinding;
 import com.alexanderbiehl.apps.zephirmediaplayer.service.Media3Service;
+import com.alexanderbiehl.apps.zephirmediaplayer.service.MediaStoreSyncService;
 import com.alexanderbiehl.apps.zephirmediaplayer.utilities.StorageUtilities;
 import com.google.common.util.concurrent.ListenableFuture;
 
@@ -35,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private MediaBrowser mediaBrowser;
     private ListenableFuture<MediaBrowser> browserFuture;
+    private ObserverCallback observerCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,8 +63,21 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (StorageUtilities.verifyStoragePermission(this)) {
-                initiateBrowserConnection();
+                handleOnPermissionGranted();
             }
+        }
+    }
+
+    private void handleOnPermissionGranted() {
+        // start service to ensure we are in sync
+        Intent mediaObserverServiceIntent = new Intent(this, MediaStoreSyncService.class);
+        startService(mediaObserverServiceIntent);
+        MainApp application = (MainApp) getApplication();
+        if (application.getStoreIsSynced().get()) {
+            initiateBrowserConnection();
+        } else {
+            observerCallback = new ObserverCallback();
+            application.getStoreIsSynced().addOnPropertyChangedCallback(observerCallback);
         }
     }
 
@@ -132,12 +151,29 @@ public class MainActivity extends AppCompatActivity {
             if (grantResults.length > 0 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Log.d(TAG, "Storage permissions granted");
-                initiateBrowserConnection();
+                handleOnPermissionGranted();
             } else {
                 Log.d(TAG, "Permissions not granted");
             }
         } else {
             Log.e(TAG, "Request code did not match");
+        }
+    }
+
+    private class ObserverCallback extends Observable.OnPropertyChangedCallback {
+
+        @Override
+        public void onPropertyChanged(Observable sender, int propertyId) {
+            Log.d(TAG, "Observer fired");
+            if (((ObservableBoolean) sender).get()) {
+                initiateBrowserConnection();
+
+                // after we want to remove the callback so it is not repeatedly called.
+                ((MainApp) getApplication()).getStoreIsSynced().removeOnPropertyChangedCallback(observerCallback);
+                observerCallback = null;
+            } else {
+                Log.d(TAG, "Sender was false");
+            }
         }
     }
 }

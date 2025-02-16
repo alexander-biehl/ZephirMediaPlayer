@@ -15,7 +15,7 @@ public class StorageUtilities {
     // Storage Permissions
     public static final int REQUEST_CODE = 1;
     private static final String[] PERMISSIONS_STORAGE = {
-            Manifest.permission.READ_EXTERNAL_STORAGE,
+            // Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.READ_MEDIA_AUDIO,
             Manifest.permission.POST_NOTIFICATIONS
     };
