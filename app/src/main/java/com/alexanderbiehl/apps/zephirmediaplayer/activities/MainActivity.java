@@ -154,9 +154,11 @@ public class MainActivity extends AppCompatActivity {
                 handleOnPermissionGranted();
             } else {
                 Log.d(TAG, "Permissions not granted");
+                finish();
             }
         } else {
             Log.e(TAG, "Request code did not match");
+            finish();
         }
     }
 
