@@ -13,23 +13,23 @@ import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.rel.m2m.PlaylistSon
 import java.util.List;
 
 @Dao
-public abstract class PlaylistDao implements DoaBase<PlaylistEntity> {
+public interface PlaylistDao extends DoaBase<PlaylistEntity> {
 
     @Transaction
     @Query("SELECT * FROM playlists WHERE id = :id")
-    public abstract PlaylistSongs getPlaylistSongsById(final Long id);
+    PlaylistSongs getPlaylistSongsById(final Long id);
 
     @Transaction
     @Query("SELECT * FROM playlists WHERE media_id = :mediaId")
-    public abstract PlaylistSongs getPlaylistSongsByMediaId(final String mediaId);
+    PlaylistSongs getPlaylistSongsByMediaId(final String mediaId);
 
     @Transaction
     @Insert
-    public abstract long[] insertPlaylistSongs(PlaylistSongM2M... pls);
+    long[] insertPlaylistSongs(PlaylistSongM2M... pls);
 
     @Query("SELECT * FROM playlists")
-    public abstract List<PlaylistEntity> getAllPlaylists();
+    List<PlaylistEntity> getAllPlaylists();
 
     @Query("SELECT * FROM playlists WHERE media_id = :mediaId")
-    public abstract PlaylistEntity getByMediaId(final String mediaId);
+    PlaylistEntity getByMediaId(final String mediaId);
 }
