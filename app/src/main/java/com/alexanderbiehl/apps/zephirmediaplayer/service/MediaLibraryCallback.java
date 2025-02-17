@@ -136,7 +136,7 @@ public class MediaLibraryCallback extends Observable.OnPropertyChangedCallback i
     private List<MediaItem> resolveMediaItems(List<MediaItem> mediaItems) {
         List<MediaItem> playlist = new ArrayList<>();
         for (MediaItem mediaItem : mediaItems) {
-            playlist.add(repository.expandItem(mediaItem));
+            repository.expandItem(mediaItem).ifPresent(playlist::add);
         }
 //        mediaItems.forEach(mediaItem -> {
 //            if (!mediaItem.mediaId.isEmpty()) {

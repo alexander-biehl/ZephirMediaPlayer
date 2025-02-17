@@ -124,12 +124,19 @@ public class MediaItemRepository {
     }
 
     @OptIn(markerClass = UnstableApi.class)
-    public MediaItem expandItem(MediaItem item) {
-        MediaMetadata metadata = item.mediaMetadata.buildUpon()
-                .populate(item.mediaMetadata).build();
-        return item.buildUpon()
-                .setMediaMetadata(metadata)
-                .setUri(item.localConfiguration.uri)
-                .build();
+    public Optional<MediaItem> expandItem(MediaItem remoteItem) {
+        Optional<MediaItem> localItem = getItem(remoteItem.mediaId);
+        if (localItem.isEmpty()) {
+            return Optional.empty();
+        }
+        MediaItem foundLocalItem = localItem.get();
+        MediaMetadata metadata = foundLocalItem.mediaMetadata.buildUpon()
+                .populate(remoteItem.mediaMetadata).build();
+        return Optional.of(
+                remoteItem.buildUpon()
+                        .setMediaMetadata(metadata)
+                        .setUri(foundLocalItem.localConfiguration.uri)
+                        .build()
+        );
     }
 }
