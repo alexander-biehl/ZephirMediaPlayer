@@ -16,6 +16,7 @@ import androidx.media3.session.SessionError;
 import com.alexanderbiehl.apps.zephirmediaplayer.MainApp;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.database.AppDatabase;
 import com.alexanderbiehl.apps.zephirmediaplayer.repositories.CompositeMediaRepository;
+import com.alexanderbiehl.apps.zephirmediaplayer.repositories.MediaItemRepository;
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -29,19 +30,24 @@ public class MediaLibraryCallback extends Observable.OnPropertyChangedCallback i
     private static final String TAG = MediaLibraryCallback.class.getSimpleName();
     private final Context context;
     private final MainApp mainApp;
-    private final CompositeMediaRepository repository;
+    private final MediaItemRepository repository;
 
 
     public MediaLibraryCallback(@NonNull final Context context, @NonNull final MainApp mainApp) {
         this.context = context;
         this.mainApp = mainApp;
-        this.repository = new CompositeMediaRepository(AppDatabase.getDatabase(context));
+        this.repository = new MediaItemRepository(
+                new CompositeMediaRepository(
+                        AppDatabase.getDatabase(context)
+                )
+        );
 
-        if (this.mainApp.getStoreIsSynced().get()) {
-            initializeData();
-        } else {
+        if (!this.mainApp.getStoreIsSynced().get()) {
+            // initializeData();
             this.mainApp.getStoreIsSynced().addOnPropertyChangedCallback(this);
-        }
+        } /*else {
+            this.mainApp.getStoreIsSynced().addOnPropertyChangedCallback(this);
+        }*/
     }
 
     private void initializeData() {
@@ -75,7 +81,8 @@ public class MediaLibraryCallback extends Observable.OnPropertyChangedCallback i
             @Nullable MediaLibraryService.LibraryParams params
     ) {
         return Futures.submit(() ->
-                        LibraryResult.ofItem(MediaItemTree.getInstance().getRootItem(), params),
+                        LibraryResult.ofItem(repository.getRoot(), params),
+                // LibraryResult.ofItem(MediaItemTree.getInstance().getRootItem(), params),
                 this.mainApp.getExec());
     }
 
@@ -88,7 +95,7 @@ public class MediaLibraryCallback extends Observable.OnPropertyChangedCallback i
             @NonNull String mediaId
     ) {
         return Futures.submit(() -> {
-            Optional<MediaItem> optItem = MediaItemTree.getInstance().getItem(mediaId);
+            Optional<MediaItem> optItem = repository.getItem(mediaId);
             return optItem.map(mediaItem ->
                             LibraryResult.ofItem(mediaItem, null))
                     .orElseGet(() ->
@@ -108,7 +115,8 @@ public class MediaLibraryCallback extends Observable.OnPropertyChangedCallback i
             @Nullable MediaLibraryService.LibraryParams params
     ) {
         return Futures.submit(() -> {
-            List<MediaItem> optChildren = MediaItemTree.getInstance().getChildren(parentId);
+            // List<MediaItem> optChildren = MediaItemTree.getInstance().getChildren(parentId);
+            List<MediaItem> optChildren = repository.getChildren(parentId);
             return optChildren.isEmpty() ?
                     LibraryResult.ofError(SessionError.ERROR_BAD_VALUE) :
                     LibraryResult.ofItemList(optChildren, params);
@@ -127,12 +135,15 @@ public class MediaLibraryCallback extends Observable.OnPropertyChangedCallback i
 
     private List<MediaItem> resolveMediaItems(List<MediaItem> mediaItems) {
         List<MediaItem> playlist = new ArrayList<>();
-        mediaItems.forEach(mediaItem -> {
-            if (!mediaItem.mediaId.isEmpty()) {
-                Optional<MediaItem> expandedItem = MediaItemTree.getInstance().expandItem(mediaItem);
-                expandedItem.ifPresent(playlist::add);
-            }
-        });
+        for (MediaItem mediaItem : mediaItems) {
+            playlist.add(repository.expandItem(mediaItem));
+        }
+//        mediaItems.forEach(mediaItem -> {
+//            if (!mediaItem.mediaId.isEmpty()) {
+//                Optional<MediaItem> expandedItem = MediaItemTree.getInstance().expandItem(mediaItem);
+//                expandedItem.ifPresent(playlist::add);
+//            }
+//        });
         return playlist;
     }
 

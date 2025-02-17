@@ -12,12 +12,16 @@ import com.alexanderbiehl.apps.zephirmediaplayer.data.dao.SongDao;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.database.AppDatabase;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.AlbumEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.ArtistEntity;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.PlaylistEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.SongEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.rel.AlbumSongs;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.rel.ArtistAlbums;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.rel.PlaylistSongs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class CompositeMediaRepository {
@@ -49,8 +53,10 @@ public class CompositeMediaRepository {
 
     public MediaItem /*void*/ getArtistByMediaId(String mediaId/*, RepositoryCallback<MediaItem> callback*/) {
         ArtistEntity entity = artistDao.getByMediaId(mediaId);
-
-        return ArtistEntity.asItem(entity);
+        if (entity != null) {
+            return ArtistEntity.asItem(entity);
+        }
+        return null;
         /*callback.onComplete(
                 new Result.Success<>(
                         ArtistEntity.asItem(entity)
@@ -105,11 +111,11 @@ public class CompositeMediaRepository {
     }
 
     public List<MediaItem> /*void*/ getAlbumsByArtistId(String mediaId/*, RepositoryCallback<List<MediaItem>> callback*/) {
-        ArtistEntity artistEntity = artistDao.getByMediaId(mediaId);
-        AlbumEntity[] entities = albumDao.getAlbumsForArtistMediaId(mediaId);
+        ArtistAlbums albums = artistDao.getArtistAlbumsByMediaId(mediaId);
+        ArtistEntity artistEntity = albums.artistEntity;
         // AlbumEntity[] entities = albumDao.getAlbumsForArtist(artistEntity.id);
         List<MediaItem> items = new ArrayList<>();
-        for (AlbumEntity entity : entities) {
+        for (AlbumEntity entity : albums.albumEntities) {
             items.add(new MediaItem.Builder()
                     .setMediaId(entity.mediaId)
                     .setMediaMetadata(
@@ -192,6 +198,7 @@ public class CompositeMediaRepository {
                                             .setIsPlayable(true)
                                             .setIsBrowsable(false)
                                             .setMediaType(MEDIA_TYPE_MUSIC)
+                                            .setTrackNumber(Integer.valueOf(s.trackNumber))
                                             .build()
                             ).build()
             ).collect(Collectors.toList());
@@ -203,5 +210,64 @@ public class CompositeMediaRepository {
         }
     }
 
+    public List<MediaItem> getAllPlaylists() {
+        List<PlaylistEntity> playlistEntities = playlistDao.getAllPlaylists();
+        List<MediaItem> items = new ArrayList<>();
+        for (PlaylistEntity entity : playlistEntities) {
+            items.add(
+                    new MediaItem.Builder()
+                            .setMediaId(entity.mediaId)
+                            .setMediaMetadata(
+                                    new MediaMetadata.Builder()
+                                            .setTitle(entity.title)
+                                            .setIsPlayable(true)
+                                            .setIsBrowsable(true)
+                                            .setMediaType(MediaMetadata.MEDIA_TYPE_PLAYLIST)
+                                            .build()
+                            ).build()
+            );
+        }
+        return items;
+    }
+
+    public MediaItem getPlaylistByMediaId(String mediaId) {
+        PlaylistEntity entity = playlistDao.getByMediaId(mediaId);
+        if (entity != null) {
+            return new MediaItem.Builder()
+                    .setMediaId(entity.mediaId)
+                    .setMediaMetadata(
+                            new MediaMetadata.Builder()
+                                    .setTitle(entity.title)
+                                    .setIsPlayable(true)
+                                    .setIsBrowsable(true)
+                                    .setMediaType(MediaMetadata.MEDIA_TYPE_PLAYLIST)
+                                    .build()
+                    ).build();
+        }
+        return null;
+    }
+
+    public List<MediaItem> getSongsByPlaylistId(String mediaId) {
+        PlaylistSongs ps = playlistDao.getPlaylistSongsByMediaId(mediaId);
+        List<MediaItem> items = new ArrayList<>();
+        for (SongEntity entity : ps.songEntities) {
+            items.add(
+                    new MediaItem.Builder()
+                            .setMediaId(entity.mediaId)
+                            .setUri(entity.sourceUri)
+                            .setMediaMetadata(
+                                    new MediaMetadata.Builder()
+                                            .setTitle(entity.title)
+//                                            .setArtist(artist.title)
+//                                            .setAlbumTitle(album.title)
+                                            .setIsPlayable(true)
+                                            .setIsBrowsable(false)
+                                            .setMediaType(MEDIA_TYPE_MUSIC)
+                                            .build()
+                            ).build()
+            );
+        }
+        return items;
+    }
 
 }
