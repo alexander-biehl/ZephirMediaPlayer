@@ -17,12 +17,17 @@ import java.util.stream.Collectors;
 
 public class EntityExtractor {
 
+    private static final String ALBUM_PREFIX = "[albumEntity]";
+    private static final String ARTIST_PREFIX = "[artistEntity]";
+    private static final String ITEM_PREFIX = "[item]";
+    private static final String PLAYLIST_PREFIX = "[playlistEntity]";
+
     public static List<ArtistEntity> extractArtistEntities(List<MediaItem> items) {
 
         Map<String, ArtistEntity> entityMap = new HashMap<>();
         for (MediaItem item : items) {
             String artist = item.mediaMetadata.artist.toString();
-            String mediaId = item.mediaId;
+            String mediaId = ARTIST_PREFIX + artist;
             if (!entityMap.containsKey(artist)) {
                 entityMap.put(artist, new ArtistEntity(artist, mediaId));
             }
@@ -36,7 +41,7 @@ public class EntityExtractor {
         for (MediaItem item : items) {
             String album = item.mediaMetadata.albumTitle.toString();
             String artist = item.mediaMetadata.artist.toString();
-            String mediaId = item.mediaId;
+            String mediaId = ALBUM_PREFIX + album;
             if (!entityMap.containsKey(album)) {
                 entityMap.put(album, new AlbumEntity(album, mediaId, artistIdMap.get(artist)));
             }
@@ -53,7 +58,7 @@ public class EntityExtractor {
                 .stream()
                 .map(e -> new SongEntity(
                         e.mediaMetadata.title.toString(),
-                        e.mediaId,
+                        ITEM_PREFIX + e.mediaId,
                         String.valueOf(e.mediaMetadata.trackNumber),
                         ContentUris.withAppendedId(
                                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
