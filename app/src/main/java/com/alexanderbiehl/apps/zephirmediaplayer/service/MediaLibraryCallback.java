@@ -14,6 +14,7 @@ import androidx.media3.session.MediaSession;
 import androidx.media3.session.SessionError;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.MainApp;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.database.AppDatabase;
 import com.alexanderbiehl.apps.zephirmediaplayer.repositories.CompositeMediaRepository;
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.Futures;
@@ -34,7 +35,7 @@ public class MediaLibraryCallback extends Observable.OnPropertyChangedCallback i
     public MediaLibraryCallback(@NonNull final Context context, @NonNull final MainApp mainApp) {
         this.context = context;
         this.mainApp = mainApp;
-        this.repository = new CompositMediaRepositoryImpl();
+        this.repository = new CompositeMediaRepository(AppDatabase.getDatabase(context));
 
         if (this.mainApp.getStoreIsSynced().get()) {
             initializeData();
