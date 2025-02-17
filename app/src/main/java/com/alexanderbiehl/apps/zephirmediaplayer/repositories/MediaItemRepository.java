@@ -123,6 +123,14 @@ public class MediaItemRepository {
         return Optional.of(item);
     }
 
+    /**
+     * Since the localConfiguration is stripped out when a mediaItem is sent back and forth
+     * from controller to browser, we need to re-instantiate it from the DB when we are going
+     * to play
+     *
+     * @param remoteItem - The remote media item that we wish to play
+     * @return Optional<MediaItem> The expanded MediaItem with localConfiguration
+     */
     @OptIn(markerClass = UnstableApi.class)
     public Optional<MediaItem> expandItem(MediaItem remoteItem) {
         Optional<MediaItem> localItem = getItem(remoteItem.mediaId);
