@@ -1,5 +1,7 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.data.entity;
 
+import androidx.media3.common.MediaItem;
+import androidx.media3.common.MediaMetadata;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
@@ -32,4 +34,15 @@ public class AlbumEntity extends EntityBase {
         super();
     }
 
+    public static MediaItem asItem(AlbumEntity entity) {
+        return new MediaItem.Builder()
+                .setMediaId(entity.mediaId)
+                .setMediaMetadata(
+                        new MediaMetadata.Builder()
+                                .setTitle(entity.title)
+                                .setIsBrowsable(true)
+                                .setIsPlayable(true)
+                                .build())
+                .build();
+    }
 }

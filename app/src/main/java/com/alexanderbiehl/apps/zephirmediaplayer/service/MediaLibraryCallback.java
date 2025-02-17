@@ -1,7 +1,6 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.service;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,10 +14,7 @@ import androidx.media3.session.MediaSession;
 import androidx.media3.session.SessionError;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.MainApp;
-import com.alexanderbiehl.apps.zephirmediaplayer.common.Result;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.database.AppDatabase;
-import com.alexanderbiehl.apps.zephirmediaplayer.datasources.impl.MediaDbDataSource;
-import com.alexanderbiehl.apps.zephirmediaplayer.repositories.MediaRepository;
+import com.alexanderbiehl.apps.zephirmediaplayer.repositories.CompositeMediaRepository;
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -32,11 +28,13 @@ public class MediaLibraryCallback extends Observable.OnPropertyChangedCallback i
     private static final String TAG = MediaLibraryCallback.class.getSimpleName();
     private final Context context;
     private final MainApp mainApp;
+    private final CompositeMediaRepository repository;
 
 
     public MediaLibraryCallback(@NonNull final Context context, @NonNull final MainApp mainApp) {
         this.context = context;
         this.mainApp = mainApp;
+        this.repository = new CompositMediaRepositoryImpl();
 
         if (this.mainApp.getStoreIsSynced().get()) {
             initializeData();
@@ -46,14 +44,14 @@ public class MediaLibraryCallback extends Observable.OnPropertyChangedCallback i
     }
 
     private void initializeData() {
-        MediaRepository repo = new MediaRepository(
-                new MediaDbDataSource(
-                        AppDatabase.getDatabase(context),
-                        mainApp.getExec()
-                )
-        );
+//        MediaRepository repo = new MediaRepository(
+//                new MediaDbDataSource(
+//                        AppDatabase.getDatabase(context),
+//                        mainApp.getExec()
+//                )
+//        );
 
-        repo.getMedia((result) -> {
+        /*repo.getMedia((result) -> {
             if (result instanceof Result.Success) {
                 // TODO this implementation does not work with large amounts of media
                 // TODO instead of loading everything at once, load all data into the db,
@@ -63,7 +61,7 @@ public class MediaLibraryCallback extends Observable.OnPropertyChangedCallback i
                 Log.e(TAG, "There was an error receiving media: " +
                         ((Result.Error<?>) result).ex.toString());
             }
-        });
+        });*/
     }
 
 

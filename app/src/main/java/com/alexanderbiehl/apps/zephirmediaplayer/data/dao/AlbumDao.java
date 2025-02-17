@@ -27,4 +27,12 @@ public interface AlbumDao extends DoaBase<AlbumEntity> {
     @Transaction
     @Query("SELECT * FROM albums WHERE media_id = :mediaId")
     AlbumSongs getAlbumSongsByMediaId(final String mediaId);
+
+    @Query("SELECT * from albums WHERE albumArtistId = :artistId")
+    AlbumEntity[] getAlbumsForArtist(final Long artistId);
+
+    @Query("SELECT * from albums " +
+            "LEFT JOIN artists ON albums.albumArtistId = artists.id " +
+            "WHERE artists.media_id = :mediaId")
+    AlbumEntity[] getAlbumsForArtistMediaId(final String mediaId);
 }

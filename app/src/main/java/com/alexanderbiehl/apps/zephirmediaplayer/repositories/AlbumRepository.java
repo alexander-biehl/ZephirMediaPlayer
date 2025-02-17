@@ -1,4 +1,6 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.repositories;
 
-public class AlbumRepository {
+import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.AlbumEntity;
+
+public interface AlbumRepository extends AbstractRepository<AlbumEntity>{
 }

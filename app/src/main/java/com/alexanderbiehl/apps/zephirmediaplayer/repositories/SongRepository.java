@@ -1,4 +1,6 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.repositories;
 
-public class SongRepository {
+import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.SongEntity;
+
+public interface SongRepository extends AbstractRepository<SongEntity> {
 }
