@@ -31,6 +31,7 @@ public class ArtistEntity extends EntityBase {
                         .setTitle(entity.title)
                         .setIsBrowsable(true)
                         .setIsPlayable(false)
+                        .setMediaType(MediaMetadata.MEDIA_TYPE_ARTIST)
                         .build())
                 .build();
     }

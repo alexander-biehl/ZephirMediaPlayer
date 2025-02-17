@@ -42,6 +42,7 @@ public class AlbumEntity extends EntityBase {
                                 .setTitle(entity.title)
                                 .setIsBrowsable(true)
                                 .setIsPlayable(true)
+                                .setMediaType(MediaMetadata.MEDIA_TYPE_ALBUM)
                                 .build())
                 .build();
     }
