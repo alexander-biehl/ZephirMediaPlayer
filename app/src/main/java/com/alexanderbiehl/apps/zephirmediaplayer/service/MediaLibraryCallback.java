@@ -25,7 +25,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class MediaLibraryCallback extends Observable.OnPropertyChangedCallback implements MediaLibraryService.MediaLibrarySession.Callback {
+public class MediaLibraryCallback
+        extends Observable.OnPropertyChangedCallback
+        implements MediaLibraryService.MediaLibrarySession.Callback {
 
     private static final String TAG = MediaLibraryCallback.class.getSimpleName();
     private final Context context;
@@ -43,32 +45,8 @@ public class MediaLibraryCallback extends Observable.OnPropertyChangedCallback i
         );
 
         if (!this.mainApp.getStoreIsSynced().get()) {
-            // initializeData();
             this.mainApp.getStoreIsSynced().addOnPropertyChangedCallback(this);
-        } /*else {
-            this.mainApp.getStoreIsSynced().addOnPropertyChangedCallback(this);
-        }*/
-    }
-
-    private void initializeData() {
-//        MediaRepository repo = new MediaRepository(
-//                new MediaDbDataSource(
-//                        AppDatabase.getDatabase(context),
-//                        mainApp.getExec()
-//                )
-//        );
-
-        /*repo.getMedia((result) -> {
-            if (result instanceof Result.Success) {
-                // TODO this implementation does not work with large amounts of media
-                // TODO instead of loading everything at once, load all data into the db,
-                // TODO and then just query what we need from db
-                MediaItemTree.getInstance().initialize(((Result.Success<List<MediaItem>>) result).data);
-            } else {
-                Log.e(TAG, "There was an error receiving media: " +
-                        ((Result.Error<?>) result).ex.toString());
-            }
-        });*/
+        }
     }
 
 
@@ -81,9 +59,7 @@ public class MediaLibraryCallback extends Observable.OnPropertyChangedCallback i
             @Nullable MediaLibraryService.LibraryParams params
     ) {
         return Futures.submit(() ->
-                        LibraryResult.ofItem(repository.getRoot(), params),
-                // LibraryResult.ofItem(MediaItemTree.getInstance().getRootItem(), params),
-                this.mainApp.getExec());
+                LibraryResult.ofItem(repository.getRoot(), params), this.mainApp.getExec());
     }
 
     @NonNull
@@ -115,7 +91,6 @@ public class MediaLibraryCallback extends Observable.OnPropertyChangedCallback i
             @Nullable MediaLibraryService.LibraryParams params
     ) {
         return Futures.submit(() -> {
-            // List<MediaItem> optChildren = MediaItemTree.getInstance().getChildren(parentId);
             List<MediaItem> optChildren = repository.getChildren(parentId);
             return optChildren.isEmpty() ?
                     LibraryResult.ofError(SessionError.ERROR_BAD_VALUE) :
@@ -138,19 +113,13 @@ public class MediaLibraryCallback extends Observable.OnPropertyChangedCallback i
         for (MediaItem mediaItem : mediaItems) {
             repository.expandItem(mediaItem).ifPresent(playlist::add);
         }
-//        mediaItems.forEach(mediaItem -> {
-//            if (!mediaItem.mediaId.isEmpty()) {
-//                Optional<MediaItem> expandedItem = MediaItemTree.getInstance().expandItem(mediaItem);
-//                expandedItem.ifPresent(playlist::add);
-//            }
-//        });
         return playlist;
     }
 
 
     @Override
     public void onPropertyChanged(Observable sender, int propertyId) {
-        initializeData();
+
         // remove the listener since it's only for the initial load
         this.mainApp.getStoreIsSynced().removeOnPropertyChangedCallback(this);
     }
