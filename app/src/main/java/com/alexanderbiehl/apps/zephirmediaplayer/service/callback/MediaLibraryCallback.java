@@ -29,13 +29,11 @@ public class MediaLibraryCallback
         implements MediaLibraryService.MediaLibrarySession.Callback {
 
     private static final String TAG = MediaLibraryCallback.class.getSimpleName();
-    private final Context context;
     private final MainApp mainApp;
     private final MediaItemRepository repository;
 
 
     public MediaLibraryCallback(@NonNull final Context context, @NonNull final MainApp mainApp) {
-        this.context = context;
         this.mainApp = mainApp;
         this.repository = new MediaItemRepository(
                 new CompositeMediaRepository(
