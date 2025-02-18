@@ -10,6 +10,7 @@ import androidx.media3.session.MediaLibraryService;
 import androidx.media3.session.MediaSession;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.MainApp;
+import com.alexanderbiehl.apps.zephirmediaplayer.service.callback.MediaLibraryCallback;
 
 public class Media3Service extends MediaLibraryService {
 

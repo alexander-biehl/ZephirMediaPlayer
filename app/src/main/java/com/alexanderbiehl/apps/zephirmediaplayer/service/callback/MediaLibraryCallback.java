@@ -1,4 +1,4 @@
-package com.alexanderbiehl.apps.zephirmediaplayer.service;
+package com.alexanderbiehl.apps.zephirmediaplayer.service.callback;
 
 import android.content.Context;
 
