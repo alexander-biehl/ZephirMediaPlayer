@@ -23,6 +23,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * The CompositeMediaRepository handles operations on Song/Artist/Album/PlaylistEntities.
+ */
 public class CompositeMediaRepository {
 
     private final ArtistDao artistDao;

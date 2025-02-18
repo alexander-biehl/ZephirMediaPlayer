@@ -7,10 +7,15 @@ import androidx.media3.common.util.UnstableApi;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * The MediaItemRepository is a top-level repository that consumes the CompositeMediaRepository.
+ * The CompositeMediaRepository is used to retrieve the underlying database entities, and this class
+ * is responsible for converting those into MediaItem records usable by the MediaBrowserService
+ * Media3Service.
+ */
 public class MediaItemRepository {
 
     private static final String ROOT_ID = "[rootID]";
@@ -103,7 +108,7 @@ public class MediaItemRepository {
                 default:
                     return new ArrayList<MediaItem>();
             }
-        }).orElseGet(ArrayList<MediaItem>::new);
+        }).orElseGet(ArrayList::new);
     }
 
     public Optional<MediaItem> getItem(final String mediaId) {
