@@ -1,11 +1,11 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.service.callback;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
-import androidx.databinding.Observable;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.session.LibraryResult;
@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Optional;
 
 public class MediaLibraryCallback
-        extends Observable.OnPropertyChangedCallback
         implements MediaLibraryService.MediaLibrarySession.Callback {
 
     private static final String TAG = MediaLibraryCallback.class.getSimpleName();
@@ -43,10 +42,6 @@ public class MediaLibraryCallback
                         AppDatabase.getDatabase(context)
                 )
         );
-
-        if (!this.mainApp.getStoreIsSynced().get()) {
-            this.mainApp.getStoreIsSynced().addOnPropertyChangedCallback(this);
-        }
     }
 
 
@@ -58,6 +53,11 @@ public class MediaLibraryCallback
             @NonNull MediaSession.ControllerInfo browser,
             @Nullable MediaLibraryService.LibraryParams params
     ) {
+        if (Log.isLoggable(TAG, Log.DEBUG)) {
+            Log.d(TAG, "onGetLibraryRoot: session: " + session +
+                    "\nbrowser: " + browser +
+                    "\nparams: " + params);
+        }
         return Futures.submit(() ->
                 LibraryResult.ofItem(repository.getRoot(), params), this.mainApp.getExec());
     }
@@ -70,6 +70,12 @@ public class MediaLibraryCallback
             @NonNull MediaSession.ControllerInfo browser,
             @NonNull String mediaId
     ) {
+        if (Log.isLoggable(TAG, Log.DEBUG)) {
+            Log.d(TAG, "onGetItem:" +
+                    "\nsession: " + session +
+                    "\nbrowser: " + browser +
+                    "\nmediaID: " + mediaId);
+        }
         return Futures.submit(() -> {
             Optional<MediaItem> optItem = repository.getItem(mediaId);
             return optItem.map(mediaItem ->
@@ -90,6 +96,12 @@ public class MediaLibraryCallback
             int pageSize,
             @Nullable MediaLibraryService.LibraryParams params
     ) {
+        if (Log.isLoggable(TAG, Log.DEBUG)) {
+            Log.d(TAG, "onGetChildren:" +
+                    "\nsession: " + session +
+                    "\nbrowser: " + browser +
+                    "\nparentId: " + parentId);
+        }
         return Futures.submit(() -> {
             List<MediaItem> optChildren = repository.getChildren(parentId);
             return optChildren.isEmpty() ?
@@ -114,13 +126,5 @@ public class MediaLibraryCallback
             repository.expandItem(mediaItem).ifPresent(playlist::add);
         }
         return playlist;
-    }
-
-
-    @Override
-    public void onPropertyChanged(Observable sender, int propertyId) {
-
-        // remove the listener since it's only for the initial load
-        this.mainApp.getStoreIsSynced().removeOnPropertyChangedCallback(this);
     }
 }
