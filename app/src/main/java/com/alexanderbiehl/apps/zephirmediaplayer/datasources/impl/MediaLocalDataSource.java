@@ -18,7 +18,6 @@ public class MediaLocalDataSource implements MediaDataSource {
     private static final String TAG = MediaLocalDataSource.class.getSimpleName();
 
     private final MediaLoader mediaLoader;
-    private final Executor executor;
     private final Context context;
 
     /**
@@ -31,25 +30,14 @@ public class MediaLocalDataSource implements MediaDataSource {
      */
     public MediaLocalDataSource(
             final MediaLoader mediaLoader,
-            final Executor executor,
             final Context context
     ) {
         this.mediaLoader = mediaLoader;
-        this.executor = executor;
         this.context = context;
     }
 
-
     @Override
-    public void getMedia(RepositoryCallback<List<MediaItem>> callback) {
-        this.executor.execute(() -> {
-            List<MediaItem> items = mediaLoader.getMedia(context);
-            callback.onComplete(new Result.Success<>(items));
-        });
-    }
-
-    @Override
-    public List<MediaItem> getMediaSynchronous() {
+    public List<MediaItem> getMedia() {
         return mediaLoader.getMedia(context);
     }
 }

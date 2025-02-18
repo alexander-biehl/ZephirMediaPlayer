@@ -21,8 +21,8 @@ public class MediaRepository {
         this.dataSource = dataSource;
     }
 
-    public List<MediaItem> getMediaSynchronous() {
-        return this.dataSource.getMediaSynchronous();
+    public List<MediaItem> getMedia() {
+        return this.dataSource.getMedia();
     }
 
 }

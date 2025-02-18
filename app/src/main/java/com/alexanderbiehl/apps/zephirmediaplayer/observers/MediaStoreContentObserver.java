@@ -59,12 +59,11 @@ public class MediaStoreContentObserver extends ContentObserver {
         MediaRepository mediaRepository = new MediaRepository(
                 new MediaLocalDataSource(
                         new MediaLoader(),
-                        executorService,
                         context
                 )
         );
         // want to make a synchronous call here because we are already running on a background thread
-        List<MediaItem> items = mediaRepository.getMediaSynchronous();
+        List<MediaItem> items = mediaRepository.getMedia();
 
         List<ArtistEntity> artistEntities = EntityExtractor.extractArtistEntities(items);
         Map<String, Long> artistIdMap = new HashMap<>();
