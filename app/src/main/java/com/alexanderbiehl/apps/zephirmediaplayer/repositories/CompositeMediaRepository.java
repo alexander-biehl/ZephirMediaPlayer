@@ -21,7 +21,6 @@ import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.rel.PlaylistSongs;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class CompositeMediaRepository {
@@ -40,31 +39,23 @@ public class CompositeMediaRepository {
         this.playlistDao = db.playlistDao();
     }
 
-    public List<MediaItem> /*void*/ getAllArtists(/*RepositoryCallback<List<MediaItem>> callback*/) {
+    public List<MediaItem> getAllArtists() {
         List<ArtistEntity> artists = Arrays.asList(artistDao.getArtists());
-        //List<MediaItem> items =
         return artists
                 .stream()
                 .map(ArtistEntity::asItem)
                 .collect(Collectors.toList());
-
-        //callback.onComplete(new Result.Success<>(items));
     }
 
-    public MediaItem /*void*/ getArtistByMediaId(String mediaId/*, RepositoryCallback<MediaItem> callback*/) {
+    public MediaItem getArtistByMediaId(String mediaId) {
         ArtistEntity entity = artistDao.getByMediaId(mediaId);
         if (entity != null) {
             return ArtistEntity.asItem(entity);
         }
         return null;
-        /*callback.onComplete(
-                new Result.Success<>(
-                        ArtistEntity.asItem(entity)
-                )
-        );*/
     }
 
-    public List<MediaItem> /*void*/ getAllAlbums(/*RepositoryCallback<List<MediaItem>> callback*/) {
+    public List<MediaItem> getAllAlbums() {
         AlbumEntity[] entities = albumDao.getAll();
         List<MediaItem> items = new ArrayList<>();
         for (AlbumEntity entity : entities) {
@@ -85,10 +76,9 @@ public class CompositeMediaRepository {
         }
 
         return items;
-        // callback.onComplete(new Result.Success<>(items));
     }
 
-    public MediaItem /*void*/ getAlbumByMediaId(String mediaId/*, RepositoryCallback<MediaItem> callback*/) {
+    public MediaItem getAlbumByMediaId(String mediaId) {
         AlbumEntity entity = albumDao.getByMediaId(mediaId);
         if (entity != null) {
             ArtistEntity artist = artistDao.getById(entity.albumArtistId);
@@ -103,17 +93,14 @@ public class CompositeMediaRepository {
                                     .setMediaType(MediaMetadata.MEDIA_TYPE_ALBUM)
                                     .build()
                     ).build();
-            // callback.onComplete(new Result.Success<>(item));
         } else {
-            // callback.onComplete(new Result.Error<>(new Exception("Album not found")));
             return null;
         }
     }
 
-    public List<MediaItem> /*void*/ getAlbumsByArtistId(String mediaId/*, RepositoryCallback<List<MediaItem>> callback*/) {
+    public List<MediaItem> getAlbumsByArtistId(String mediaId) {
         ArtistAlbums albums = artistDao.getArtistAlbumsByMediaId(mediaId);
         ArtistEntity artistEntity = albums.artistEntity;
-        // AlbumEntity[] entities = albumDao.getAlbumsForArtist(artistEntity.id);
         List<MediaItem> items = new ArrayList<>();
         for (AlbumEntity entity : albums.albumEntities) {
             items.add(new MediaItem.Builder()
@@ -128,11 +115,10 @@ public class CompositeMediaRepository {
                                     .build()
                     ).build());
         }
-        // callback.onComplete(new Result.Success<>(items));
         return items;
     }
 
-    public List<MediaItem> /*void*/ getAllSongs(/*RepositoryCallback<List<MediaItem>> callback*/) {
+    public List<MediaItem> getAllSongs() {
         SongEntity[] entities = songDao.getAllSongs();
         List<MediaItem> items = new ArrayList<>();
         for (SongEntity entity : entities) {
@@ -152,16 +138,15 @@ public class CompositeMediaRepository {
                             ).build()
             );
         }
-        // callback.onComplete(new Result.Success<>(items));
         return items;
     }
 
-    public MediaItem /*void*/ getSongByMediaId(String mediaId/*, RepositoryCallback<MediaItem> callback*/) {
+    public MediaItem getSongByMediaId(String mediaId) {
         SongEntity songEntity = songDao.getByMediaId(mediaId);
         if (songEntity != null) {
             ArtistEntity artist = artistDao.getById(songEntity.songArtistId);
             AlbumEntity album = albumDao.getById(songEntity.songAlbumId);
-            MediaItem item = new MediaItem.Builder()
+            return new MediaItem.Builder()
                     .setMediaId(songEntity.mediaId)
                     .setUri(songEntity.sourceUri)
                     .setMediaMetadata(
@@ -174,19 +159,17 @@ public class CompositeMediaRepository {
                                     .setMediaType(MEDIA_TYPE_MUSIC)
                                     .build()
                     ).build();
-            return item;
-            // callback.onComplete(new Result.Success<>(item));
         }
         return null;
     }
 
-    public List<MediaItem> /*void*/ getSongsByAlbumId(String mediaId/*, RepositoryCallback<List<MediaItem>> callback*/) {
+    public List<MediaItem> getSongsByAlbumId(String mediaId) {
         AlbumSongs albumSongs = albumDao.getAlbumSongsByMediaId(mediaId);
         if (albumSongs != null) {
             AlbumEntity album = albumSongs.albumEntity;
             List<SongEntity> songs = albumSongs.songEntities;
             ArtistEntity artist = artistDao.getById(album.albumArtistId);
-            List<MediaItem> items = songs.stream().map(s ->
+            return songs.stream().map(s ->
                     new MediaItem.Builder()
                             .setMediaId(s.mediaId)
                             .setUri(s.sourceUri)
@@ -202,10 +185,7 @@ public class CompositeMediaRepository {
                                             .build()
                             ).build()
             ).collect(Collectors.toList());
-            return items;
-            // callback.onComplete(new Result.Success<>(items));
         } else {
-            // callback.onComplete(new Result.Error<>(new Exception("Not found")));
             return null;
         }
     }
@@ -258,8 +238,6 @@ public class CompositeMediaRepository {
                             .setMediaMetadata(
                                     new MediaMetadata.Builder()
                                             .setTitle(entity.title)
-//                                            .setArtist(artist.title)
-//                                            .setAlbumTitle(album.title)
                                             .setIsPlayable(true)
                                             .setIsBrowsable(false)
                                             .setMediaType(MEDIA_TYPE_MUSIC)
