@@ -14,9 +14,6 @@ public interface DoaBase<T extends EntityBase> {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     long insert(T entity);
 
-//    @Insert
-//    void insertAll(T... entities);
-
     @Update
     void update(T entity);
 
