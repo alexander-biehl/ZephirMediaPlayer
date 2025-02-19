@@ -7,7 +7,6 @@ import androidx.media3.common.MediaMetadata;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.data.dao.AlbumDao;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.dao.ArtistDao;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.dao.PlaylistDao;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.dao.SongDao;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.database.AppDatabase;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.AlbumEntity;
@@ -31,15 +30,16 @@ public class CompositeMediaRepository {
     private final ArtistDao artistDao;
     private final AlbumDao albumDao;
     private final SongDao songDao;
-    private final PlaylistDao playlistDao;
+    private final PlaylistRepository playlistRepository;
 
     public CompositeMediaRepository(
-            AppDatabase db
+            AppDatabase db,
+            PlaylistRepository playlistRepository
     ) {
         this.artistDao = db.artistDao();
         this.albumDao = db.albumDao();
         this.songDao = db.songDao();
-        this.playlistDao = db.playlistDao();
+        this.playlistRepository = playlistRepository;
     }
 
     public List<MediaItem> getAllArtists() {
@@ -194,7 +194,7 @@ public class CompositeMediaRepository {
     }
 
     public List<MediaItem> getAllPlaylists() {
-        List<PlaylistEntity> playlistEntities = playlistDao.getAllPlaylists();
+        List<PlaylistEntity> playlistEntities = playlistRepository.getAll();
         List<MediaItem> items = new ArrayList<>();
         for (PlaylistEntity entity : playlistEntities) {
             items.add(
@@ -214,7 +214,7 @@ public class CompositeMediaRepository {
     }
 
     public MediaItem getPlaylistByMediaId(String mediaId) {
-        PlaylistEntity entity = playlistDao.getByMediaId(mediaId);
+        PlaylistEntity entity = playlistRepository.getByMediaId(mediaId);
         if (entity != null) {
             return new MediaItem.Builder()
                     .setMediaId(entity.mediaId)
@@ -231,7 +231,7 @@ public class CompositeMediaRepository {
     }
 
     public List<MediaItem> getSongsByPlaylistId(String mediaId) {
-        PlaylistSongs ps = playlistDao.getPlaylistSongsByMediaId(mediaId);
+        PlaylistSongs ps = playlistRepository.getPlaylistSongsByMediaId(mediaId);
         List<MediaItem> items = new ArrayList<>();
         for (SongEntity entity : ps.songEntities) {
             items.add(

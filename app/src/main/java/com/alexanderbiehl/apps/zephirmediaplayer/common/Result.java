@@ -24,5 +24,8 @@ public abstract class Result<T> {
         public Error(Exception ex) {
             this.ex = ex;
         }
+        public Error(String error) {
+            this.ex = new Exception(error);
+        }
     }
 }

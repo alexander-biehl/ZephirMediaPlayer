@@ -15,8 +15,10 @@ import androidx.media3.session.SessionError;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.MainApp;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.database.AppDatabase;
+import com.alexanderbiehl.apps.zephirmediaplayer.datasources.impl.PlaylistDbDataSource;
 import com.alexanderbiehl.apps.zephirmediaplayer.repositories.CompositeMediaRepository;
 import com.alexanderbiehl.apps.zephirmediaplayer.repositories.MediaItemRepository;
+import com.alexanderbiehl.apps.zephirmediaplayer.repositories.PlaylistRepository;
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -35,9 +37,16 @@ public class MediaLibraryCallback
 
     public MediaLibraryCallback(@NonNull final Context context, @NonNull final MainApp mainApp) {
         this.mainApp = mainApp;
+        final AppDatabase INSTANCE = AppDatabase.getDatabase(context);
         this.repository = new MediaItemRepository(
                 new CompositeMediaRepository(
-                        AppDatabase.getDatabase(context)
+                        INSTANCE,
+                        new PlaylistRepository(
+                                new PlaylistDbDataSource(
+                                        INSTANCE.playlistDao(),
+                                        mainApp.getExec()
+                                )
+                        )
                 )
         );
     }
