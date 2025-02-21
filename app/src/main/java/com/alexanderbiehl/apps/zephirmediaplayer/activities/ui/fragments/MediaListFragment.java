@@ -304,7 +304,8 @@ public class MediaListFragment extends Fragment {
     }
 
     private void addMediaItemToPlaylist(@NonNull MediaItem item) {
-        //TODO
+        //TODO need to open UI to select which playlist to add to
+        // perhaps add a new fragment for the playlists
     }
 
     private void popPathStack() {
