@@ -36,7 +36,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Stack;
 
 /**
@@ -319,7 +318,10 @@ public class MediaListFragment extends Fragment {
     }
 
     private void pushPathStack(final MediaItem item) {
-        treeBackStack.push(item);
+        if (treeBackStack.isEmpty() ||
+                !treeBackStack.peek().mediaId.equals(item.mediaId)) {
+            treeBackStack.push(item);
+        }
         openSubFolder(item);
     }
 
@@ -328,7 +330,16 @@ public class MediaListFragment extends Fragment {
         @Override
         public void onClick(int position, MediaItem item) {
             MediaItem selectedItem = subMediaList.get(position);
-            mediaViewModel.setCurrentMedia(selectedItem);
+
+            // if we clicked a playable mediaitem, directly play it instead of adding to viewmode,
+            // otherwise when back is clicked in NowPlayingFragment, it'll just jump back to the playable
+            // mediaitem and then back to NowPlaying
+            if (Boolean.TRUE.equals(selectedItem.mediaMetadata.isPlayable) &&
+                    Boolean.FALSE.equals(selectedItem.mediaMetadata.isBrowsable)) {
+                handlePlay(item);
+            } else {
+                mediaViewModel.setCurrentMedia(selectedItem);
+            }
         }
     }
 }
