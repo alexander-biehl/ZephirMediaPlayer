@@ -331,8 +331,9 @@ public class MediaListFragment extends Fragment {
         public void onClick(int position, MediaItem item) {
             MediaItem selectedItem = subMediaList.get(position);
 
-            // if we clicked a playable mediaitem, directly play it instead of adding to viewmode,
-            // otherwise when back is clicked in NowPlayingFragment, it'll just jump back to the playable
+            // if we clicked a playable but not browsable MediaItem (i.e. a song), directly play it
+            // instead of adding to viewmodel, otherwise when back is clicked in NowPlayingFragment
+            // it'll just jump back to the playable
             // mediaitem and then back to NowPlaying
             if (Boolean.TRUE.equals(selectedItem.mediaMetadata.isPlayable) &&
                     Boolean.FALSE.equals(selectedItem.mediaMetadata.isBrowsable)) {
