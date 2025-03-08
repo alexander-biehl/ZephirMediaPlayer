@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -47,6 +48,13 @@ public class NowPlayingFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        requireActivity().getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                NavHostFragment.findNavController(NowPlayingFragment.this)
+                        .navigate(R.id.action_SecondFragment_to_FirstFragment);
+            }
+        });
         initializeController();
     }
 
