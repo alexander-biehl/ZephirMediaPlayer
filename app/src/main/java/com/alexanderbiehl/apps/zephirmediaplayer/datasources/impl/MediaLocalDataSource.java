@@ -4,14 +4,10 @@ import android.content.Context;
 
 import androidx.media3.common.MediaItem;
 
-import com.alexanderbiehl.apps.zephirmediaplayer.common.RepositoryCallback;
-import com.alexanderbiehl.apps.zephirmediaplayer.common.Result;
 import com.alexanderbiehl.apps.zephirmediaplayer.dataloaders.MediaLoader;
 import com.alexanderbiehl.apps.zephirmediaplayer.datasources.MediaDataSource;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Executor;
 
 public class MediaLocalDataSource implements MediaDataSource {
 
@@ -25,7 +21,6 @@ public class MediaLocalDataSource implements MediaDataSource {
      * and an executor that will execute the work on a backend thread
      *
      * @param mediaLoader
-     * @param executor
      * @param context
      */
     public MediaLocalDataSource(
