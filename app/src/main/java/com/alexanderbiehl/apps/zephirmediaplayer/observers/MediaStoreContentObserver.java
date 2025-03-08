@@ -1,16 +1,13 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.observers;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.database.ContentObserver;
 import android.os.Handler;
 
 import androidx.media3.common.MediaItem;
-import androidx.media3.extractor.ExtractorUtil;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.common.RepositoryCallback;
 import com.alexanderbiehl.apps.zephirmediaplayer.common.Result;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.dao.base.DoaBase;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.database.AppDatabase;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.AlbumEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.ArtistEntity;
@@ -24,10 +21,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 public class MediaStoreContentObserver extends ContentObserver {
+
+    private static final String TAG = MediaStoreContentObserver.class.getSimpleName();
 
     private final AppDatabase db;
     private final Executor executorService;
@@ -75,12 +73,17 @@ public class MediaStoreContentObserver extends ContentObserver {
         }
 
         List<AlbumEntity> albumEntities = EntityExtractor.extractAlbumEntities(items, artistIdMap);
-        Map<String,Long> albumIdMap = new HashMap<>();
+        Map<String, Long> albumIdMap = new HashMap<>();
         for (AlbumEntity entity : albumEntities) {
             AlbumEntity _entity = db.albumDao().getByMediaId(entity.mediaId);
 
             Long id = _entity != null ? _entity.id : db.albumDao().insert(entity);
-            albumIdMap.put(entity.title, id);
+            albumIdMap.put(
+                    entity.title + "-" + artistIdMap.entrySet().stream()
+                            .filter((p) -> p.getValue() == entity.albumArtistId)
+                            .collect(Collectors.toList()).get(0).getKey(),
+                    id
+            );
         }
 
         List<SongEntity> songEntities = EntityExtractor.extractSongEntities(items, artistIdMap, albumIdMap);

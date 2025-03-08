@@ -2,6 +2,7 @@ package com.alexanderbiehl.apps.zephirmediaplayer.data.entity.util;
 
 import android.content.ContentUris;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import androidx.media3.common.MediaItem;
 
@@ -17,6 +18,8 @@ import java.util.stream.Collectors;
 
 public class EntityExtractor {
 
+    private static final String TAG = EntityExtractor.class.getSimpleName();
+
     private static final String ALBUM_PREFIX = "[albumEntity]";
     private static final String ARTIST_PREFIX = "[artistEntity]";
     private static final String ITEM_PREFIX = "[item]";
@@ -27,6 +30,9 @@ public class EntityExtractor {
         Map<String, ArtistEntity> entityMap = new HashMap<>();
         for (MediaItem item : items) {
             String artist = item.mediaMetadata.artist.toString();
+            if (artist.equals("Actress")) {
+                Log.d(TAG, "Actress");
+            }
             String mediaId = ARTIST_PREFIX + artist;
             if (!entityMap.containsKey(artist)) {
                 entityMap.put(artist, new ArtistEntity(artist, mediaId));
@@ -41,9 +47,14 @@ public class EntityExtractor {
         for (MediaItem item : items) {
             String album = item.mediaMetadata.albumTitle.toString();
             String artist = item.mediaMetadata.artist.toString();
-            String mediaId = ALBUM_PREFIX + album;
-            if (!entityMap.containsKey(album)) {
-                entityMap.put(album, new AlbumEntity(album, mediaId, artistIdMap.get(artist)));
+            // use artist-album for the map key to avoid issues with duplicate album names
+            String mapKey = artist + "-" + album;
+
+            // use ALBUM_PREFIXalbum_artist as the album mediaID to avoid issues where different
+            // artists have albums with the same title
+            String mediaId = ALBUM_PREFIX + album + "_" + artist;
+            if (!entityMap.containsKey(mapKey)) {
+                entityMap.put(mapKey, new AlbumEntity(album, mediaId, artistIdMap.get(artist)));
             }
         }
         return new ArrayList<>(entityMap.values());
@@ -65,7 +76,7 @@ public class EntityExtractor {
                                 Long.parseLong(e.mediaId)
                         ).toString(),
                         artistIdMap.get(e.mediaMetadata.artist.toString()),
-                        albumIdMap.get(e.mediaMetadata.albumTitle.toString())
+                        albumIdMap.get(e.mediaMetadata.albumTitle.toString() + "-" + e.mediaMetadata.artist)
                 ))
                 .collect(Collectors.toList());
     }
