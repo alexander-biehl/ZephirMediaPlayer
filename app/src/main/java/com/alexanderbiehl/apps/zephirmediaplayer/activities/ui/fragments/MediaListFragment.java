@@ -252,6 +252,7 @@ public class MediaListFragment extends Fragment {
                 );
         childrenFuture.addListener(() -> {
             try {
+                // TODO we need to check if the service returns an error here
                 subMediaList.clear();
                 subMediaList.addAll(childrenFuture.get().value);
                 subMediaList.sort((a, b) -> {
