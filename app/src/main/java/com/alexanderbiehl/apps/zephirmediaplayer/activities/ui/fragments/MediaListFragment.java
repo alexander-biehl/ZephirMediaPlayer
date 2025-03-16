@@ -170,12 +170,17 @@ public class MediaListFragment extends Fragment {
     public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, @Nullable ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater inflater = requireActivity().getMenuInflater();
-        // TODO check if browsable & playable, display options accordingly
+
         if (v instanceof RecyclerView) {
             MediaItem item = ((MediaListRecyclerViewAdapter) ((RecyclerView) v).getAdapter()).getContextMenuItem();
-            Log.d(TAG, "Item: " + item.toString());
+
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                Log.d(TAG, "Item: " + item.toString());
+            }
+            if (item.mediaMetadata.isPlayable) {
+                inflater.inflate(R.menu.menu_media_item, menu);
+            }
         }
-        inflater.inflate(R.menu.menu_media_item, menu);
     }
 
     @Override
@@ -296,7 +301,7 @@ public class MediaListFragment extends Fragment {
         // if the item is Browsable AND Playable (i.e. it is an album / playlist)
         if (Boolean.TRUE.equals(item.mediaMetadata.isBrowsable) &&
                 Boolean.TRUE.equals(item.mediaMetadata.isPlayable)) {
-            Log.d(TAG, "Item is browsable, adding child items to queue");
+            Log.d(TAG, "Item is browsable and playable, adding child items to queue");
             addChildItemsToQueue(item);
         } else if (Boolean.TRUE.equals(item.mediaMetadata.isPlayable)) {
             Log.d(TAG, "Item is playable, adding to queue");
@@ -351,7 +356,7 @@ public class MediaListFragment extends Fragment {
             // if we clicked a playable but not browsable MediaItem (i.e. a song), directly play it
             // instead of adding to viewmodel, otherwise when back is clicked in NowPlayingFragment
             // it'll just jump back to the playable
-            // mediaitem and then back to NowPlaying
+            // MediaItem and then back to NowPlaying
             if (Boolean.TRUE.equals(selectedItem.mediaMetadata.isPlayable) &&
                     Boolean.FALSE.equals(selectedItem.mediaMetadata.isBrowsable)) {
                 handlePlay(item);
