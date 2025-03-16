@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 import androidx.media3.common.MediaItem;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.alexanderbiehl.apps.zephirmediaplayer.common.OnClickHandler;
 import com.alexanderbiehl.apps.zephirmediaplayer.databinding.FragmentQueueItemBinding;
 
 import java.util.List;

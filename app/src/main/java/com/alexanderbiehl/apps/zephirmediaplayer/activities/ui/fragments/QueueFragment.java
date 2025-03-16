@@ -3,12 +3,17 @@ package com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.fragments;
 import android.content.ComponentName;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.media3.common.MediaItem;
@@ -21,7 +26,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.R;
 import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.adapters.MyQueueRecyclerViewAdapter;
-import com.alexanderbiehl.apps.zephirmediaplayer.common.OnClickHandler;
 import com.alexanderbiehl.apps.zephirmediaplayer.service.Media3Service;
 import com.google.common.util.concurrent.ListenableFuture;
 
@@ -32,6 +36,8 @@ import java.util.List;
  * A fragment representing a list of Items.
  */
 public class QueueFragment extends Fragment {
+
+    private static final String TAG = QueueFragment.class.getSimpleName();
 
     private static final String ARG_COLUMN_COUNT = "column-count";
     private final List<MediaItem> currentQueue;
@@ -92,6 +98,8 @@ public class QueueFragment extends Fragment {
                         .navigate(R.id.action_QueueFragment_to_NowPlayingFragment);
             }
         });
+
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -112,6 +120,28 @@ public class QueueFragment extends Fragment {
             recyclerView.setAdapter(queueAdapter);
         }
         return view;
+    }
+
+    @Override
+    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, @Nullable ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = requireActivity().getMenuInflater();
+//        if (v instanceof RecyclerView) {
+//            MediaItem item = ((MyQueueRecyclerViewAdapter) ((RecyclerView) v).getAdapter()).getContextMenuItem();
+//        }
+        inflater.inflate(R.menu.menu_now_playing_queue, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.remove_from_queue:
+                Log.d(TAG, "Remove from Queue clicked");
+                // TODO remove from queue
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
     }
 
     private void initializeController() {

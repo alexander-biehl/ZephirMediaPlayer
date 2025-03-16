@@ -160,4 +160,5 @@
     <string name="add_to_queue">Add To Queue</string>
     <string name="add_to_playlist">Add to Playlist</string>
     <string name="splash_logo_content_description">Displays logo</string>
+    <string name="remove_from_queue">Remove from Queue</string>
 </resources>
