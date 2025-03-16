@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.media3.common.MediaItem;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.alexanderbiehl.apps.zephirmediaplayer.common.OnClickHandler;
 import com.alexanderbiehl.apps.zephirmediaplayer.databinding.FragmentQueueItemBinding;
 
 import java.util.List;
@@ -18,9 +19,11 @@ import java.util.List;
 public class MyQueueRecyclerViewAdapter extends RecyclerView.Adapter<MyQueueRecyclerViewAdapter.ViewHolder> {
 
     private final List<MediaItem> mValues;
+    private final OnClickHandler clickListener;
 
-    public MyQueueRecyclerViewAdapter(List<MediaItem> items) {
+    public MyQueueRecyclerViewAdapter(List<MediaItem> items, final OnClickHandler clickListener) {
         mValues = items;
+        this.clickListener = clickListener;
     }
 
     @NonNull

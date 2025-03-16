@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.R;
 import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.adapters.MyQueueRecyclerViewAdapter;
+import com.alexanderbiehl.apps.zephirmediaplayer.common.OnClickHandler;
 import com.alexanderbiehl.apps.zephirmediaplayer.service.Media3Service;
 import com.google.common.util.concurrent.ListenableFuture;
 
@@ -107,7 +108,7 @@ public class QueueFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            queueAdapter = new MyQueueRecyclerViewAdapter(currentQueue);
+            queueAdapter = new MyQueueRecyclerViewAdapter(currentQueue, new QueueViewClickHandler());
             recyclerView.setAdapter(queueAdapter);
         }
         return view;
@@ -147,5 +148,13 @@ public class QueueFragment extends Fragment {
             currentQueue.add(mediaController.getMediaItemAt(i));
         }
         queueAdapter.notifyDataSetChanged();
+    }
+
+    private class QueueViewClickHandler implements OnClickHandler {
+
+        @Override
+        public void onClick(int position, MediaItem item) {
+
+        }
     }
 }

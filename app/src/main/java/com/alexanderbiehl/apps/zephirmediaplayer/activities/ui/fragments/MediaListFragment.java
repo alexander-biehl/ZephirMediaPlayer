@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alexanderbiehl.apps.zephirmediaplayer.R;
 import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.adapters.MediaListRecyclerViewAdapter;
 import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.viewmodel.MediaViewModel;
+import com.alexanderbiehl.apps.zephirmediaplayer.common.OnClickHandler;
 import com.alexanderbiehl.apps.zephirmediaplayer.service.Media3Service;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.common.collect.ImmutableList;
@@ -326,7 +327,7 @@ public class MediaListFragment extends Fragment {
         openSubFolder(item);
     }
 
-    private class MediaListViewClickHandler implements MediaListRecyclerViewAdapter.OnClickHandler {
+    private class MediaListViewClickHandler implements OnClickHandler {
 
         @Override
         public void onClick(int position, MediaItem item) {

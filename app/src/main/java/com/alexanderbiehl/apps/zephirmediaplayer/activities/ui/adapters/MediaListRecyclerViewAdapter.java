@@ -1,16 +1,14 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.adapters;
 
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.media3.common.MediaItem;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.alexanderbiehl.apps.zephirmediaplayer.common.OnClickHandler;
 import com.alexanderbiehl.apps.zephirmediaplayer.databinding.FragmentMediaItemBinding;
 
 import java.util.List;
@@ -30,12 +28,12 @@ public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaList
         clickListener = listener;
     }
 
-    public void setLongPresPosition(int pos) {
-        longPresPosition = pos;
-    }
-
     public int getLongPresPosition() {
         return longPresPosition;
+    }
+
+    public void setLongPresPosition(int pos) {
+        longPresPosition = pos;
     }
 
     public MediaItem getContextMenuItem() {
@@ -70,10 +68,6 @@ public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaList
     @Override
     public int getItemCount() {
         return mValues.size();
-    }
-
-    public interface OnClickHandler {
-        void onClick(int position, MediaItem item);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
