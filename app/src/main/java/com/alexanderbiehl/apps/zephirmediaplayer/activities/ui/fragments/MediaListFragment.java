@@ -150,7 +150,6 @@ public class MediaListFragment extends Fragment {
         }
 
         this.mediaViewModel = new ViewModelProvider(requireActivity()).get(MediaViewModel.class);
-
         return view;
     }
 
@@ -295,9 +294,8 @@ public class MediaListFragment extends Fragment {
             Log.d(TAG, "Item is playable, adding to queue");
             if (mediaBrowser != null) {
                 int mediaItemCount = mediaBrowser.getMediaItemCount();
-                int position = mediaItemCount != 0 ? mediaItemCount - 1 : 0;
                 mediaBrowser.addMediaItem(
-                        position,
+                        mediaItemCount,
                         item
                 );
             }
