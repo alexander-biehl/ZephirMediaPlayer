@@ -19,11 +19,10 @@ import java.util.List;
 public class MyQueueRecyclerViewAdapter extends RecyclerView.Adapter<MyQueueRecyclerViewAdapter.ViewHolder> {
 
     private final List<MediaItem> mValues;
-    private final OnClickHandler clickListener;
+    private int longPressPosition;
 
-    public MyQueueRecyclerViewAdapter(List<MediaItem> items, final OnClickHandler clickListener) {
+    public MyQueueRecyclerViewAdapter(List<MediaItem> items) {
         mValues = items;
-        this.clickListener = clickListener;
     }
 
     @NonNull
@@ -50,7 +49,19 @@ public class MyQueueRecyclerViewAdapter extends RecyclerView.Adapter<MyQueueRecy
         return mValues.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public int getLongPressPosition() {
+        return longPressPosition;
+    }
+
+    public void setLongPressPosition(int longPressPosition) {
+        this.longPressPosition = longPressPosition;
+    }
+
+    public MediaItem getContextMenuItem() {
+        return mValues.get(longPressPosition);
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder {
         public final TextView mIdView;
         public final TextView mContentView;
         public MediaItem mItem;
@@ -59,6 +70,12 @@ public class MyQueueRecyclerViewAdapter extends RecyclerView.Adapter<MyQueueRecy
             super(binding.getRoot());
             mIdView = binding.itemNumber;
             mContentView = binding.content;
+
+            itemView.setOnLongClickListener(l -> {
+                setLongPressPosition(getBindingAdapterPosition());
+                itemView.showContextMenu();
+                return true;
+            });
         }
 
         @Override

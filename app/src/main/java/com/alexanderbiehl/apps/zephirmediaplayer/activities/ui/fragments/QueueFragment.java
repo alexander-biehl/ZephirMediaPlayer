@@ -108,7 +108,7 @@ public class QueueFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            queueAdapter = new MyQueueRecyclerViewAdapter(currentQueue, new QueueViewClickHandler());
+            queueAdapter = new MyQueueRecyclerViewAdapter(currentQueue);
             recyclerView.setAdapter(queueAdapter);
         }
         return view;
@@ -150,11 +150,4 @@ public class QueueFragment extends Fragment {
         queueAdapter.notifyDataSetChanged();
     }
 
-    private class QueueViewClickHandler implements OnClickHandler {
-
-        @Override
-        public void onClick(int position, MediaItem item) {
-
-        }
-    }
 }
