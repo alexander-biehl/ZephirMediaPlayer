@@ -38,6 +38,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+import java.util.concurrent.ExecutionException;
 
 /**
  * A fragment representing a list of Items.
@@ -255,14 +256,7 @@ public class MediaListFragment extends Fragment {
                 // TODO we need to check if the service returns an error here
                 subMediaList.clear();
                 subMediaList.addAll(childrenFuture.get().value);
-                subMediaList.sort((a, b) -> {
-                    if (a.mediaMetadata.trackNumber != null && b.mediaMetadata.trackNumber != null) {
-                        return a.mediaMetadata.trackNumber - b.mediaMetadata.trackNumber;
-                    } else {
-                        return a.mediaMetadata.title.toString().compareTo(
-                                b.mediaMetadata.title.toString());
-                    }
-                });
+                subMediaList.sort(this::sortMediaItems);
                 mediaAdapter.notifyDataSetChanged();
                 Log.d(TAG, "Got media list of " + subMediaList.size() + " items.");
             } catch (Exception e) {
@@ -280,14 +274,28 @@ public class MediaListFragment extends Fragment {
                         null
                 );
         childrenFuture.addListener(() -> {
-            // TODO how do we handle issue when a parent of a parent is clicked?
-            // could recursively get all the children and add them to the final queue?
+            if (childrenFuture.isDone()) {
+                try {
+                    List<MediaItem> queuedItems = childrenFuture.get().value;
+                    if (queuedItems != null && !queuedItems.isEmpty()) {
+                        List<MediaItem> sortedItems = new ArrayList<>(queuedItems);
+                        sortedItems.sort(this::sortMediaItems);
+                        mediaBrowser.addMediaItems(mediaBrowser.getMediaItemCount(), sortedItems);
+                    }
+                } catch (ExecutionException e) {
+                    throw new RuntimeException(e);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
 
         }, ContextCompat.getMainExecutor(requireContext()));
     }
 
     private void addMediaItemToQueue(@NonNull MediaItem item) {
-        if (Boolean.TRUE.equals(item.mediaMetadata.isBrowsable)) {
+        // if the item is Browsable AND Playable (i.e. it is an album / playlist)
+        if (Boolean.TRUE.equals(item.mediaMetadata.isBrowsable) &&
+                Boolean.TRUE.equals(item.mediaMetadata.isPlayable)) {
             Log.d(TAG, "Item is browsable, adding child items to queue");
             addChildItemsToQueue(item);
         } else if (Boolean.TRUE.equals(item.mediaMetadata.isPlayable)) {
@@ -323,6 +331,15 @@ public class MediaListFragment extends Fragment {
             treeBackStack.push(item);
         }
         openSubFolder(item);
+    }
+
+    private int sortMediaItems(MediaItem a, MediaItem b) {
+        if (a.mediaMetadata.trackNumber != null && b.mediaMetadata.trackNumber != null) {
+            return a.mediaMetadata.trackNumber - b.mediaMetadata.trackNumber;
+        } else {
+            return a.mediaMetadata.title.toString().compareTo(
+                    b.mediaMetadata.title.toString());
+        }
     }
 
     private class MediaListViewClickHandler implements OnClickHandler {
