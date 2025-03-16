@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.media3.common.MediaItem;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.alexanderbiehl.apps.zephirmediaplayer.common.OnClickHandler;
 import com.alexanderbiehl.apps.zephirmediaplayer.databinding.FragmentQueueItemBinding;
 
 import java.util.List;
@@ -18,10 +19,12 @@ import java.util.List;
 public class MyQueueRecyclerViewAdapter extends RecyclerView.Adapter<MyQueueRecyclerViewAdapter.ViewHolder> {
 
     private final List<MediaItem> mValues;
+    private final OnClickHandler clickHandler;
     private int longPressPosition;
 
-    public MyQueueRecyclerViewAdapter(List<MediaItem> items) {
+    public MyQueueRecyclerViewAdapter(List<MediaItem> items, final OnClickHandler onClickHandler) {
         mValues = items;
+        this.clickHandler = onClickHandler;
     }
 
     @NonNull
@@ -41,6 +44,12 @@ public class MyQueueRecyclerViewAdapter extends RecyclerView.Adapter<MyQueueRecy
         holder.mItem = mValues.get(position);
         holder.mIdView.setText(String.valueOf(position));
         holder.mContentView.setText(mValues.get(position).mediaMetadata.title);
+
+        holder.itemView.setOnClickListener(v -> {
+            if (clickHandler != null) {
+                clickHandler.onClick(position, mValues.get(position));
+            }
+        });
     }
 
     @Override
@@ -69,6 +78,13 @@ public class MyQueueRecyclerViewAdapter extends RecyclerView.Adapter<MyQueueRecy
             super(binding.getRoot());
             mIdView = binding.itemNumber;
             mContentView = binding.content;
+
+            itemView.setOnClickListener(v -> {
+                if (clickHandler != null) {
+                    int pos = getBindingAdapterPosition();
+                    clickHandler.onClick(pos, mValues.get(pos));
+                }
+            });
 
             itemView.setOnLongClickListener(l -> {
                 setLongPressPosition(getBindingAdapterPosition());
