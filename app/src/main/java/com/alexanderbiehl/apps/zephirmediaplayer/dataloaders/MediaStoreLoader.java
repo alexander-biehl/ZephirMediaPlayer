@@ -15,9 +15,9 @@ import androidx.media3.common.MediaMetadata;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MediaLoader {
+public class MediaStoreLoader {
 
-    private static final String TAG = MediaLoader.class.getSimpleName();
+    private static final String TAG = MediaStoreLoader.class.getSimpleName();
 
     private static final String[] PROJECTION = {
             MediaStore.Audio.AudioColumns._ID,

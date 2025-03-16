@@ -13,7 +13,7 @@ import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.AlbumEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.ArtistEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.SongEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.util.EntityExtractor;
-import com.alexanderbiehl.apps.zephirmediaplayer.dataloaders.MediaLoader;
+import com.alexanderbiehl.apps.zephirmediaplayer.dataloaders.MediaStoreLoader;
 import com.alexanderbiehl.apps.zephirmediaplayer.datasources.impl.MediaLocalDataSource;
 import com.alexanderbiehl.apps.zephirmediaplayer.repositories.MediaRepository;
 
@@ -56,7 +56,7 @@ public class MediaStoreContentObserver extends ContentObserver {
     private void syncMediaStore(RepositoryCallback<Void> callback) {
         MediaRepository mediaRepository = new MediaRepository(
                 new MediaLocalDataSource(
-                        new MediaLoader(),
+                        new MediaStoreLoader(),
                         context
                 )
         );
