@@ -193,7 +193,19 @@ public class QueueFragment extends Fragment {
 
         @Override
         public void onClick(int position, MediaItem item) {
-            // TODO handle play
+            // need to remove all items earlier than the selected one in the queue
+            // and then start playing
+            boolean wasPlaying = false;
+            if (mediaController.getCurrentMediaItemIndex() < position && mediaController.isPlaying()) {
+                mediaController.stop();
+                wasPlaying = true;
+            }
+            mediaController.removeMediaItems(0, position);
+            updateQueue();
+            if (wasPlaying) {
+                mediaController.prepare();
+                mediaController.play();
+            }
         }
     }
 }
