@@ -18,7 +18,7 @@
     <fragment
         android:id="@+id/MediaListFragment"
         android:name="com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.fragments.MediaListFragment"
-        android:label="@string/first_fragment_label"
+        android:label="@string/media_list_fragment_default_title"
         tools:layout="@layout/fragment_media_item_list">
 
         <action
@@ -28,7 +28,7 @@
     <fragment
         android:id="@+id/NowPlayingFragment"
         android:name="com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.fragments.NowPlayingFragment"
-        android:label="@string/second_fragment_label"
+        android:label="@string/now_playing_fragment_title"
         tools:layout="@layout/fragment_now_playing">
 
         <action
@@ -42,7 +42,7 @@
     <fragment
         android:id="@+id/QueueFragment"
         android:name="com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.fragments.QueueFragment"
-        android:label="Queue Fragment"
+        android:label="@string/queue_fragment_title"
         tools:layout="@layout/fragment_queue" >
 
         <action

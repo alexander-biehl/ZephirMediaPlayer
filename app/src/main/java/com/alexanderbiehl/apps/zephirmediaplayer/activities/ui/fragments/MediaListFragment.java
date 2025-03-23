@@ -94,8 +94,6 @@ public class MediaListFragment extends Fragment {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
 
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle("Media");
-
         requireActivity().getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {

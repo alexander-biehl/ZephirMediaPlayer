@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.media3.common.MediaItem;
@@ -99,6 +100,8 @@ public class QueueFragment extends Fragment {
                         .navigate(R.id.action_QueueFragment_to_NowPlayingFragment);
             }
         });
+
+        ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle(R.string.queue_fragment_title);
 
         setHasOptionsMenu(true);
     }
