@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -59,6 +60,7 @@ public class MediaListFragment extends Fragment {
     private FloatingActionButton fab;
     private int mColumnCount = 1;
 
+
     // TODO's
     /*
      * add a context menu to each list item so that we can add to queue
@@ -91,6 +93,9 @@ public class MediaListFragment extends Fragment {
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
+
+        ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle("Media");
+
         requireActivity().getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -248,6 +253,7 @@ public class MediaListFragment extends Fragment {
     }
 
     private void openSubFolder(MediaItem item) {
+        ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle(item.mediaMetadata.title);
 
         ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> childrenFuture =
                 mediaBrowser.getChildren(
