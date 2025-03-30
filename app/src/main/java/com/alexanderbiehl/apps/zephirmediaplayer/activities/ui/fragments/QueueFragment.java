@@ -193,6 +193,7 @@ public class QueueFragment extends Fragment {
     private void updateQueue() {
         this.currentQueue.clear();
         List<MediaItem> savedQueue = this.mediaViewModel.getQueue().getValue();
+        // if we are resuming and the mediaViewModel has elements, restore them to the controller
         if (mediaController.getMediaItemCount() == 0 && savedQueue != null && !savedQueue.isEmpty()) {
             mediaController.addMediaItems(savedQueue);
         }
