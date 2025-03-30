@@ -290,6 +290,7 @@ public class MediaListFragment extends Fragment {
                         List<MediaItem> sortedItems = new ArrayList<>(queuedItems);
                         sortedItems.sort(this::sortMediaItems);
                         mediaBrowser.addMediaItems(mediaBrowser.getMediaItemCount(), sortedItems);
+                        mediaViewModel.addToQueue(sortedItems);
                     }
                 } catch (ExecutionException e) {
                     throw new RuntimeException(e);
@@ -315,6 +316,7 @@ public class MediaListFragment extends Fragment {
                         mediaItemCount,
                         item
                 );
+                mediaViewModel.addToQueue(item);
             }
         }
     }

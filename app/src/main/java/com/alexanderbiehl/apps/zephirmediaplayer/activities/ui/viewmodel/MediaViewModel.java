@@ -33,4 +33,25 @@ public class MediaViewModel extends ViewModel {
     public void setCurrentMedia(final MediaItem item) {
         this.currentMedia.setValue(item);
     }
+
+    public void addToQueue(final MediaItem item) {
+        List<MediaItem> current = currentQueue.getValue();
+        if (current != null) {
+            current.add(current.size(), item);
+        } else {
+            current = new ArrayList<>();
+            current.add(item);
+        }
+        this.currentQueue.setValue(current);
+    }
+
+    public void addToQueue(final List<MediaItem> items) {
+        List<MediaItem> current = currentQueue.getValue();
+        if (current != null) {
+            current.addAll(current.size(), items);
+        } else {
+            current = new ArrayList<>(items);
+        }
+        this.currentQueue.setValue(current);
+    }
 }

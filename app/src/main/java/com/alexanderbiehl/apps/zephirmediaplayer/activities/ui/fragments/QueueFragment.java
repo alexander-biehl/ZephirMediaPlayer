@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.MediaItem;
 import androidx.media3.session.MediaController;
 import androidx.media3.session.SessionToken;
@@ -27,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.R;
 import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.adapters.MyQueueRecyclerViewAdapter;
+import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.viewmodel.MediaViewModel;
 import com.alexanderbiehl.apps.zephirmediaplayer.common.OnClickHandler;
 import com.alexanderbiehl.apps.zephirmediaplayer.service.Media3Service;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -47,6 +49,7 @@ public class QueueFragment extends Fragment {
     private MediaController mediaController;
     private ListenableFuture<MediaController> controllerFuture;
     private MyQueueRecyclerViewAdapter queueAdapter;
+    private MediaViewModel mediaViewModel;
 
     // TODO's
     /*
@@ -101,6 +104,8 @@ public class QueueFragment extends Fragment {
             }
         });
 
+        this.mediaViewModel = new ViewModelProvider(requireActivity()).get(MediaViewModel.class);
+
         ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle(R.string.queue_fragment_title);
 
         setHasOptionsMenu(true);
@@ -150,6 +155,7 @@ public class QueueFragment extends Fragment {
                         break;
                     }
                 }
+                // TODO need to add method to remove from viewModel as well
                 return true;
             default:
                 return super.onContextItemSelected(item);
@@ -186,6 +192,10 @@ public class QueueFragment extends Fragment {
 
     private void updateQueue() {
         this.currentQueue.clear();
+        List<MediaItem> savedQueue = this.mediaViewModel.getQueue().getValue();
+        if (mediaController.getMediaItemCount() == 0 && savedQueue != null && !savedQueue.isEmpty()) {
+            mediaController.addMediaItems(savedQueue);
+        }
         for (int i = 0; i < mediaController.getMediaItemCount(); i++) {
             currentQueue.add(mediaController.getMediaItemAt(i));
         }
