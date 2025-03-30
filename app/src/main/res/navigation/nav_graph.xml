@@ -43,7 +43,7 @@
         android:id="@+id/QueueFragment"
         android:name="com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.fragments.QueueFragment"
         android:label="@string/queue_fragment_title"
-        tools:layout="@layout/fragment_queue" >
+        tools:layout="@layout/fragment_queue">
 
         <action
             android:id="@+id/action_QueueFragment_to_NowPlayingFragment"

@@ -91,7 +91,10 @@ public class MainActivity extends AppCompatActivity {
             if (browserFuture.isDone()) {
                 try {
                     mediaBrowser = browserFuture.get();
-                    getRoot();
+                    // if we are resuming, then we don't need to retrieve the root
+                    if (mediaViewModel.getCurrentMedia().getValue() == null) {
+                        getRoot();
+                    }
                 } catch (Exception ex) {
                     throw new RuntimeException(ex);
                 }
@@ -140,7 +143,8 @@ public class MainActivity extends AppCompatActivity {
             mediaViewModel.setCurrentMedia(item);
             NavController navController =
                     Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
-            navController.navigate(R.id.action_SplashFragment_to_MediaListFragment);
+
+            navController.navigate(R.id.MediaListFragment);
         }
     }
 
