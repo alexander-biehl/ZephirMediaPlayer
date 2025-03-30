@@ -61,12 +61,6 @@ public class MediaListFragment extends Fragment {
     private int mColumnCount = 1;
 
 
-    // TODO's
-    /*
-     * add a context menu to each list item so that we can add to queue
-     *
-     * */
-
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -76,7 +70,7 @@ public class MediaListFragment extends Fragment {
         this.treeBackStack = new Stack<>();
     }
 
-    // TODO: Customize parameter initialization
+
     @SuppressWarnings("unused")
     public static MediaListFragment newInstance(int columnCount) {
         MediaListFragment fragment = new MediaListFragment();

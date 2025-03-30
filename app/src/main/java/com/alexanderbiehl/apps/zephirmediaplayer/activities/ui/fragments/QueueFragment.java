@@ -103,10 +103,13 @@ public class QueueFragment extends Fragment {
                         .navigate(R.id.action_QueueFragment_to_NowPlayingFragment);
             }
         });
-
+        // don't need to observe the viewModel, since we are only using it in case we pause/resume
         this.mediaViewModel = new ViewModelProvider(requireActivity()).get(MediaViewModel.class);
 
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle(R.string.queue_fragment_title);
+        // Set the fragment title
+        ((AppCompatActivity) requireActivity())
+                .getSupportActionBar()
+                .setTitle(R.string.queue_fragment_title);
 
         setHasOptionsMenu(true);
     }
@@ -133,7 +136,10 @@ public class QueueFragment extends Fragment {
     }
 
     @Override
-    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, @Nullable ContextMenu.ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(
+            @NonNull ContextMenu menu,
+            @NonNull View v,
+            @Nullable ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         MenuInflater inflater = requireActivity().getMenuInflater();
 //        if (v instanceof RecyclerView) {
