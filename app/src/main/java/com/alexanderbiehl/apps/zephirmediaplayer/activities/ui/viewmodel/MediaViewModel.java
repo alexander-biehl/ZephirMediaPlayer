@@ -69,4 +69,22 @@ public class MediaViewModel extends ViewModel {
         }
         this.currentQueue.setValue(current);
     }
+
+    public void removeRangeFromQueue(int start, int end) {
+        if (end < start || start < 0) {
+            return;
+        }
+        List<MediaItem> current = this.currentQueue.getValue();
+        if (current != null) {
+            if (start < current.size() && end <= current.size() - 1) {
+                // reverse iterate down the list, removing items
+                for (int i = end; i > 0 && i >= start; i--) {
+                    current.remove(i);
+                }
+            }
+        } else {
+            current = new ArrayList<>();
+        }
+        this.currentQueue.setValue(current);
+    }
 }

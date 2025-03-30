@@ -215,7 +215,10 @@ public class QueueFragment extends Fragment {
                 mediaController.stop();
                 wasPlaying = true;
             }
+            // update our items held by the mediaController
             mediaController.removeMediaItems(0, position);
+            // update the items held by the ViewModel in case we pause/resume
+            mediaViewModel.removeRangeFromQueue(0, position);
             updateQueue();
             if (wasPlaying) {
                 mediaController.prepare();
