@@ -155,7 +155,8 @@ public class QueueFragment extends Fragment {
                         break;
                     }
                 }
-                // TODO need to add method to remove from viewModel as well
+                // remove from the viewModel queue as well
+                mediaViewModel.removeFromQueue(toRemove);
                 return true;
             default:
                 return super.onContextItemSelected(item);
