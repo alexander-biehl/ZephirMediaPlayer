@@ -1,5 +1,7 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.repositories;
 
+import android.net.Uri;
+
 import androidx.media3.common.MediaItem;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.datasources.MediaDataSource;

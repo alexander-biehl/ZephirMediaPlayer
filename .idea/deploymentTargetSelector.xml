@@ -22,9 +22,6 @@
       <SelectionState runConfigName="Tests in 'com.alexanderbiehl.apps.zephirmediaplayer'">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="Android.ZephirMediaPlayer.app">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
     </selectionStates>
   </component>
 </project>

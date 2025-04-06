@@ -1,5 +1,6 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.activities;
 
+import android.app.appsearch.observer.ObserverCallback;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -104,7 +105,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
-        MediaBrowser.releaseFuture(browserFuture);
+        if (browserFuture != null) {
+            MediaBrowser.releaseFuture(browserFuture);
+        }
         if (this.mediaBrowser != null) {
             this.mediaBrowser.release();
             this.mediaBrowser = null;

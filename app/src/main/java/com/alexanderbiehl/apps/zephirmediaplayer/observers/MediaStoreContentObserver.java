@@ -60,6 +60,7 @@ public class MediaStoreContentObserver extends ContentObserver {
                         context
                 )
         );
+
         // want to make a synchronous call here because we are already running on a background thread
         List<MediaItem> items = mediaRepository.getMedia();
 
@@ -76,6 +77,7 @@ public class MediaStoreContentObserver extends ContentObserver {
         Map<String, Long> albumIdMap = new HashMap<>();
         for (AlbumEntity entity : albumEntities) {
             AlbumEntity _entity = db.albumDao().getByMediaId(entity.mediaId);
+            // Uri artUri = mediaRepository.getAlbumArtForId(Long.parseLong(entity.mediaId));
 
             Long id = _entity != null ? _entity.id : db.albumDao().insert(entity);
             albumIdMap.put(
