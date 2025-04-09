@@ -98,6 +98,7 @@ public class MediaStoreLoader {
                             builder.setArtworkUri(albumArtUri);
                         } else if (art != null) {
                             // TODO
+                            // builder.setArtworkData()
                         }
                         media.add(
                                 new MediaItem.Builder()
@@ -144,6 +145,9 @@ public class MediaStoreLoader {
                 final String path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.ALBUM_ART));
 
                 if (path == null) {
+                    if (Log.isLoggable(TAG, Log.DEBUG)) {
+                        Log.d(TAG, "Album art URI for " + albumID + " was null");
+                    }
                     return null;
                 }
                 return ContentUris.withAppendedId(
