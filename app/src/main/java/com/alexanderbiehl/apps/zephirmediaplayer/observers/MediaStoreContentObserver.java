@@ -77,7 +77,6 @@ public class MediaStoreContentObserver extends ContentObserver {
         Map<String, Long> albumIdMap = new HashMap<>();
         for (AlbumEntity entity : albumEntities) {
             AlbumEntity _entity = db.albumDao().getByMediaId(entity.mediaId);
-            // Uri artUri = mediaRepository.getAlbumArtForId(Long.parseLong(entity.mediaId));
 
             Long id = _entity != null ? _entity.id : db.albumDao().insert(entity);
             albumIdMap.put(
