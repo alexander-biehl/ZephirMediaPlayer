@@ -1,5 +1,7 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.dataloaders;
 
+import static androidx.media3.common.MediaMetadata.PICTURE_TYPE_FRONT_COVER;
+
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
@@ -17,6 +19,7 @@ import androidx.media3.common.MediaItem;
 import androidx.media3.common.MediaMetadata;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,21 +100,14 @@ public class MediaStoreLoader {
                         if (albumArtUri != null) {
                             builder.setArtworkUri(albumArtUri);
                         } else if (art != null) {
-                            // TODO
-                            // builder.setArtworkData()
+                            builder.setArtworkData(convertBitmapToByteArray(art), PICTURE_TYPE_FRONT_COVER);
                         }
                         media.add(
                                 new MediaItem.Builder()
                                         .setMediaId(String.valueOf(id))
                                         .setUri(uri)
                                         .setMediaMetadata(
-                                                new MediaMetadata.Builder()
-                                                        .setTitle(title)
-                                                        .setArtist(artist)
-                                                        .setAlbumTitle(album)
-                                                        .setTrackNumber(order)
-                                                        .setArtworkUri(albumArtUri)
-                                                        .build()
+                                                builder.build()
                                         )
                                         .build()
                         );
@@ -170,5 +166,12 @@ public class MediaStoreLoader {
             Log.e(TAG, "Unable to load bitmap with loadThumbnail: " + e);
         }
         return null;
+    }
+
+    private byte[] convertBitmapToByteArray(Bitmap bitmap) {
+        ByteBuffer buffer = ByteBuffer.allocate(bitmap.getByteCount());
+        bitmap.copyPixelsToBuffer(buffer);
+        buffer.rewind();
+        return buffer.array();
     }
 }
