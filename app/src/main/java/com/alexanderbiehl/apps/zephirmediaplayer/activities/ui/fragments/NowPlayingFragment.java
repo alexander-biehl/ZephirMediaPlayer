@@ -11,11 +11,9 @@ import android.view.ViewGroup;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.media3.common.MediaItem;
 import androidx.media3.common.MediaMetadata;
 import androidx.media3.common.Player;
 import androidx.media3.common.util.UnstableApi;
@@ -29,20 +27,16 @@ import com.alexanderbiehl.apps.zephirmediaplayer.databinding.FragmentNowPlayingB
 import com.alexanderbiehl.apps.zephirmediaplayer.service.Media3Service;
 import com.google.common.util.concurrent.ListenableFuture;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class NowPlayingFragment extends Fragment {
 
     private static final String TAG = NowPlayingFragment.class.getSimpleName();
-    private final List<MediaItem> currentQueue;
     private FragmentNowPlayingBinding binding;
     private PlayerView playerView;
     private MediaController mediaController;
     private ListenableFuture<MediaController> controllerFuture;
 
     public NowPlayingFragment() {
-        currentQueue = new ArrayList<>();
+
     }
 
 
@@ -148,6 +142,7 @@ public class NowPlayingFragment extends Fragment {
         updateMediaMetadataUI();
     }
 
+    @OptIn(markerClass = UnstableApi.class)
     private void updateMediaMetadataUI() {
         if (mediaController == null || mediaController.getMediaItemCount() == 0) {
             binding.albumTextView.setText(R.string.album_view_default_text);

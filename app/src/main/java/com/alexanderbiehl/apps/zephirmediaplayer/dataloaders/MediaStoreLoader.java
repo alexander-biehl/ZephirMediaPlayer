@@ -1,27 +1,20 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.dataloaders;
 
-import static androidx.media3.common.MediaMetadata.PICTURE_TYPE_FRONT_COVER;
-
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.util.Size;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.MediaMetadata;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class MediaStoreLoader {
 
@@ -83,13 +76,8 @@ public class MediaStoreLoader {
                     );
                     final int order = cursor.getInt(orderColumn);
                     final String albumID = cursor.getString(albumIdColumn);
+                    // this will fail when api >= 29
                     Uri albumArtUri = getAlbumArt(ctx, albumID);
-                    Bitmap art = null;
-                    if (albumArtUri == null) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                            art = getAlbumArt(resolver, uri);
-                        }
-                    }
 
                     try {
                         MediaMetadata.Builder builder = new MediaMetadata.Builder()
@@ -97,11 +85,8 @@ public class MediaStoreLoader {
                                 .setArtist(artist)
                                 .setAlbumTitle(album)
                                 .setTrackNumber(order);
-                        if (albumArtUri != null) {
-                            builder.setArtworkUri(albumArtUri);
-                        } else if (art != null) {
-                            builder.setArtworkData(convertBitmapToByteArray(art), PICTURE_TYPE_FRONT_COVER);
-                        }
+                        // for api > 29, the album art is directly decoded from the URI
+                        builder.setArtworkUri(Objects.requireNonNullElse(albumArtUri, uri));
                         media.add(
                                 new MediaItem.Builder()
                                         .setMediaId(String.valueOf(id))
@@ -138,7 +123,8 @@ public class MediaStoreLoader {
             } else if (!cursor.moveToNext()) {
                 Log.d(TAG, "No Art found");
             } else {
-                final String path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.ALBUM_ART));
+                final String path = cursor.getString(
+                        cursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.ALBUM_ART));
 
                 if (path == null) {
                     if (Log.isLoggable(TAG, Log.DEBUG)) {
@@ -156,22 +142,5 @@ public class MediaStoreLoader {
             throw new RuntimeException(e);
         }
         return null;
-    }
-
-    @RequiresApi(Build.VERSION_CODES.Q)
-    public Bitmap getAlbumArt(ContentResolver resolver, Uri uri) {
-        try {
-            return resolver.loadThumbnail(uri, new Size(300, 300), null);
-        } catch (IOException e) {
-            Log.e(TAG, "Unable to load bitmap with loadThumbnail: " + e);
-        }
-        return null;
-    }
-
-    private byte[] convertBitmapToByteArray(Bitmap bitmap) {
-        ByteBuffer buffer = ByteBuffer.allocate(bitmap.getByteCount());
-        bitmap.copyPixelsToBuffer(buffer);
-        buffer.rewind();
-        return buffer.array();
     }
 }
