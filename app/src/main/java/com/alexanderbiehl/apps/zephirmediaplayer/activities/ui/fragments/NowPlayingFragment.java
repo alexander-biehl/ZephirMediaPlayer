@@ -4,6 +4,7 @@ import static androidx.media3.common.Player.EVENT_MEDIA_METADATA_CHANGED;
 
 import android.content.ComponentName;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -116,13 +117,14 @@ public class NowPlayingFragment extends Fragment {
                 try {
                     setController(controllerFuture.get());
                 } catch (Exception e) {
+                    Log.e(TAG, "Exception when getting the controller: " + e);
                     throw new RuntimeException(e);
                 }
             }
         }, ContextCompat.getMainExecutor(requireContext()));
     }
 
-    @OptIn(markerClass = UnstableApi.class)
+
     private void setController(@NonNull MediaController controller) {
         mediaController = controller;
         playerView.setPlayer(mediaController);
@@ -142,7 +144,6 @@ public class NowPlayingFragment extends Fragment {
         updateMediaMetadataUI();
     }
 
-    @OptIn(markerClass = UnstableApi.class)
     private void updateMediaMetadataUI() {
         if (mediaController == null || mediaController.getMediaItemCount() == 0) {
             binding.albumTextView.setText(R.string.album_view_default_text);
