@@ -38,12 +38,12 @@ public class AlbumEntityTests {
     }
 
     @After
-    public void cleanup() throws IOException {
+    public void cleanup() {
         db.close();
     }
 
     @Test
-    public void testCreate() throws Exception {
+    public void testCreate() {
         dao.insert(TestUtils.createAlbumOne());
         AlbumEntity a = dao.getByMediaId(TestUtils.albumOneMediaId);
         assertNotNull(a.id);
@@ -51,7 +51,7 @@ public class AlbumEntityTests {
     }
 
     @Test
-    public void testUpdate() throws Exception {
+    public void testUpdate() {
         dao.insert(TestUtils.createAlbumOne());
         AlbumEntity a = dao.getByMediaId(TestUtils.albumOneMediaId);
         assertEquals("AlbumEntity One", a.title);
@@ -62,7 +62,7 @@ public class AlbumEntityTests {
     }
 
     @Test
-    public void testDelete() throws Exception {
+    public void testDelete() {
         dao.insert(TestUtils.createAlbumOne());
         AlbumEntity a = dao.getByMediaId(TestUtils.albumOneMediaId);
         dao.delete(a);
@@ -71,7 +71,7 @@ public class AlbumEntityTests {
     }
 
     @Test
-    public void testGetSongsForAlbum() throws IOException {
+    public void testGetSongsForAlbum() {
         SongDao songDao = db.songDao();
         dao.insert(TestUtils.createAlbumOne());
 

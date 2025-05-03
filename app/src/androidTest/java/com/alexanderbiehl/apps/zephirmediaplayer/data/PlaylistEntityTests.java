@@ -42,12 +42,12 @@ public class PlaylistEntityTests {
     }
 
     @After
-    public void cleanup() throws IOException {
+    public void cleanup() {
         db.close();
     }
 
     @Test
-    public void testCreateAndGetPlaylist() throws IOException {
+    public void testCreateAndGetPlaylist() {
         PlaylistEntity p = new PlaylistEntity();
         p.title = "PlaylistEntity One";
         long rowId = dao.insert(p);

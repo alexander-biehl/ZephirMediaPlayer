@@ -33,12 +33,12 @@ public class SongEntityTests {
     }
 
     @After
-    public void cleanup() throws IOException {
+    public void cleanup() {
         db.close();
     }
 
     @Test
-    public void testCreateAndQuerySong() throws Exception {
+    public void testCreateAndQuerySong() {
         SongEntity songEntity = new SongEntity();
         songEntity.title = "Test";
         songDao.insert(songEntity);
@@ -49,7 +49,7 @@ public class SongEntityTests {
     }
 
     @Test
-    public void testCreateAndQueryByMediaId() throws Exception {
+    public void testCreateAndQueryByMediaId() {
         SongEntity songEntity = new SongEntity();
         final String mediaId = "001";
         songEntity.title = "test";
@@ -63,7 +63,7 @@ public class SongEntityTests {
     }
 
     @Test
-    public void testSongDelete() throws Exception {
+    public void testSongDelete() {
         SongEntity songEntity = new SongEntity();
         final String mediaID = "001";
         songEntity.title = "Test";

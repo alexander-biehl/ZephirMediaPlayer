@@ -38,12 +38,12 @@ public class ArtistEntityTests {
     }
 
     @After
-    public void cleanup() throws IOException {
+    public void cleanup() {
         db.close();
     }
 
     @Test
-    public void testCreate() throws IOException {
+    public void testCreate() {
         dao.insert(TestUtils.createArtist());
         ArtistEntity a = dao.getByMediaId(TestUtils.artistMediaId);
         assertNotNull(a);
@@ -51,7 +51,7 @@ public class ArtistEntityTests {
     }
 
     @Test
-    public void testUpdate() throws IOException {
+    public void testUpdate() {
         dao.insert(TestUtils.createArtist());
         ArtistEntity a = dao.getByMediaId(TestUtils.artistMediaId);
         assertNotNull(a);
@@ -63,7 +63,7 @@ public class ArtistEntityTests {
     }
 
     @Test
-    public void testDelete() throws IOException {
+    public void testDelete() {
         dao.insert(TestUtils.createArtist());
         ArtistEntity a = dao.getByMediaId(TestUtils.artistMediaId);
         assertNotNull(a);
@@ -73,7 +73,7 @@ public class ArtistEntityTests {
     }
 
     @Test
-    public void testGetAlbumsForArtist() throws IOException {
+    public void testGetAlbumsForArtist() {
         dao.insert(TestUtils.createArtist());
         ArtistEntity a = dao.getByMediaId(TestUtils.artistMediaId);
 
