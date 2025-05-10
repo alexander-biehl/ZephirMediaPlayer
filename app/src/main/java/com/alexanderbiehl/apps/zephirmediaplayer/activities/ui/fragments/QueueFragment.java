@@ -51,16 +51,7 @@ public class QueueFragment extends Fragment {
     private MyQueueRecyclerViewAdapter queueAdapter;
     private MediaViewModel mediaViewModel;
 
-    // TODO's
-    /*
-     * add mediacontroller so we can display all the items in the current queue
-     * add context menu so we can remove items from queue
-     * */
 
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
     public QueueFragment() {
         currentQueue = new ArrayList<>();
     }
