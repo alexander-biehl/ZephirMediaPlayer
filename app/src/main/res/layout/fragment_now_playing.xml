@@ -73,7 +73,7 @@
                         android:layout_weight="1"
                         android:text="@string/artist_view_default_test"
                         android:textAlignment="center"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
                     <TextView
                         android:id="@+id/album_text_view"
@@ -82,7 +82,7 @@
                         android:layout_weight="1"
                         android:text="@string/album_view_default_text"
                         android:textAlignment="center"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
                     <TextView
                         android:id="@+id/song_text_view"
@@ -91,7 +91,7 @@
                         android:layout_weight="1"
                         android:text="@string/song_view_default_text"
                         android:textAlignment="center"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
                 </LinearLayout>
             </TableRow>
 
