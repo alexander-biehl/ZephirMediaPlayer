@@ -15,20 +15,27 @@ import android.os.Bundle;
 
 import androidx.fragment.app.testing.FragmentScenario;
 import androidx.media3.common.MediaItem;
-import androidx.media3.session.MediaBrowser;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.R;
 import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.fragments.MediaListFragment;
 import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.viewmodel.MediaViewModel;
+import com.alexanderbiehl.apps.zephirmediaplayer.common.wrappers.MediaBrowserWrapper;
+import com.alexanderbiehl.apps.zephirmediaplayer.common.wrappers.MediaBrowserWrapperImpl;
 import com.alexanderbiehl.apps.zephirmediaplayer.util.TestUtils;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 public class MediaListFragmentTests {
+
+//    @Mock
+//    MediaBrowserWrapper mediaBrowser;
+//    @Mock
+//    MediaViewModel mediaViewModel;
 
     @Before
     public void setUp() {
@@ -41,7 +48,7 @@ public class MediaListFragmentTests {
 
         FragmentScenario<MediaListFragment> scenario = FragmentScenario.launchInContainer(MediaListFragment.class, new Bundle(), R.style.Theme_AppCompat);
         scenario.onFragment(fragment -> {
-            fragment.mediaBrowser = mock(MediaBrowser.class);
+            fragment.mediaBrowser = mock(MediaBrowserWrapper.class);
             fragment.mediaViewModel = mock(MediaViewModel.class);
 
             fragment.addMediaItemToQueue(playableItem);
@@ -58,7 +65,7 @@ public class MediaListFragmentTests {
 
         FragmentScenario<MediaListFragment> scenario = FragmentScenario.launchInContainer(MediaListFragment.class, new Bundle());
         scenario.onFragment(fragment -> {
-            fragment.mediaBrowser = mock(MediaBrowser.class);
+            fragment.mediaBrowser = mock(MediaBrowserWrapperImpl.class);
             fragment.mediaViewModel = mock(MediaViewModel.class);
 
             fragment.addMediaItemToQueue(nonPlayableItem);
@@ -88,7 +95,7 @@ public class MediaListFragmentTests {
 
         FragmentScenario<MediaListFragment> scenario = FragmentScenario.launchInContainer(MediaListFragment.class, new Bundle());
         scenario.onFragment(fragment -> {
-            fragment.mediaBrowser = mock(MediaBrowser.class);
+            fragment.mediaBrowser = mock(MediaBrowserWrapperImpl.class);
 
             fragment.pushPathStack(browsableItem);
 

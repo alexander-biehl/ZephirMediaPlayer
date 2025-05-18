@@ -31,6 +31,8 @@ import com.alexanderbiehl.apps.zephirmediaplayer.R;
 import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.adapters.MediaListRecyclerViewAdapter;
 import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.viewmodel.MediaViewModel;
 import com.alexanderbiehl.apps.zephirmediaplayer.common.OnClickHandler;
+import com.alexanderbiehl.apps.zephirmediaplayer.common.wrappers.MediaBrowserWrapper;
+import com.alexanderbiehl.apps.zephirmediaplayer.common.wrappers.MediaBrowserWrapperImpl;
 import com.alexanderbiehl.apps.zephirmediaplayer.service.Media3Service;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.common.collect.ImmutableList;
@@ -53,7 +55,7 @@ public class MediaListFragment extends Fragment {
     private final List<MediaItem> subMediaList;
     public final Stack<MediaItem> treeBackStack;
     private ListenableFuture<MediaBrowser> browserFuture;
-    public MediaBrowser mediaBrowser;
+    public MediaBrowserWrapper mediaBrowser;
     public MediaViewModel mediaViewModel;
     private MediaListRecyclerViewAdapter mediaAdapter;
     private RecyclerView recyclerView;
@@ -207,7 +209,7 @@ public class MediaListFragment extends Fragment {
         browserFuture.addListener(() -> {
             if (browserFuture.isDone()) {
                 try {
-                    mediaBrowser = browserFuture.get();
+                    mediaBrowser = new MediaBrowserWrapperImpl(browserFuture.get());
                     observeViewModel();
                 } catch (Exception e) {
                     throw new RuntimeException(e);
