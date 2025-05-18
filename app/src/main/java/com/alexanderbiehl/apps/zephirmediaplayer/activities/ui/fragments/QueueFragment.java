@@ -46,10 +46,10 @@ public class QueueFragment extends Fragment {
     private static final String ARG_COLUMN_COUNT = "column-count";
     private final List<MediaItem> currentQueue;
     private int mColumnCount = 1;
-    private MediaController mediaController;
+    public MediaController mediaController;
     private ListenableFuture<MediaController> controllerFuture;
-    private MyQueueRecyclerViewAdapter queueAdapter;
-    private MediaViewModel mediaViewModel;
+    public MyQueueRecyclerViewAdapter queueAdapter;
+    public MediaViewModel mediaViewModel;
 
 
     public QueueFragment() {
@@ -188,7 +188,7 @@ public class QueueFragment extends Fragment {
         updateQueue();
     }
 
-    private void updateQueue() {
+    public void updateQueue() {
         this.currentQueue.clear();
         List<MediaItem> savedQueue = this.mediaViewModel.getQueue().getValue();
         // if we are resuming and the mediaViewModel has elements, restore them to the controller
@@ -201,7 +201,7 @@ public class QueueFragment extends Fragment {
         queueAdapter.notifyDataSetChanged();
     }
 
-    private class QueueViewClickHandler implements OnClickHandler {
+    public class QueueViewClickHandler implements OnClickHandler {
 
         @Override
         public void onClick(int position, MediaItem item) {

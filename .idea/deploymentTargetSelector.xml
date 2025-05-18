@@ -28,6 +28,12 @@
       <SelectionState runConfigName="AlbumEntityTests">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
+      <SelectionState runConfigName="removesItemFromQueue_whenRemoveFromQueueMenuClicked()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="restoresQueueFromViewModel_whenControllerIsEmptyOnResume()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
     </selectionStates>
   </component>
 </project>
