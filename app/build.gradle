@@ -50,13 +50,12 @@ dependencies {
     implementation 'androidx.media3:media3-session:1.5.1'
     implementation 'com.google.android.material:material:1.12.0'
     implementation 'androidx.room:room-common:2.6.1'
-    implementation 'androidx.room:androidx.room.gradle.plugin:2.6.1'
+    debugImplementation 'androidx.room:androidx.room.gradle.plugin:2.6.1'
     implementation 'androidx.room:room-guava:2.6.1'
     implementation 'androidx.room:room-paging:2.6.1'
     implementation 'androidx.room:room-runtime:2.6.1'
     implementation 'androidx.room:room-testing:2.6.1'
     implementation 'androidx.lifecycle:lifecycle-service:2.8.7'
-    androidTestImplementation 'androidx.fragment:fragment-testing:1.8.6'
 
     annotationProcessor 'androidx.room:room-compiler:2.6.1'
 
@@ -71,4 +70,9 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.2.1'
     androidTestImplementation 'androidx.test:rules:1.6.1'
     androidTestImplementation 'androidx.test:runner:1.6.2'
+    debugImplementation 'androidx.test:core:1.6.1'
+    debugImplementation 'androidx.test:rules:1.6.1'
+    debugImplementation 'androidx.test:runner:1.6.2'
+    debugImplementation 'androidx.fragment:fragment-testing:1.8.6'
+
 }

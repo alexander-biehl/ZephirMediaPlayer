@@ -1,5 +1,8 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.util;
 
+import androidx.media3.common.MediaItem;
+import androidx.media3.common.MediaMetadata;
+
 import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.AlbumEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.ArtistEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.SongEntity;
@@ -49,5 +52,38 @@ public class TestUtils {
         a.mediaId = artistMediaId;
         a.title = "ArtistEntity One";
         return a;
+    }
+
+    public static MediaItem createArtistMediaItem() {
+        return new MediaItem.Builder()
+                .setMediaId(artistMediaId)
+                .setMediaMetadata(new MediaMetadata.Builder()
+                        .setTitle("ArtistEntity One")
+                        .setIsPlayable(false)
+                        .setIsBrowsable(true)
+                        .build())
+                .build();
+    }
+
+    public static MediaItem createAlbumMediaItem() {
+        return new MediaItem.Builder()
+                .setMediaId(albumOneMediaId)
+                .setMediaMetadata(new MediaMetadata.Builder()
+                        .setTitle("AlbumEntity One")
+                        .setIsPlayable(false)
+                        .setIsBrowsable(true)
+                        .build())
+                .build();
+    }
+
+    public static MediaItem createSongMediaItem() {
+        return new MediaItem.Builder()
+                .setMediaId(songOneMediaId)
+                .setMediaMetadata(new MediaMetadata.Builder()
+                        .setTitle("SongEntity One")
+                        .setIsPlayable(true)
+                        .setIsBrowsable(false)
+                        .build())
+                .build();
     }
 }

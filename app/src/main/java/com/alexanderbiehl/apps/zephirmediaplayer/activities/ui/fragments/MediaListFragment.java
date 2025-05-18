@@ -51,13 +51,13 @@ public class MediaListFragment extends Fragment {
 
     private static final String ARG_COLUMN_COUNT = "column-count";
     private final List<MediaItem> subMediaList;
-    private final Stack<MediaItem> treeBackStack;
+    public final Stack<MediaItem> treeBackStack;
     private ListenableFuture<MediaBrowser> browserFuture;
-    private MediaBrowser mediaBrowser;
-    private MediaViewModel mediaViewModel;
+    public MediaBrowser mediaBrowser;
+    public MediaViewModel mediaViewModel;
     private MediaListRecyclerViewAdapter mediaAdapter;
     private RecyclerView recyclerView;
-    private FloatingActionButton fab;
+    public FloatingActionButton fab;
     private int mColumnCount = 1;
 
 
@@ -228,7 +228,7 @@ public class MediaListFragment extends Fragment {
         });
     }
 
-    private void handlePlay(MediaItem item) {
+    public void handlePlay(MediaItem item) {
         int position = subMediaList.indexOf(item);
         List<MediaItem> playQueue = subMediaList.subList(position, subMediaList.size());
         mediaBrowser.addMediaItems(playQueue);
@@ -240,7 +240,7 @@ public class MediaListFragment extends Fragment {
                 .navigate(R.id.action_FirstFragment_to_SecondFragment);
     }
 
-    private void openSubFolder(MediaItem item) {
+    public void openSubFolder(MediaItem item) {
         ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle(item.mediaMetadata.title);
 
         ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> childrenFuture =
@@ -264,7 +264,7 @@ public class MediaListFragment extends Fragment {
         }, ContextCompat.getMainExecutor(requireActivity()));
     }
 
-    private void addChildItemsToQueue(@NonNull MediaItem parent) {
+    public void addChildItemsToQueue(@NonNull MediaItem parent) {
         ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> childrenFuture =
                 mediaBrowser.getChildren(
                         parent.mediaId,
@@ -292,7 +292,7 @@ public class MediaListFragment extends Fragment {
         }, ContextCompat.getMainExecutor(requireContext()));
     }
 
-    private void addMediaItemToQueue(@NonNull MediaItem item) {
+    public void addMediaItemToQueue(@NonNull MediaItem item) {
         // if the item is Browsable AND Playable (i.e. it is an album / playlist)
         if (Boolean.TRUE.equals(item.mediaMetadata.isBrowsable) &&
                 Boolean.TRUE.equals(item.mediaMetadata.isPlayable)) {
@@ -311,13 +311,13 @@ public class MediaListFragment extends Fragment {
         }
     }
 
-    private void addMediaItemToPlaylist(@NonNull MediaItem item) {
+    public void addMediaItemToPlaylist(@NonNull MediaItem item) {
         //TODO need to open UI to select which playlist to add to
         // perhaps add a new fragment for the playlists, have it
         // return its result (the selected playlist) and then populate
     }
 
-    private void popPathStack() {
+    public void popPathStack() {
         treeBackStack.pop();
         if (treeBackStack.isEmpty()) {
             requireActivity().finish();
@@ -326,7 +326,7 @@ public class MediaListFragment extends Fragment {
         openSubFolder(treeBackStack.peek());
     }
 
-    private void pushPathStack(final MediaItem item) {
+    public void pushPathStack(final MediaItem item) {
         if (treeBackStack.isEmpty() ||
                 !treeBackStack.peek().mediaId.equals(item.mediaId)) {
             treeBackStack.push(item);
@@ -334,7 +334,7 @@ public class MediaListFragment extends Fragment {
         openSubFolder(item);
     }
 
-    private int sortMediaItems(MediaItem a, MediaItem b) {
+    public int sortMediaItems(MediaItem a, MediaItem b) {
         if (a.mediaMetadata.trackNumber != null && b.mediaMetadata.trackNumber != null) {
             return a.mediaMetadata.trackNumber - b.mediaMetadata.trackNumber;
         } else {
@@ -343,7 +343,7 @@ public class MediaListFragment extends Fragment {
         }
     }
 
-    private class MediaListViewClickHandler implements OnClickHandler {
+    public class MediaListViewClickHandler implements OnClickHandler {
 
         @Override
         public void onClick(int position, MediaItem item) {

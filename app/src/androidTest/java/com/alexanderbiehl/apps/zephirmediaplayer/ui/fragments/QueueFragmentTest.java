@@ -47,7 +47,7 @@ public class QueueFragmentTest {
         MutableLiveData<List<MediaItem>> liveData = new MutableLiveData<>(queue);
         when(mockMediaViewModel.getQueue()).thenReturn(liveData);
 
-        FragmentScenario<QueueFragment> scenario = FragmentScenario.launchInContainer(QueueFragment.class, new Bundle(), null);
+        FragmentScenario<QueueFragment> scenario = FragmentScenario.launchInContainer(QueueFragment.class, new Bundle(), R.style.Theme_AppCompat);
         scenario.onFragment(fragment -> {
             fragment.mediaController = mockMediaController;
             fragment.mediaViewModel = mockMediaViewModel;

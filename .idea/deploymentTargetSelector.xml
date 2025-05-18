@@ -13,9 +13,6 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="PlaylistEntityTests">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="Tests in 'com.alexanderbiehl.apps.zephirmediaplayer'">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
@@ -32,6 +29,9 @@
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
       <SelectionState runConfigName="restoresQueueFromViewModel_whenControllerIsEmptyOnResume()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="addsPlayableMediaItemToQueue()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
