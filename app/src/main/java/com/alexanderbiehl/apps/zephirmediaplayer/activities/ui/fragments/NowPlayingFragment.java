@@ -157,6 +157,9 @@ public class NowPlayingFragment extends Fragment {
         final CharSequence artist = currentMetadata.artist;
         final CharSequence album = currentMetadata.albumTitle;
 
+        // TODO see if we can do some calculations on spacing to that longer
+        // strings don't make the UI look wierd
+
         binding.artistTextView.setText(artist);
         binding.albumTextView.setText(album);
         binding.songTextView.setText(title);
