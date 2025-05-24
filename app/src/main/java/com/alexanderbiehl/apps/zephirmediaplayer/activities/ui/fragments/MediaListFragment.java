@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,7 +19,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.MediaItem;
 import androidx.media3.session.LibraryResult;
@@ -93,19 +96,6 @@ public class MediaListFragment extends Fragment {
                 popPathStack();
             }
         });
-        setHasOptionsMenu(true);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        // override the default Menu back button to instead pop the stack of MediaItems
-        if (item.getItemId() == android.R.id.home) {
-            Log.d(TAG, "Back clicked!");
-            popPathStack();
-            // make sure we return true to indicate that the action was successful
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -160,6 +150,24 @@ public class MediaListFragment extends Fragment {
             NavHostFragment.findNavController(this)
                     .navigate(R.id.action_FirstFragment_to_SecondFragment);
         });
+
+        requireActivity().addMenuProvider(new MenuProvider() {
+            @Override
+            public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+
+            }
+
+            @Override
+            public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+                if (menuItem.getItemId() == android.R.id.home) {
+                    Log.d(TAG, "Back clicked!");
+                    popPathStack();
+                    // make sure we return true to indicate that the action was successful
+                    return true;
+                }
+                return false;
+            }
+        }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
     }
 
     @Override
