@@ -2,8 +2,6 @@ package com.alexanderbiehl.apps.zephirmediaplayer.repositories;
 
 import static androidx.media3.common.MediaMetadata.MEDIA_TYPE_MUSIC;
 
-import android.net.Uri;
-
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.MediaMetadata;
 
@@ -162,7 +160,6 @@ public class CompositeMediaRepository {
                                     .setIsBrowsable(false)
                                     .setIsPlayable(true)
                                     .setMediaType(MEDIA_TYPE_MUSIC)
-                                    //.setArtworkUri(Uri.parse(songEntity.sourceUri))
                                     .build()
                     ).build();
         }

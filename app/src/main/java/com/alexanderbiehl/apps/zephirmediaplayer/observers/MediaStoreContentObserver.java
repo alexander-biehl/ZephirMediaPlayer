@@ -3,6 +3,7 @@ package com.alexanderbiehl.apps.zephirmediaplayer.observers;
 import android.content.Context;
 import android.database.ContentObserver;
 import android.os.Handler;
+import android.util.Log;
 
 import androidx.media3.common.MediaItem;
 
@@ -45,15 +46,25 @@ public class MediaStoreContentObserver extends ContentObserver {
 
     @Override
     public void onChange(boolean selfChange) {
+        if (Log.isLoggable(TAG, Log.DEBUG)) {
+            Log.d(TAG, "onChange: selfChange = " + selfChange);
+        }
+
         super.onChange(selfChange);
         executeSync(null);
     }
 
     public void executeSync(RepositoryCallback<Void> callback) {
+        if (Log.isLoggable(TAG, Log.DEBUG)) {
+            Log.d(TAG, "executeSync");
+        }
         this.executorService.execute(() -> syncMediaStore(callback));
     }
 
     private void syncMediaStore(RepositoryCallback<Void> callback) {
+        if (Log.isLoggable(TAG, Log.DEBUG)) {
+            Log.d(TAG, "syncMediaStore");
+        }
         MediaRepository mediaRepository = new MediaRepository(
                 new MediaLocalDataSource(
                         new MediaStoreLoader(),
