@@ -16,7 +16,8 @@ import java.util.List;
 /**
  * {@link RecyclerView.Adapter} that can display a {@link MediaItem}.
  */
-public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaListRecyclerViewAdapter.ViewHolder> {
+public class MediaListRecyclerViewAdapter extends
+        RecyclerView.Adapter<MediaListRecyclerViewAdapter.ViewHolder> {
 
     private final List<MediaItem> mValues;
     private final OnClickHandler clickListener;
@@ -92,6 +93,7 @@ public class MediaListRecyclerViewAdapter extends RecyclerView.Adapter<MediaList
             });
         }
 
+        @NonNull
         @Override
         public String toString() {
             return super.toString() + " '" + mContentView.getText() + "'";

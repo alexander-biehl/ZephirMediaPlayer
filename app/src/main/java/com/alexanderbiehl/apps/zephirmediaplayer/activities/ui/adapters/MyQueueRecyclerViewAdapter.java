@@ -16,7 +16,8 @@ import java.util.List;
 /**
  * {@link RecyclerView.Adapter} that can display a {@link MediaItem}.
  */
-public class MyQueueRecyclerViewAdapter extends RecyclerView.Adapter<MyQueueRecyclerViewAdapter.ViewHolder> {
+public class MyQueueRecyclerViewAdapter extends
+        RecyclerView.Adapter<MyQueueRecyclerViewAdapter.ViewHolder> {
 
     private final List<MediaItem> mValues;
     private final OnClickHandler clickHandler;
@@ -93,6 +94,7 @@ public class MyQueueRecyclerViewAdapter extends RecyclerView.Adapter<MyQueueRecy
             });
         }
 
+        @NonNull
         @Override
         public String toString() {
             return super.toString() + " '" + mContentView.getText() + "'";
