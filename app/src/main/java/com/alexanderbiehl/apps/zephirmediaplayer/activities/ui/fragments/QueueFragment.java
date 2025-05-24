@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -56,14 +57,6 @@ public class QueueFragment extends Fragment {
         currentQueue = new ArrayList<>();
     }
 
-    public static QueueFragment newInstance(int columnCount) {
-        QueueFragment fragment = new QueueFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onStart() {
         super.onStart();
@@ -98,9 +91,10 @@ public class QueueFragment extends Fragment {
         this.mediaViewModel = new ViewModelProvider(requireActivity()).get(MediaViewModel.class);
 
         // Set the fragment title
-        ((AppCompatActivity) requireActivity())
-                .getSupportActionBar()
-                .setTitle(R.string.queue_fragment_title);
+        ActionBar actionBar = ((AppCompatActivity) requireActivity()).getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(R.string.queue_fragment_title);
+        }
 
         setHasOptionsMenu(true);
     }
@@ -141,23 +135,21 @@ public class QueueFragment extends Fragment {
 
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.remove_from_queue:
-                Log.d(TAG, "Remove from Queue clicked");
-                MediaItem toRemove = queueAdapter.getContextMenuItem();
-                for (int i = 0; i < mediaController.getMediaItemCount(); i++) {
-                    if (toRemove == mediaController.getMediaItemAt(i)) {
-                        mediaController.removeMediaItem(i);
-                        updateQueue();
-                        break;
-                    }
+        if (item.getItemId() == R.id.remove_from_queue) {
+            Log.d(TAG, "Remove from Queue clicked");
+            MediaItem toRemove = queueAdapter.getContextMenuItem();
+            for (int i = 0; i < mediaController.getMediaItemCount(); i++) {
+                if (toRemove == mediaController.getMediaItemAt(i)) {
+                    mediaController.removeMediaItem(i);
+                    updateQueue();
+                    break;
                 }
-                // remove from the viewModel queue as well
-                mediaViewModel.removeFromQueue(toRemove);
-                return true;
-            default:
-                return super.onContextItemSelected(item);
+            }
+            // remove from the viewModel queue as well
+            mediaViewModel.removeFromQueue(toRemove);
+            return true;
         }
+        return super.onContextItemSelected(item);
     }
 
     private void initializeController() {
