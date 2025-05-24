@@ -16,9 +16,6 @@
       <SelectionState runConfigName="Android.ZephirMediaPlayer.app">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="AlbumEntityTests">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="removesItemFromQueue_whenRemoveFromQueueMenuClicked()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>

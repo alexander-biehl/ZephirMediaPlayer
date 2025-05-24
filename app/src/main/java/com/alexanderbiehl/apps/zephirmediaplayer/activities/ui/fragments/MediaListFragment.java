@@ -10,10 +10,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -52,14 +54,13 @@ public class MediaListFragment extends Fragment {
 
 
     private static final String ARG_COLUMN_COUNT = "column-count";
-    private final List<MediaItem> subMediaList;
     public final Stack<MediaItem> treeBackStack;
-    private ListenableFuture<MediaBrowser> browserFuture;
+    private final List<MediaItem> subMediaList;
     public MediaBrowserWrapper mediaBrowser;
     public MediaViewModel mediaViewModel;
-    private MediaListRecyclerViewAdapter mediaAdapter;
-    private RecyclerView recyclerView;
     public FloatingActionButton fab;
+    private ListenableFuture<MediaBrowser> browserFuture;
+    private MediaListRecyclerViewAdapter mediaAdapter;
     private int mColumnCount = 1;
 
 
@@ -128,7 +129,7 @@ public class MediaListFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_media_item_list, container, false);
 
-        recyclerView = view.findViewById(R.id.list);
+        RecyclerView recyclerView = view.findViewById(R.id.list);
 
         // Set the adapter
         if (recyclerView != null) {
@@ -167,12 +168,17 @@ public class MediaListFragment extends Fragment {
         MenuInflater inflater = requireActivity().getMenuInflater();
 
         if (v instanceof RecyclerView) {
-            MediaItem item = ((MediaListRecyclerViewAdapter) ((RecyclerView) v).getAdapter()).getContextMenuItem();
+            MediaListRecyclerViewAdapter adapter = (MediaListRecyclerViewAdapter) ((RecyclerView) v).getAdapter();
+            if (adapter == null) {
+                Log.d(TAG, "Adapter was null");
+                return;
+            }
+            MediaItem item = adapter.getContextMenuItem();
 
             if (Log.isLoggable(TAG, Log.DEBUG)) {
                 Log.d(TAG, "Item: " + item.toString());
             }
-            if (item.mediaMetadata.isPlayable) {
+            if (Boolean.TRUE.equals(item.mediaMetadata.isPlayable)) {
                 inflater.inflate(R.menu.menu_media_item, menu);
             }
         }
@@ -243,7 +249,11 @@ public class MediaListFragment extends Fragment {
     }
 
     public void openSubFolder(MediaItem item) {
-        ((AppCompatActivity) requireActivity()).getSupportActionBar().setTitle(item.mediaMetadata.title);
+        ActionBar supportActionBar =
+                ((AppCompatActivity) requireActivity()).getSupportActionBar();
+        if (supportActionBar != null) {
+            supportActionBar.setTitle(item.mediaMetadata.title);
+        }
 
         ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> childrenFuture =
                 mediaBrowser.getChildren(
@@ -254,12 +264,24 @@ public class MediaListFragment extends Fragment {
                 );
         childrenFuture.addListener(() -> {
             try {
-                // TODO we need to check if the service returns an error here
-                subMediaList.clear();
-                subMediaList.addAll(childrenFuture.get().value);
-                subMediaList.sort(this::sortMediaItems);
-                mediaAdapter.notifyDataSetChanged();
-                Log.d(TAG, "Got media list of " + subMediaList.size() + " items.");
+                if (childrenFuture.isDone()) {
+                    // TODO we need to check if the service returns an error here
+                    subMediaList.clear();
+                    List<MediaItem> items = childrenFuture.get().value;
+                    // prevent NPE if the service returns null
+                    if (items == null || items.isEmpty()) {
+                        Log.d(TAG, "No items found in this folder");
+                        Toast.makeText(requireContext(), "Folder is empty", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    subMediaList.addAll(items);
+                    subMediaList.sort(this::sortMediaItems);
+                    // mediaAdapter.notifyItemRangeChanged(0, items.size());
+                    // keep this for now since itemRangeChanged causes an exception
+                    mediaAdapter.notifyDataSetChanged();
+                    Log.d(TAG, "Got media list of " + subMediaList.size() + " items.");
+                }
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -284,9 +306,7 @@ public class MediaListFragment extends Fragment {
                         mediaBrowser.addMediaItems(mediaBrowser.getMediaItemCount(), sortedItems);
                         mediaViewModel.addToQueue(sortedItems);
                     }
-                } catch (ExecutionException e) {
-                    throw new RuntimeException(e);
-                } catch (InterruptedException e) {
+                } catch (ExecutionException | InterruptedException e) {
                     throw new RuntimeException(e);
                 }
             }

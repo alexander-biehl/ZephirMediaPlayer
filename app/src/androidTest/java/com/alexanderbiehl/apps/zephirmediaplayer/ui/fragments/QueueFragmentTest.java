@@ -1,7 +1,6 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.ui.fragments;
 
 import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
 
 import android.os.Bundle;
 import androidx.fragment.app.testing.FragmentScenario;
