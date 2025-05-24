@@ -1,6 +1,5 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.activities;
 
-import android.app.appsearch.observer.ObserverCallback;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -38,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     public MediaViewModel mediaViewModel;
     private AppBarConfiguration appBarConfiguration;
-    private ActivityMainBinding binding;
     private MediaBrowser mediaBrowser;
     private ListenableFuture<MediaBrowser> browserFuture;
     private ObserverCallback observerCallback;
@@ -47,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         setSupportActionBar(binding.toolbar);
