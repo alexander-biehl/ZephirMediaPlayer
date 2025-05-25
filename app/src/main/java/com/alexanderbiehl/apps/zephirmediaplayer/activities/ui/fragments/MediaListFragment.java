@@ -72,6 +72,14 @@ public class MediaListFragment extends Fragment {
         this.treeBackStack = new Stack<>();
     }
 
+    // for testing
+    public MediaListFragment(MediaViewModel viewModel, MediaBrowserWrapper mediaBrowser) {
+        this.mediaViewModel = viewModel;
+        this.mediaBrowser = mediaBrowser;
+        this.subMediaList = new ArrayList<>();
+        this.treeBackStack = new Stack<>();
+    }
+
 
     @SuppressWarnings("unused")
     public static MediaListFragment newInstance(int columnCount) {

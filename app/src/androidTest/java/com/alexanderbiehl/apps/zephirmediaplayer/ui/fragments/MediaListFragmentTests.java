@@ -1,5 +1,10 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.ui.fragments;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -12,8 +17,13 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.provider.MediaStore;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentFactory;
 import androidx.fragment.app.testing.FragmentScenario;
+import androidx.lifecycle.Lifecycle;
 import androidx.media3.common.MediaItem;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -37,19 +47,44 @@ public class MediaListFragmentTests {
 //    @Mock
 //    MediaViewModel mediaViewModel;
 
-    @Before
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
+//    @Before
+//    public void setUp() {
+//        MockitoAnnotations.openMocks(this);
+//    }
+
+    @Test
+    public void onCreateFragment_validateTitle() {
+        FragmentScenario<MediaListFragment> scenario = FragmentScenario.launchInContainer(MediaListFragment.class, new Bundle(), R.style.Theme_AppCompat);
+        // scenario.moveToState(Lifecycle.State.CREATED);
+        onView(withId(R.id.fragment_media_item_list)).check(matches(withText("Root Folder")));
+//        onView(withId(R.id.fragment_media_item_list)).check(matches(withText("Artists")));
+//        onView(withId(R.id.fragment_media_item_list)).check(matches(withText("Playlists")));
     }
 
     @Test
     public void addsPlayableMediaItemToQueue() {
         MediaItem playableItem = TestUtils.createSongMediaItem();
 
-        FragmentScenario<MediaListFragment> scenario = FragmentScenario.launchInContainer(MediaListFragment.class, new Bundle(), R.style.Theme_AppCompat);
+        MediaBrowserWrapper mediaBrowser = mock(MediaBrowserWrapper.class);
+        MediaViewModel mediaViewModel = mock(MediaViewModel.class);
+
+        // FragmentScenario<MediaListFragment> scenario = FragmentScenario.launchInContainer(MediaListFragment.class, new Bundle(), R.style.Theme_AppCompat);
+        FragmentScenario<MediaListFragment> scenario = FragmentScenario.launch(MediaListFragment.class,
+                new Bundle(), new FragmentFactory() {
+
+                    @NonNull
+                    @Override
+                    public Fragment instantiate(@NonNull ClassLoader classLoader, @NonNull String className) {
+                        if (className.equals(MediaListFragment.class.getName())) {
+                            // Provide custom constructor or dependencies if needed
+                            return new MediaListFragment(mediaViewModel, mediaBrowser);
+                        }
+                        return super.instantiate(classLoader, className);
+                    }
+                });
         scenario.onFragment(fragment -> {
-            fragment.mediaBrowser = mock(MediaBrowserWrapper.class);
-            fragment.mediaViewModel = mock(MediaViewModel.class);
+//            fragment.mediaBrowser = mock(MediaBrowserWrapper.class);
+//            fragment.mediaViewModel = mock(MediaViewModel.class);
 
             fragment.addMediaItemToQueue(playableItem);
 

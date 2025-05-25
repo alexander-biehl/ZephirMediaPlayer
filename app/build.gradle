@@ -50,6 +50,7 @@ dependencies {
     implementation 'androidx.media3:media3-session:1.7.1'
     implementation 'com.google.android.material:material:1.12.0'
     implementation 'androidx.room:room-common:2.7.1'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     debugImplementation 'androidx.room:androidx.room.gradle.plugin:2.7.1'
     implementation 'androidx.room:room-guava:2.7.1'
     implementation 'androidx.room:room-paging:2.7.1'
@@ -73,6 +74,8 @@ dependencies {
     debugImplementation 'androidx.test:core:1.6.1'
     debugImplementation 'androidx.test:rules:1.6.1'
     debugImplementation 'androidx.test:runner:1.6.2'
-    debugImplementation 'androidx.fragment:fragment-testing:1.8.6'
+    debugImplementation "androidx.fragment:fragment-testing-manifest:1.8.7"
+
+    androidTestImplementation "androidx.fragment:fragment-testing:1.8.7"
 
 }
