@@ -80,7 +80,13 @@ public class MediaStoreContentObserver extends ContentObserver {
         for (ArtistEntity entity : artistEntities) {
             ArtistEntity _entity = db.artistDao().getByMediaId(entity.mediaId);
 
-            Long id = _entity != null ? _entity.id : db.artistDao().insert(entity);
+            Long id;
+            if (_entity != null) {
+                id = entity.id = _entity.id;
+                db.artistDao().update(entity);
+            } else {
+               id = db.artistDao().insert(entity);
+            }
             artistIdMap.put(entity.title, id);
         }
 
@@ -89,7 +95,13 @@ public class MediaStoreContentObserver extends ContentObserver {
         for (AlbumEntity entity : albumEntities) {
             AlbumEntity _entity = db.albumDao().getByMediaId(entity.mediaId);
 
-            Long id = _entity != null ? _entity.id : db.albumDao().insert(entity);
+            Long id;
+            if (_entity != null) {
+                id = entity.id = _entity.id;
+                db.albumDao().update(entity);
+            } else {
+                id = db.albumDao().insert(entity);
+            }
             albumIdMap.put(
                     entity.title + "-" + artistIdMap.entrySet().stream()
                             .filter((p) -> p.getValue() == entity.albumArtistId)
@@ -100,7 +112,11 @@ public class MediaStoreContentObserver extends ContentObserver {
 
         List<SongEntity> songEntities = EntityExtractor.extractSongEntities(items, artistIdMap, albumIdMap);
         for (SongEntity entity : songEntities) {
-            if (db.songDao().getByMediaId(entity.mediaId) == null) {
+            SongEntity _entity = db.songDao().getByMediaId(entity.mediaId);
+            if (_entity != null) {
+                entity.id = _entity.id;
+                db.songDao().update(entity);
+            } else {
                 db.songDao().insert(entity);
             }
         }
