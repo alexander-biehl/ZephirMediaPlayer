@@ -51,6 +51,14 @@ dependencies {
     implementation 'com.google.android.material:material:1.12.0'
     implementation 'androidx.room:room-common:2.7.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-accessibility:3.6.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.6.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-device:1.0.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-idling-resource:3.6.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.6.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-remote:3.6.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-web:3.6.1'
     debugImplementation 'androidx.room:androidx.room.gradle.plugin:2.7.1'
     implementation 'androidx.room:room-guava:2.7.1'
     implementation 'androidx.room:room-paging:2.7.1'
@@ -63,10 +71,10 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'androidx.test:core:1.6.1'
     testImplementation 'androidx.test.ext:junit:1.2.1'
-    testImplementation 'org.mockito:mockito-core:5.15.2'
-    testImplementation 'org.mockito:mockito-android:5.2.0'
+    testImplementation 'org.mockito:mockito-core:5.18.0'
+    testImplementation 'org.mockito:mockito-android:5.18.0'
     testImplementation 'org.mockito:mockito-inline:5.2.0'
-    androidTestImplementation 'org.mockito:mockito-android:5.2.0'
+    androidTestImplementation 'org.mockito:mockito-android:5.18.0'
     androidTestImplementation 'androidx.test:core:1.6.1'
     androidTestImplementation 'androidx.test.ext:junit:1.2.1'
     androidTestImplementation 'androidx.test:rules:1.6.1'
@@ -74,8 +82,8 @@ dependencies {
     debugImplementation 'androidx.test:core:1.6.1'
     debugImplementation 'androidx.test:rules:1.6.1'
     debugImplementation 'androidx.test:runner:1.6.2'
-    debugImplementation "androidx.fragment:fragment-testing-manifest:1.8.7"
 
+    debugImplementation "androidx.fragment:fragment-testing-manifest:1.8.7"
     androidTestImplementation "androidx.fragment:fragment-testing:1.8.7"
 
 }
