@@ -82,6 +82,77 @@ public class PlaylistsFragment extends Fragment {
         );
     }
 
+    @Override
+    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v,
+                                    @Nullable ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+
+        MenuInflater inflater = requireActivity().getMenuInflater();
+
+        if (v instanceof RecyclerView) {
+            PlaylistsAdapter adapter = (PlaylistsAdapter) ((RecyclerView) v).getAdapter();
+            if (adapter == null) {
+                Log.d(TAG, "Adapter was null");
+                return;
+            }
+            MediaItem item = adapter.getContextMenuItem();
+
+            if (item == null) {
+                return;
+            }
+
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                Log.d(TAG, "Item: " + item);
+            }
+
+            inflater.inflate(R.menu.menu_playlists_context, menu);
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        MediaItem playlist = playlistsAdapter.getContextMenuItem();
+
+        if (playlist == null) {
+            return super.onContextItemSelected(item);
+        }
+
+        if (id == R.id.action_play_playlist) {
+            // TODO: Play the selected playlist
+            playPlaylist(playlist);
+            return true;
+        } else if (id == R.id.action_rename_playlist) {
+            // TODO: Rename the selected playlist
+            Snackbar.make(binding.getRoot(), "Rename playlist: " + playlist.mediaMetadata.title,
+                    Snackbar.LENGTH_SHORT).show();
+            return true;
+        } else if (id == R.id.action_delete_playlist) {
+            // TODO: Delete the selected playlist
+            Snackbar.make(binding.getRoot(), "Delete playlist: " + playlist.mediaMetadata.title,
+                    Snackbar.LENGTH_SHORT).show();
+            return true;
+        }
+
+        return super.onContextItemSelected(item);
+    }
+
+    @Override
+    public void onStop() {
+        if (mediaBrowser != null) {
+            mediaBrowser.release();
+            mediaBrowser = null;
+        }
+        MediaBrowser.releaseFuture(browserFuture);
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
+
     private void initializeBrowser() {
         SessionToken sessionToken =
                 new SessionToken(
@@ -191,61 +262,6 @@ public class PlaylistsFragment extends Fragment {
         Snackbar.make(binding.getRoot(), "Create new playlist", Snackbar.LENGTH_SHORT).show();
     }
 
-    @Override
-    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v,
-                                    @Nullable ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-
-        MenuInflater inflater = requireActivity().getMenuInflater();
-
-        if (v instanceof RecyclerView) {
-            PlaylistsAdapter adapter = (PlaylistsAdapter) ((RecyclerView) v).getAdapter();
-            if (adapter == null) {
-                Log.d(TAG, "Adapter was null");
-                return;
-            }
-            MediaItem item = adapter.getContextMenuItem();
-
-            if (item == null) {
-                return;
-            }
-
-            if (Log.isLoggable(TAG, Log.DEBUG)) {
-                Log.d(TAG, "Item: " + item);
-            }
-
-            inflater.inflate(R.menu.menu_playlists_context, menu);
-        }
-    }
-
-    @Override
-    public boolean onContextItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        MediaItem playlist = playlistsAdapter.getContextMenuItem();
-
-        if (playlist == null) {
-            return super.onContextItemSelected(item);
-        }
-
-        if (id == R.id.action_play_playlist) {
-            // TODO: Play the selected playlist
-            playPlaylist(playlist);
-            return true;
-        } else if (id == R.id.action_rename_playlist) {
-            // TODO: Rename the selected playlist
-            Snackbar.make(binding.getRoot(), "Rename playlist: " + playlist.mediaMetadata.title,
-                    Snackbar.LENGTH_SHORT).show();
-            return true;
-        } else if (id == R.id.action_delete_playlist) {
-            // TODO: Delete the selected playlist
-            Snackbar.make(binding.getRoot(), "Delete playlist: " + playlist.mediaMetadata.title,
-                    Snackbar.LENGTH_SHORT).show();
-            return true;
-        }
-
-        return super.onContextItemSelected(item);
-    }
-
     private void playPlaylist(MediaItem playlist) {
         if (mediaBrowser != null) {
             // This is similar to the implementation in your MediaListFragment
@@ -283,22 +299,6 @@ public class PlaylistsFragment extends Fragment {
                 }
             }, ContextCompat.getMainExecutor(requireActivity()));
         }
-    }
-
-    @Override
-    public void onStop() {
-        if (mediaBrowser != null) {
-            mediaBrowser.release();
-            mediaBrowser = null;
-        }
-        MediaBrowser.releaseFuture(browserFuture);
-        super.onStop();
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
     }
 
     /**
