@@ -5,11 +5,7 @@
         android:id="@+id/action_sort_playlists"
         android:icon="@drawable/img_btn_shuffle"
         android:orderInCategory="100"
+        android:contentDescription="@string/shuffle_playlists_text"
         android:title="@string/action_sort"
         app:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/action_import_playlist"
-        android:orderInCategory="200"
-        android:title="@string/action_import_playlist"
-        app:showAsAction="never" />
 </menu>

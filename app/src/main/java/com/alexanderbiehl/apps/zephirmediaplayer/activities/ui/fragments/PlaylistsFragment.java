@@ -136,10 +136,6 @@ public class PlaylistsFragment extends Fragment {
                     // TODO: Show sort options dialog
                     Snackbar.make(binding.getRoot(), "Sort playlists", Snackbar.LENGTH_SHORT).show();
                     return true;
-                } else if (id == R.id.action_import_playlist) {
-                    // TODO: Import playlist functionality
-                    Snackbar.make(binding.getRoot(), "Import playlist", Snackbar.LENGTH_SHORT).show();
-                    return true;
                 }
                 return false;
             }

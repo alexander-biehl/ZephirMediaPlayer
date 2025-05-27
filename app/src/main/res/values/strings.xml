@@ -172,4 +172,5 @@
     <string name="splash_logo_content_description">Displays logo</string>
     <string name="remove_from_queue">Remove from Queue</string>
     <string name="playlists_fragment_title">Playlists</string>
+    <string name="shuffle_playlists_text">Shuffle Playlists</string>
 </resources>
