@@ -11,7 +11,13 @@
       <SelectionState runConfigName="MediaListFragmentTests">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="Tests in 'com.alexanderbiehl.apps.zephirmediaplayer.data'">
+      <SelectionState runConfigName="NowPlayingFragmentTests">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="QueueFragmentTests">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="testQueueFragmentComponents()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
