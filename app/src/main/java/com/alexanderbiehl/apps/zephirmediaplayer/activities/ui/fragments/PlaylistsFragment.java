@@ -107,41 +107,6 @@ public class PlaylistsFragment extends Fragment {
         }, ContextCompat.getMainExecutor(requireActivity()));
     }
 
-    private void loadPlaylists() {
-        // In a real implementation, you would load actual playlists from your media service
-        // For demonstration, I'll create dummy playlists similar to your app's approach
-
-        playlists.clear();
-        for (int i = 0; i < 5; i++) {
-            MediaMetadata metadata = new MediaMetadata.Builder()
-                    .setTitle("Playlist " + (i + 1))
-                    .setArtist(i + 10 + " songs")
-                    .setAlbumTitle("Total: " + (i * 10 + 30) + " min")
-                    .setIsBrowsable(true)
-                    .setIsPlayable(true)
-                    .build();
-
-            MediaItem playlist = new MediaItem.Builder()
-                    .setMediaId("playlist_" + i)
-                    .setMediaMetadata(metadata)
-                    .build();
-
-            playlists.add(playlist);
-        }
-
-        playlistsAdapter.notifyDataSetChanged();
-    }
-
-    private void observerViewModel() {
-        mediaViewModel.getCurrentMedia().observe(getViewLifecycleOwner(), currentMedia -> {
-            if (currentMedia != null) {
-                Log.d(TAG, "Current media: " + currentMedia.mediaMetadata.title);
-            } else {
-                Log.d(TAG, "No current media");
-            }
-        });
-    }
-
     private void setupOptionsMenu() {
         requireActivity().addMenuProvider(new MenuProvider() {
             @Override
@@ -178,6 +143,47 @@ public class PlaylistsFragment extends Fragment {
 
         // Register for context menu
         registerForContextMenu(recyclerView);
+    }
+
+    private void loadPlaylists() {
+        // In a real implementation, you would load actual playlists from your media service
+        // For demonstration, I'll create dummy playlists similar to your app's approach
+
+        playlists.clear();
+        for (int i = 0; i < 5; i++) {
+            MediaMetadata metadata = new MediaMetadata.Builder()
+                    .setTitle("Playlist " + (i + 1))
+                    .setArtist(i + 10 + " songs")
+                    .setAlbumTitle("Total: " + (i * 10 + 30) + " min")
+                    .setIsBrowsable(true)
+                    .setIsPlayable(true)
+                    .build();
+
+            MediaItem playlist = new MediaItem.Builder()
+                    .setMediaId("playlist_" + i)
+                    .setMediaMetadata(metadata)
+                    .build();
+
+            playlists.add(playlist);
+        }
+
+        playlistsAdapter.notifyDataSetChanged();
+    }
+
+    private void observerViewModel() {
+        mediaViewModel.getCurrentMedia().observe(getViewLifecycleOwner(), currentMedia -> {
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                Log.d(TAG, "Current media changed: " + currentMedia);
+            }
+            if (mediaBrowser != null) {
+                if (currentMedia != null) {
+                    playPlaylist(currentMedia);
+                    Log.d(TAG, "Current media: " + currentMedia.mediaMetadata.title);
+                } else {
+                    Log.d(TAG, "No current media");
+                }
+            }
+        });
     }
 
     private void createNewPlaylist() {
@@ -261,6 +267,8 @@ public class PlaylistsFragment extends Fragment {
                             mediaBrowser.addMediaItems(items);
                             mediaBrowser.prepare();
                             mediaBrowser.play();
+                            // add items to MediaViewModel queue for tracking in QueueFragment
+                            mediaViewModel.setQueue(items);
 
                             Snackbar.make(binding.getRoot(),
                                     "Playing playlist: " + playlist.mediaMetadata.title,
