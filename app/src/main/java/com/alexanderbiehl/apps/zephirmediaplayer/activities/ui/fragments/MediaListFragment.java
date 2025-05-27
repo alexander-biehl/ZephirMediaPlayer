@@ -243,7 +243,7 @@ public class MediaListFragment extends Fragment {
     }
 
     private void observeViewModel() {
-        this.mediaViewModel.getCurrentMedia().observe(requireActivity(), item -> {
+        this.mediaViewModel.getCurrentMedia().observe(getViewLifecycleOwner(), item -> {
             if (mediaBrowser != null) {
                 if (item.mediaId.equals(PLAYLIST_ID)) {
                     NavHostFragment.findNavController(this)

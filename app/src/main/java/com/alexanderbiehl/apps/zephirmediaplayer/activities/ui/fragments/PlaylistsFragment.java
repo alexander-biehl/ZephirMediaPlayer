@@ -19,6 +19,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.MediaMetadata;
 import androidx.media3.session.LibraryResult;
@@ -29,6 +30,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.R;
+import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.viewmodel.MediaViewModel;
 import com.alexanderbiehl.apps.zephirmediaplayer.common.OnClickHandler;
 import com.alexanderbiehl.apps.zephirmediaplayer.databinding.FragmentPlaylistsBinding;
 import com.alexanderbiehl.apps.zephirmediaplayer.service.Media3Service;
@@ -47,6 +49,14 @@ public class PlaylistsFragment extends Fragment {
     private List<MediaItem> playlists;
     private MediaBrowser mediaBrowser;
     private ListenableFuture<MediaBrowser> browserFuture;
+    private MediaViewModel mediaViewModel;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        this.mediaViewModel = new ViewModelProvider(requireActivity()).get(MediaViewModel.class);
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -87,6 +97,7 @@ public class PlaylistsFragment extends Fragment {
             if (browserFuture.isDone()) {
                 try {
                     mediaBrowser = browserFuture.get();
+                    observerViewModel();
                     loadPlaylists();
                 } catch (Exception e) {
                     Log.e(TAG, "Error getting media browser: " + e.getMessage());
@@ -119,6 +130,16 @@ public class PlaylistsFragment extends Fragment {
         }
 
         playlistsAdapter.notifyDataSetChanged();
+    }
+
+    private void observerViewModel() {
+        mediaViewModel.getCurrentMedia().observe(getViewLifecycleOwner(), currentMedia -> {
+            if (currentMedia != null) {
+                Log.d(TAG, "Current media: " + currentMedia.mediaMetadata.title);
+            } else {
+                Log.d(TAG, "No current media");
+            }
+        });
     }
 
     private void setupOptionsMenu() {
