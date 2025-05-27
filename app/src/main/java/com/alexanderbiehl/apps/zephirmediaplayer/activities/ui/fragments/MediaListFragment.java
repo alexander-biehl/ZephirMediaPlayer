@@ -1,5 +1,7 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.fragments;
 
+import static com.alexanderbiehl.apps.zephirmediaplayer.repositories.MediaItemRepository.PLAYLIST_ID;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.os.Bundle;
@@ -243,7 +245,10 @@ public class MediaListFragment extends Fragment {
     private void observeViewModel() {
         this.mediaViewModel.getCurrentMedia().observe(requireActivity(), item -> {
             if (mediaBrowser != null) {
-                if (Boolean.TRUE.equals(item.mediaMetadata.isBrowsable)) {
+                if (item.mediaId.equals(PLAYLIST_ID)) {
+                    NavHostFragment.findNavController(this)
+                            .navigate(R.id.action_mediaList_toPlaylists);
+                } else if (Boolean.TRUE.equals(item.mediaMetadata.isBrowsable)) {
                     pushPathStack(item);
                 } else if (Boolean.TRUE.equals(item.mediaMetadata.isPlayable)) {
                     handlePlay(item);

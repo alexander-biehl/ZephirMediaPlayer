@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -32,8 +33,11 @@ public class NowPlayingFragment extends Fragment {
 
     private static final String TAG = NowPlayingFragment.class.getSimpleName();
     private FragmentNowPlayingBinding binding;
+
     private PlayerView playerView;
+
     private MediaController mediaController;
+
     private ListenableFuture<MediaController> controllerFuture;
 
     public NowPlayingFragment() {
@@ -101,7 +105,7 @@ public class NowPlayingFragment extends Fragment {
         binding = null;
     }
 
-    private void initializeController() {
+    public void initializeController() {
         controllerFuture = new MediaController.Builder(
                 requireContext(),
                 new SessionToken(
@@ -125,7 +129,7 @@ public class NowPlayingFragment extends Fragment {
     }
 
 
-    private void setController(@NonNull MediaController controller) {
+    public void setController(@NonNull MediaController controller) {
         mediaController = controller;
         playerView.setPlayer(mediaController);
 
@@ -144,7 +148,7 @@ public class NowPlayingFragment extends Fragment {
         updateMediaMetadataUI();
     }
 
-    private void updateMediaMetadataUI() {
+    public void updateMediaMetadataUI() {
         if (mediaController == null || mediaController.getMediaItemCount() == 0) {
             binding.albumTextView.setText(R.string.album_view_default_text);
             binding.songTextView.setText(R.string.song_view_default_text);

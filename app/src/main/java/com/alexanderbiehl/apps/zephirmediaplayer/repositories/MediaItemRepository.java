@@ -21,7 +21,7 @@ public class MediaItemRepository {
     private static final String ROOT_ID = "[rootID]";
     private static final String ALBUM_ID = "[albumID]";
     private static final String ARTIST_ID = "[artistID]";
-    private static final String PLAYLIST_ID = "playlistID]";
+    public static final String PLAYLIST_ID = "[playlistID]";
     private final MediaItem rootItem;
     private final MediaItem artistsFolder;
     private final MediaItem albumsFolder;
