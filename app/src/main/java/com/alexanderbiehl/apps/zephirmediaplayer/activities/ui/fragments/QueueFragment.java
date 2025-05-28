@@ -14,8 +14,6 @@ import android.view.ViewGroup;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -46,11 +44,11 @@ public class QueueFragment extends Fragment {
 
     private static final String ARG_COLUMN_COUNT = "column-count";
     private final List<MediaItem> currentQueue;
-    private int mColumnCount = 1;
     public MediaController mediaController;
-    private ListenableFuture<MediaController> controllerFuture;
     public MyQueueRecyclerViewAdapter queueAdapter;
     public MediaViewModel mediaViewModel;
+    private int mColumnCount = 1;
+    private ListenableFuture<MediaController> controllerFuture;
 
 
     public QueueFragment() {
@@ -90,12 +88,6 @@ public class QueueFragment extends Fragment {
         // don't need to observe the viewModel, since we are only using it in case we pause/resume
         this.mediaViewModel = new ViewModelProvider(requireActivity()).get(MediaViewModel.class);
 
-        // Set the fragment title
-        ActionBar actionBar = ((AppCompatActivity) requireActivity()).getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setTitle(R.string.queue_fragment_title);
-        }
-
         setHasOptionsMenu(true);
     }
 
@@ -105,9 +97,8 @@ public class QueueFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_queue, container, false);
 
         // Set the adapter
-        if (view instanceof RecyclerView) {
+        if (view instanceof RecyclerView recyclerView) {
             Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
             if (mColumnCount <= 1) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
