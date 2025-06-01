@@ -14,11 +14,11 @@ import androidx.media3.session.MediaSession;
 import androidx.media3.session.SessionError;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.MainApp;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.database.AppDatabase;
-import com.alexanderbiehl.apps.zephirmediaplayer.datasources.impl.PlaylistDbDataSource;
-import com.alexanderbiehl.apps.zephirmediaplayer.repositories.CompositeMediaRepository;
-import com.alexanderbiehl.apps.zephirmediaplayer.repositories.MediaItemRepository;
-import com.alexanderbiehl.apps.zephirmediaplayer.repositories.PlaylistRepository;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.datasources.impl.PlaylistDbDataSource;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.CompositeMediaRepository;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.MediaItemRepository;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.PlaylistRepository;
+import com.alexanderbiehl.apps.zephirmediaplayer.database.AppDatabase;
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;

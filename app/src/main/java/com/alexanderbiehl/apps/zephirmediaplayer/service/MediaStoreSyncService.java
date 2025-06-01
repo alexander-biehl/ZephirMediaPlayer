@@ -10,10 +10,8 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleService;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.MainApp;
-import com.alexanderbiehl.apps.zephirmediaplayer.common.RepositoryCallback;
-import com.alexanderbiehl.apps.zephirmediaplayer.common.Result;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.database.AppDatabase;
-import com.alexanderbiehl.apps.zephirmediaplayer.observers.MediaStoreContentObserver;
+import com.alexanderbiehl.apps.zephirmediaplayer.common.observers.MediaStoreContentObserver;
+import com.alexanderbiehl.apps.zephirmediaplayer.database.AppDatabase;
 
 public class MediaStoreSyncService extends LifecycleService {
 

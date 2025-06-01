@@ -1,6 +1,6 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.fragments;
 
-import static com.alexanderbiehl.apps.zephirmediaplayer.repositories.MediaItemRepository.PLAYLIST_ID;
+import static com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.MediaItemRepository.PLAYLIST_ID;
 
 import android.content.ComponentName;
 import android.content.Context;

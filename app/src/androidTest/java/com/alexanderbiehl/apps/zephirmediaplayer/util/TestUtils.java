@@ -3,9 +3,9 @@ package com.alexanderbiehl.apps.zephirmediaplayer.util;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.MediaMetadata;
 
-import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.AlbumEntity;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.ArtistEntity;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.entity.SongEntity;
+import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.AlbumEntity;
+import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.ArtistEntity;
+import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.SongEntity;
 
 public class TestUtils {
 
