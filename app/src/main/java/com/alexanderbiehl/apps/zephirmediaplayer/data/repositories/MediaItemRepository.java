@@ -81,33 +81,27 @@ public class MediaItemRepository {
     }
 
     public List<MediaItem> getChildren(final String mediaId) {
-        switch (mediaId) {
-            case ROOT_ID:
-                return Arrays.asList(artistsFolder, albumsFolder, playlistsFolder);
-            case ALBUM_ID:
-                return compositeMediaRepository.getAllAlbums();
-            case ARTIST_ID:
-                return compositeMediaRepository.getAllArtists();
-            case PLAYLIST_ID:
-                return compositeMediaRepository.getAllPlaylists();
-            default:
-                return handleGetChildren(mediaId);
-        }
+        return switch (mediaId) {
+            case ROOT_ID -> Arrays.asList(artistsFolder, albumsFolder, playlistsFolder);
+            case ALBUM_ID -> compositeMediaRepository.getAllAlbums();
+            case ARTIST_ID -> compositeMediaRepository.getAllArtists();
+            case PLAYLIST_ID -> compositeMediaRepository.getAllPlaylists();
+            default -> handleGetChildren(mediaId);
+        };
     }
 
     private List<MediaItem> handleGetChildren(final String mediaId) {
         Optional<MediaItem> parentOpt = getItem(mediaId);
         return parentOpt.map(parent -> {
-            switch (parent.mediaMetadata.mediaType) {
-                case MediaMetadata.MEDIA_TYPE_ARTIST:
-                    return compositeMediaRepository.getAlbumsByArtistId(parent.mediaId);
-                case MediaMetadata.MEDIA_TYPE_ALBUM:
-                    return compositeMediaRepository.getSongsByAlbumId(parent.mediaId);
-                case MediaMetadata.MEDIA_TYPE_PLAYLIST:
-                    return compositeMediaRepository.getSongsByPlaylistId(parent.mediaId);
-                default:
-                    return new ArrayList<MediaItem>();
-            }
+            return switch (parent.mediaMetadata.mediaType) {
+                case MediaMetadata.MEDIA_TYPE_ARTIST ->
+                        compositeMediaRepository.getAlbumsByArtistId(parent.mediaId);
+                case MediaMetadata.MEDIA_TYPE_ALBUM ->
+                        compositeMediaRepository.getSongsByAlbumId(parent.mediaId);
+                case MediaMetadata.MEDIA_TYPE_PLAYLIST ->
+                        compositeMediaRepository.getSongsByPlaylistId(parent.mediaId);
+                default -> new ArrayList<MediaItem>();
+            };
         }).orElseGet(ArrayList::new);
     }
 

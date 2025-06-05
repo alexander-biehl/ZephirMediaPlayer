@@ -11,7 +11,6 @@ import com.alexanderbiehl.apps.zephirmediaplayer.common.RepositoryCallback;
 import com.alexanderbiehl.apps.zephirmediaplayer.common.Result;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.dataloaders.MediaStoreLoader;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.datasources.impl.MediaLocalDataSource;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.MediaRepository;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.AppDatabase;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.AlbumEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.ArtistEntity;
@@ -65,15 +64,7 @@ public class MediaStoreContentObserver extends ContentObserver {
         if (Log.isLoggable(TAG, Log.DEBUG)) {
             Log.d(TAG, "syncMediaStore");
         }
-        MediaRepository mediaRepository = new MediaRepository(
-                new MediaLocalDataSource(
-                        new MediaStoreLoader(),
-                        context
-                )
-        );
-
-        // want to make a synchronous call here because we are already running on a background thread
-        List<MediaItem> items = mediaRepository.getMedia();
+        List<MediaItem> items = getMediaItems();
 
         List<ArtistEntity> artistEntities = EntityExtractor.extractArtistEntities(items);
         Map<String, Long> artistIdMap = new HashMap<>();
@@ -124,6 +115,16 @@ public class MediaStoreContentObserver extends ContentObserver {
         if (callback != null) {
             callback.onComplete(new Result.Success<>());
         }
+    }
+
+    private List<MediaItem> getMediaItems() {
+        MediaLocalDataSource ds = new MediaLocalDataSource(
+                new MediaStoreLoader(),
+                context
+        );
+
+        // want to make a synchronous call here because we are already running on a background thread
+        return ds.getMedia();
     }
 
 }
