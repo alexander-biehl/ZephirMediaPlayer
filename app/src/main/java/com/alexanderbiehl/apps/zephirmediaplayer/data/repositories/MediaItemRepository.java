@@ -18,6 +18,8 @@ import java.util.Optional;
  */
 public class MediaItemRepository {
 
+    // TODO deprecate for MediaItemUseCase
+
     public static final String PLAYLIST_ID = "[playlistID]";
     private static final String ROOT_ID = "[rootID]";
     private static final String ALBUM_ID = "[albumID]";

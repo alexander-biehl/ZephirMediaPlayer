@@ -2,6 +2,8 @@ package com.alexanderbiehl.apps.zephirmediaplayer.data.repositories;
 
 import android.util.Log;
 
+import androidx.media3.common.MediaItem;
+
 import com.alexanderbiehl.apps.zephirmediaplayer.common.RepositoryCallback;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.datasources.impl.PlaylistDbDataSource;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.PlaylistEntity;
@@ -65,5 +67,13 @@ public class PlaylistRepository {
             Log.d(TAG, "getAll: ");
         }
         return this.dataSource.getAll();
+    }
+
+    public List<MediaItem> getSongsByPlaylistId(String mediaId) {
+        return List.of();
+    }
+
+    public MediaItem getById(String mediaId) {
+        return null;
     }
 }
