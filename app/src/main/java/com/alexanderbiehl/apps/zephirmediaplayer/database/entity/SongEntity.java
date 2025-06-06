@@ -1,5 +1,7 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.database.entity;
 
+import androidx.media3.common.MediaItem;
+import androidx.media3.common.MediaMetadata;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
@@ -32,5 +34,21 @@ public class SongEntity extends EntityBase {
         this.songArtistId = artistId;
         this.songAlbumId = albumId;
         this.mediaId = mediaId;
+    }
+
+    public static MediaItem toItem(SongEntity entity) {
+        if (entity == null) {
+            return null;
+        }
+        return new MediaItem.Builder()
+                .setMediaId(entity.mediaId)
+                .setMediaMetadata(
+                        new MediaMetadata.Builder()
+                                .setTitle(entity.title)
+                                .setIsBrowsable(false)
+                                .setIsPlayable(true)
+                                .setMediaType(MediaMetadata.MEDIA_TYPE_MUSIC)
+                                .build())
+                .build();
     }
 }

@@ -1,9 +1,9 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.data.repositories;
 
-import androidx.media3.common.MediaItem;
+import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.SongEntity;
 
 public class SongRepository {
-    public MediaItem getById(String mediaId) {
+    public SongEntity getById(String mediaId) {
         return null;
     }
 }

@@ -1,20 +1,20 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.data.repositories;
 
-import androidx.media3.common.MediaItem;
+import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.ArtistEntity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ArtistRepository {
-    public List<MediaItem> getAlbumsByArtistId(String mediaId) {
+    public List<ArtistEntity> getAlbumsByArtistId(String mediaId) {
         return new ArrayList<>();
     }
 
-    public MediaItem getById(String mediaId) {
+    public ArtistEntity getById(String mediaId) {
         return null;
     }
 
-    public List<MediaItem> getArtists() {
+    public List<ArtistEntity> getArtists() {
         return new ArrayList<>();
     }
 }

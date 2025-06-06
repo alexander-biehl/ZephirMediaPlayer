@@ -2,7 +2,6 @@ package com.alexanderbiehl.apps.zephirmediaplayer.database.entity.util;
 
 import android.content.ContentUris;
 import android.provider.MediaStore;
-import android.util.Log;
 
 import androidx.media3.common.MediaItem;
 
@@ -18,21 +17,17 @@ import java.util.stream.Collectors;
 
 public class EntityExtractor {
 
+    public static final String ALBUM_PREFIX = "[albumEntity]";
+    public static final String ARTIST_PREFIX = "[artistEntity]";
+    public static final String ITEM_PREFIX = "[item]";
+    public static final String PLAYLIST_PREFIX = "[playlistEntity]";
     private static final String TAG = EntityExtractor.class.getSimpleName();
-
-    private static final String ALBUM_PREFIX = "[albumEntity]";
-    private static final String ARTIST_PREFIX = "[artistEntity]";
-    private static final String ITEM_PREFIX = "[item]";
-    private static final String PLAYLIST_PREFIX = "[playlistEntity]";
 
     public static List<ArtistEntity> extractArtistEntities(List<MediaItem> items) {
 
         Map<String, ArtistEntity> entityMap = new HashMap<>();
         for (MediaItem item : items) {
             String artist = item.mediaMetadata.artist.toString();
-            if (artist.equals("Actress")) {
-                Log.d(TAG, "Actress");
-            }
             String mediaId = ARTIST_PREFIX + artist;
             if (!entityMap.containsKey(artist)) {
                 entityMap.put(artist, new ArtistEntity(artist, mediaId));

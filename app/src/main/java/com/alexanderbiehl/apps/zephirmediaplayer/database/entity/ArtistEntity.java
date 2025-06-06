@@ -25,6 +25,9 @@ public class ArtistEntity extends EntityBase {
     }
 
     public static MediaItem asItem(ArtistEntity entity) {
+        if (entity == null) {
+            return null;
+        }
         return new MediaItem.Builder()
                 .setMediaId(entity.mediaId)
                 .setMediaMetadata(new MediaMetadata.Builder()

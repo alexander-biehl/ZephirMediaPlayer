@@ -1,5 +1,7 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.domain;
 
+import static com.alexanderbiehl.apps.zephirmediaplayer.database.entity.util.EntityExtractor.ITEM_PREFIX;
+
 import androidx.annotation.OptIn;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.MediaMetadata;
@@ -9,10 +11,15 @@ import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.AlbumReposito
 import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.ArtistRepository;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.PlaylistRepository;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.SongRepository;
+import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.AlbumEntity;
+import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.ArtistEntity;
+import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.PlaylistEntity;
+import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.SongEntity;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class MediaItemUseCase {
 
@@ -95,13 +102,29 @@ public class MediaItemUseCase {
     public List<MediaItem> getChildren(final String mediaId) {
         return switch (mediaId) {
             case ROOT_ID -> List.of(artistsFolder, albumsFolder, playlistsFolder);
-            case ARTIST_ID -> artistRepository.getArtists();
-            case ALBUM_ID -> albumRepository.getAlbums();
-            case PLAYLIST_ID -> playlistRepository.getAll();
+            case ARTIST_ID -> artistRepository.getArtists()
+                    .stream()
+                    .map(ArtistEntity::asItem)
+                    .collect(Collectors.toList());
+            case ALBUM_ID -> albumRepository.getAlbums()
+                    .stream()
+                    .map(AlbumEntity::asItem)
+                    .collect(Collectors.toList());
+            case PLAYLIST_ID -> playlistRepository.getAll()
+                    .stream()
+                    .map(PlaylistEntity::toItem)
+                    .collect(Collectors.toList());
             default -> handleGetChildren(mediaId);
         };
     }
 
+    /*
+    TODO need to refactor this and getItem. If MediaItemUseCase is handling
+    the usecase of getting internal elements as MediaItems, each of the underlying
+    repositories should return their own record types and this should handle the conversion
+    Need to come up with a better way of deciding to query for songs, albums, artists or playlists
+    in getItem.
+     */
     private List<MediaItem> handleGetChildren(String mediaId) {
         Optional<MediaItem> parentOption = getItem(mediaId);
         return parentOption.map(parent -> {
@@ -118,21 +141,28 @@ public class MediaItemUseCase {
     }
 
     public Optional<MediaItem> getItem(final String mediaId) {
-        MediaItem item = artistRepository.getById(mediaId);
-        if (item == null) {
-            item = albumRepository.getById(mediaId);
-            if (item == null) {
-                item = playlistRepository.getById(mediaId);
-                if (item == null) {
-                    item = songRepository.getById(mediaId);
-                    if (item == null) {
-                        // If no item found, return an empty Optional
-                        return Optional.empty();
-                    }
-                }
-            }
+        if (mediaId == null || mediaId.isEmpty()) {
+            return Optional.empty();
         }
-        return Optional.of(item);
+
+        if (mediaId.startsWith(ITEM_PREFIX)) {
+            return Optional.of(SongEntity.toItem(songRepository.getById(mediaId)));
+        }
+//        MediaItem item = artistRepository.getById(mediaId);
+//        if (item == null) {
+//            item = albumRepository.getById(mediaId);
+//            if (item == null) {
+//                item = playlistRepository.getById(mediaId);
+//                if (item == null) {
+//                    item = songRepository.getById(mediaId);
+//                    if (item == null) {
+//                        // If no item found, return an empty Optional
+//                        return Optional.empty();
+//                    }
+//                }
+//            }
+//        }
+//        return Optional.of(item);
     }
 
     /**
