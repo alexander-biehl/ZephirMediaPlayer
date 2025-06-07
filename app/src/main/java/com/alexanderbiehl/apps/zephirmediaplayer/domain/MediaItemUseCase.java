@@ -1,6 +1,9 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.domain;
 
+import static com.alexanderbiehl.apps.zephirmediaplayer.database.entity.util.EntityExtractor.ALBUM_PREFIX;
+import static com.alexanderbiehl.apps.zephirmediaplayer.database.entity.util.EntityExtractor.ARTIST_PREFIX;
 import static com.alexanderbiehl.apps.zephirmediaplayer.database.entity.util.EntityExtractor.ITEM_PREFIX;
+import static com.alexanderbiehl.apps.zephirmediaplayer.database.entity.util.EntityExtractor.PLAYLIST_PREFIX;
 
 import androidx.annotation.OptIn;
 import androidx.media3.common.MediaItem;
@@ -130,7 +133,10 @@ public class MediaItemUseCase {
         return parentOption.map(parent -> {
             return switch (parent.mediaMetadata.mediaType) {
                 case MediaMetadata.MEDIA_TYPE_FOLDER_ARTISTS ->
-                        artistRepository.getAlbumsByArtistId(mediaId);
+                        artistRepository.getAlbumsByArtistId(mediaId)
+                                .stream()
+                                .map(AlbumEntity::asItem)
+                                .collect(Collectors.toList());
                 case MediaMetadata.MEDIA_TYPE_FOLDER_ALBUMS ->
                         albumRepository.getSongsByAlbumId(mediaId);
                 case MediaMetadata.MEDIA_TYPE_FOLDER_PLAYLISTS ->
@@ -147,6 +153,12 @@ public class MediaItemUseCase {
 
         if (mediaId.startsWith(ITEM_PREFIX)) {
             return Optional.of(SongEntity.toItem(songRepository.getById(mediaId)));
+        } else if (mediaId.startsWith(ALBUM_PREFIX)) {
+            return Optional.of(AlbumEntity.asItem(albumRepository.getById(mediaId)));
+        } else if (mediaId.startsWith(ARTIST_PREFIX)) {
+            return Optional.of(ArtistEntity.asItem(artistRepository.getById(mediaId)));
+        } else if (mediaId.startsWith(PLAYLIST_PREFIX)) {
+            return Optional.of(PlaylistEntity.toItem(playlistRepository.getByMediaId(mediaId)));
         }
 //        MediaItem item = artistRepository.getById(mediaId);
 //        if (item == null) {

@@ -1,20 +1,28 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.data.repositories;
 
-import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.ArtistEntity;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.datasources.ArtistDataSource;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.models.Artist;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ArtistRepository {
-    public List<ArtistEntity> getAlbumsByArtistId(String mediaId) {
-        return new ArrayList<>();
+
+    private final ArtistDataSource localArtistDataSource;
+
+    public ArtistRepository(ArtistDataSource localArtistDataSource) {
+        this.localArtistDataSource = localArtistDataSource;
     }
 
-    public ArtistEntity getById(String mediaId) {
+    public Artist getAlbumsByArtistId(String mediaId) {
+        return localArtistDataSource.getArtistAlbumsByMediaId(mediaId);
+    }
+
+    public Artist getById(String mediaId) {
         return null;
     }
 
-    public List<ArtistEntity> getArtists() {
+    public List<Artist> getArtists() {
         return new ArrayList<>();
     }
 }
