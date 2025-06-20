@@ -20,6 +20,7 @@ import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.PlaylistEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.SongEntity;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -105,10 +106,10 @@ public class MediaItemUseCase {
     public List<MediaItem> getChildren(final String mediaId) {
         return switch (mediaId) {
             case ROOT_ID -> List.of(artistsFolder, albumsFolder, playlistsFolder);
-            case ARTIST_ID -> artistRepository.getArtists()
-                    .stream()
-                    .map(ArtistEntity::asItem)
-                    .collect(Collectors.toList());
+//            case ARTIST_ID -> artistRepository.getArtists()
+//                    .stream()
+//                    .map(ArtistEntity::asItem)
+//                    .collect(Collectors.toList());
             case ALBUM_ID -> albumRepository.getAlbums()
                     .stream()
                     .map(AlbumEntity::asItem)
@@ -117,7 +118,8 @@ public class MediaItemUseCase {
                     .stream()
                     .map(PlaylistEntity::toItem)
                     .collect(Collectors.toList());
-            default -> handleGetChildren(mediaId);
+            //default -> handleGetChildren(mediaId);
+            default -> throw new IllegalStateException("Unexpected value: " + mediaId);
         };
     }
 
@@ -128,23 +130,24 @@ public class MediaItemUseCase {
     Need to come up with a better way of deciding to query for songs, albums, artists or playlists
     in getItem.
      */
-    private List<MediaItem> handleGetChildren(String mediaId) {
-        Optional<MediaItem> parentOption = getItem(mediaId);
-        return parentOption.map(parent -> {
-            return switch (parent.mediaMetadata.mediaType) {
-                case MediaMetadata.MEDIA_TYPE_FOLDER_ARTISTS ->
-                        artistRepository.getAlbumsByArtistId(mediaId)
-                                .stream()
-                                .map(AlbumEntity::asItem)
-                                .collect(Collectors.toList());
-                case MediaMetadata.MEDIA_TYPE_FOLDER_ALBUMS ->
-                        albumRepository.getSongsByAlbumId(mediaId);
-                case MediaMetadata.MEDIA_TYPE_FOLDER_PLAYLISTS ->
-                        playlistRepository.getSongsByPlaylistId(mediaId);
-                default -> new ArrayList<MediaItem>();
-            };
-        }).orElseGet(ArrayList::new);
-    }
+//    private List<MediaItem> handleGetChildren(String mediaId) {
+//        Optional<MediaItem> parentOption = getItem(mediaId);
+//        return parentOption.map(parent -> {
+//            return switch (parent.mediaMetadata.mediaType) {
+//                case MediaMetadata.MEDIA_TYPE_FOLDER_ARTISTS -> 
+//                        artistRepository.getAlbumsByArtistId(mediaId)
+//                                .albums
+//                                .stream()
+//                                .map(AlbumEntity::asItem)
+//                                .collect(Collectors.toList());
+//                case MediaMetadata.MEDIA_TYPE_FOLDER_ALBUMS ->
+//                        albumRepository.getSongsByAlbumId(mediaId);
+//                case MediaMetadata.MEDIA_TYPE_FOLDER_PLAYLISTS ->
+//                        playlistRepository.getSongsByPlaylistId(mediaId);
+//                default -> new ArrayList<MediaItem>();
+//            };
+//        }).orElseGet(ArrayList::new);
+//    }
 
     public Optional<MediaItem> getItem(final String mediaId) {
         if (mediaId == null || mediaId.isEmpty()) {
@@ -156,7 +159,8 @@ public class MediaItemUseCase {
         } else if (mediaId.startsWith(ALBUM_PREFIX)) {
             return Optional.of(AlbumEntity.asItem(albumRepository.getById(mediaId)));
         } else if (mediaId.startsWith(ARTIST_PREFIX)) {
-            return Optional.of(ArtistEntity.asItem(artistRepository.getById(mediaId)));
+            //return Optional.of(ArtistEntity.asItem(artistRepository.getById(mediaId)));
+            return Optional.empty();
         } else if (mediaId.startsWith(PLAYLIST_PREFIX)) {
             return Optional.of(PlaylistEntity.toItem(playlistRepository.getByMediaId(mediaId)));
         }
@@ -175,6 +179,7 @@ public class MediaItemUseCase {
 //            }
 //        }
 //        return Optional.of(item);
+        return Optional.empty();
     }
 
     /**
