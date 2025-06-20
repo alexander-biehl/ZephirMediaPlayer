@@ -16,13 +16,18 @@ import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.PlaylistEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.SongEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.rel.m2m.PlaylistSongM2M;
 
-@Database(entities = {
-        SongEntity.class,
-        ArtistEntity.class,
-        AlbumEntity.class,
-        PlaylistEntity.class,
-        PlaylistSongM2M.class
-}, version = 1)
+@Database(
+        entities = {
+                SongEntity.class,
+                ArtistEntity.class,
+                AlbumEntity.class,
+                PlaylistEntity.class,
+                PlaylistSongM2M.class
+        },
+        version = 1,
+        autoMigrations = {},
+        exportSchema = true
+)
 public abstract class AppDatabase extends RoomDatabase {
     private static volatile AppDatabase INSTANCE;
 

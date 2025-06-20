@@ -12,6 +12,15 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [
+                        'room.incremental' : 'true',
+                        'room.schemaLocation' : "$projectDir/src/main/res/raw/schemas".toString(),
+                ]
+            }
+        }
     }
     buildTypes {
         release {
