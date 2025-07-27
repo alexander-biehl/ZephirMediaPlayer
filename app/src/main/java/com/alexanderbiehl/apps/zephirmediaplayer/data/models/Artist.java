@@ -1,5 +1,8 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.data.models;
 
+import androidx.media3.common.MediaItem;
+import androidx.media3.common.MediaMetadata;
+
 import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.ArtistEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.rel.ArtistAlbums;
 
@@ -79,5 +82,20 @@ public class Artist {
 
     public void setAlbums(List<Album> albums) {
         this.albums = albums;
+    }
+
+    public static MediaItem asItem(Artist artist) {
+        if (artist == null) {
+            return null;
+        }
+        return new MediaItem.Builder()
+                .setMediaId(artist.getMediaId())
+                .setMediaMetadata(new MediaMetadata.Builder()
+                        .setTitle(artist.getTitle())
+                        .setIsBrowsable(true)
+                        .setIsPlayable(false)
+                        .setMediaType(MediaMetadata.MEDIA_TYPE_ARTIST)
+                        .build())
+                .build();
     }
 }

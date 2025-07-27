@@ -3,7 +3,6 @@ package com.alexanderbiehl.apps.zephirmediaplayer.data.repositories;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.datasources.ArtistDataSource;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.models.Artist;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ArtistRepository {
@@ -19,10 +18,10 @@ public class ArtistRepository {
     }
 
     public Artist getById(String mediaId) {
-        return null;
+        return localArtistDataSource.getById(mediaId);
     }
 
     public List<Artist> getArtists() {
-        return new ArrayList<>();
+        return localArtistDataSource.getAll();
     }
 }

@@ -10,6 +10,7 @@ import androidx.media3.common.MediaItem;
 import androidx.media3.common.MediaMetadata;
 import androidx.media3.common.util.UnstableApi;
 
+import com.alexanderbiehl.apps.zephirmediaplayer.data.models.Artist;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.AlbumRepository;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.ArtistRepository;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.PlaylistRepository;
@@ -106,10 +107,10 @@ public class MediaItemUseCase {
     public List<MediaItem> getChildren(final String mediaId) {
         return switch (mediaId) {
             case ROOT_ID -> List.of(artistsFolder, albumsFolder, playlistsFolder);
-//            case ARTIST_ID -> artistRepository.getArtists()
-//                    .stream()
-//                    .map(ArtistEntity::asItem)
-//                    .collect(Collectors.toList());
+            case ARTIST_ID -> artistRepository.getArtists()
+                    .stream()
+                    .map(Artist::asItem)
+                    .collect(Collectors.toList());
             case ALBUM_ID -> albumRepository.getAlbums()
                     .stream()
                     .map(AlbumEntity::asItem)
