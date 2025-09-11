@@ -37,6 +37,7 @@ public class MediaViewModel extends ViewModel {
     public void addToQueue(final MediaItem item) {
         List<MediaItem> current = currentQueue.getValue();
         if (current != null) {
+            // TODO need to update this to be synchronized
             current.add(current.size(), item);
         } else {
             current = new ArrayList<>();
