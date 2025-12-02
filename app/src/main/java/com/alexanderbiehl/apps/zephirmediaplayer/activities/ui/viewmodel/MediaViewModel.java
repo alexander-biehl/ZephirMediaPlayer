@@ -8,6 +8,8 @@ import androidx.media3.common.MediaItem;
 import java.util.ArrayList;
 import java.util.List;
 
+import kotlin.jvm.Synchronized;
+
 public class MediaViewModel extends ViewModel {
 
     private final MutableLiveData<MediaItem> currentMedia;
@@ -34,6 +36,7 @@ public class MediaViewModel extends ViewModel {
         this.currentMedia.setValue(item);
     }
 
+    @Synchronized
     public void addToQueue(final MediaItem item) {
         List<MediaItem> current = currentQueue.getValue();
         if (current != null) {
@@ -46,6 +49,7 @@ public class MediaViewModel extends ViewModel {
         this.currentQueue.setValue(current);
     }
 
+    @Synchronized
     public void addToQueue(final List<MediaItem> items) {
         List<MediaItem> current = currentQueue.getValue();
         if (current != null) {
@@ -56,6 +60,7 @@ public class MediaViewModel extends ViewModel {
         this.currentQueue.setValue(current);
     }
 
+    @Synchronized
     public void removeFromQueue(final MediaItem item) {
         List<MediaItem> current = currentQueue.getValue();
         if (current != null) {
@@ -71,6 +76,7 @@ public class MediaViewModel extends ViewModel {
         this.currentQueue.setValue(current);
     }
 
+    @Synchronized
     public void removeRangeFromQueue(int start, int end) {
         if (end < start || start < 0) {
             return;
