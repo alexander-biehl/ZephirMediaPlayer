@@ -94,16 +94,14 @@ public class MediaItemRepository {
 
     private List<MediaItem> handleGetChildren(final String mediaId) {
         Optional<MediaItem> parentOpt = getItem(mediaId);
-        return parentOpt.map(parent -> {
-            return switch (parent.mediaMetadata.mediaType) {
-                case MediaMetadata.MEDIA_TYPE_ARTIST ->
-                        compositeMediaRepository.getAlbumsByArtistId(parent.mediaId);
-                case MediaMetadata.MEDIA_TYPE_ALBUM ->
-                        compositeMediaRepository.getSongsByAlbumId(parent.mediaId);
-                case MediaMetadata.MEDIA_TYPE_PLAYLIST ->
-                        compositeMediaRepository.getSongsByPlaylistId(parent.mediaId);
-                default -> new ArrayList<MediaItem>();
-            };
+        return parentOpt.map(parent -> switch (parent.mediaMetadata.mediaType) {
+            case MediaMetadata.MEDIA_TYPE_ARTIST ->
+                    compositeMediaRepository.getAlbumsByArtistId(parent.mediaId);
+            case MediaMetadata.MEDIA_TYPE_ALBUM ->
+                    compositeMediaRepository.getSongsByAlbumId(parent.mediaId);
+            case MediaMetadata.MEDIA_TYPE_PLAYLIST ->
+                    compositeMediaRepository.getSongsByPlaylistId(parent.mediaId);
+            default -> new ArrayList<MediaItem>();
         }).orElseGet(ArrayList::new);
     }
 
