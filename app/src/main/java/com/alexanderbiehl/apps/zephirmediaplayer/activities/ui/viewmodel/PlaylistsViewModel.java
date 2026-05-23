@@ -43,6 +43,23 @@ public class PlaylistsViewModel extends AndroidViewModel {
         this.messageId = new AtomicLong(0);
     }
 
+    PlaylistsViewModel(
+            @NonNull Application application,
+            @NonNull GetPlaylistsUseCase getPlaylistsUseCase,
+            @NonNull CreatePlaylistUseCase createPlaylistUseCase,
+            @NonNull RenamePlaylistUseCase renamePlaylistUseCase,
+            @NonNull DeletePlaylistUseCase deletePlaylistUseCase
+    ) {
+        super(application);
+        this.getPlaylistsUseCase = getPlaylistsUseCase;
+        this.createPlaylistUseCase = createPlaylistUseCase;
+        this.renamePlaylistUseCase = renamePlaylistUseCase;
+        this.deletePlaylistUseCase = deletePlaylistUseCase;
+        this.playlists = new MutableLiveData<>(new ArrayList<>());
+        this.uiMessages = new MutableLiveData<>();
+        this.messageId = new AtomicLong(0);
+    }
+
     public LiveData<List<MediaItem>> getPlaylists() {
         return playlists;
     }
@@ -65,9 +82,10 @@ public class PlaylistsViewModel extends AndroidViewModel {
     }
 
     public void createPlaylist(@NonNull String title) {
-        createPlaylistUseCase.execute(title, result -> {
+        String normalizedTitle = title.trim();
+        createPlaylistUseCase.execute(normalizedTitle, result -> {
             if (result instanceof Result.Success<?>) {
-                postMessage(R.string.playlist_created, title);
+                postMessage(R.string.playlist_created, normalizedTitle);
                 loadPlaylists();
             } else {
                 postMessage(R.string.playlist_create_failed, null);
@@ -76,9 +94,10 @@ public class PlaylistsViewModel extends AndroidViewModel {
     }
 
     public void renamePlaylist(@NonNull String mediaId, @NonNull String newTitle) {
-        renamePlaylistUseCase.execute(mediaId, newTitle, result -> {
+        String normalizedTitle = newTitle.trim();
+        renamePlaylistUseCase.execute(mediaId, normalizedTitle, result -> {
             if (result instanceof Result.Success<?>) {
-                postMessage(R.string.playlist_renamed, newTitle);
+                postMessage(R.string.playlist_renamed, normalizedTitle);
                 loadPlaylists();
             } else {
                 postMessage(R.string.playlist_rename_failed, null);

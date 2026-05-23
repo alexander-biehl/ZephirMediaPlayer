@@ -5,16 +5,15 @@ import androidx.media3.common.MediaItem;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.common.RepositoryCallback;
 import com.alexanderbiehl.apps.zephirmediaplayer.common.Result;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.PlaylistRepository;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.PlaylistEntity;
 
 import java.util.List;
 
 public class AddMediaItemsToPlaylistUseCase {
 
-    private final PlaylistRepository playlistRepository;
+    private final PlaylistRepositoryGateway playlistRepository;
 
-    public AddMediaItemsToPlaylistUseCase(@NonNull PlaylistRepository playlistRepository) {
+    public AddMediaItemsToPlaylistUseCase(@NonNull PlaylistRepositoryGateway playlistRepository) {
         this.playlistRepository = playlistRepository;
     }
 

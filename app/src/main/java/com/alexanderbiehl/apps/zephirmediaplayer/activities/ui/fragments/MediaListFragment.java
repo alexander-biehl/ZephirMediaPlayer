@@ -74,6 +74,7 @@ public class MediaListFragment extends Fragment {
     private ListenableFuture<MediaBrowser> browserFuture;
     private MediaListRecyclerViewAdapter mediaAdapter;
     private int mColumnCount = 1;
+    private boolean firstCurrentMediaEmission = true;
 
 
     public MediaListFragment() {
@@ -107,12 +108,6 @@ public class MediaListFragment extends Fragment {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
 
-        requireActivity().getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                popPathStack();
-            }
-        });
     }
 
     @Override
@@ -162,6 +157,14 @@ public class MediaListFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        firstCurrentMediaEmission = true;
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                popPathStack();
+            }
+        });
 
         fab = view.findViewById(R.id.toNowPlaying);
         // set FAB to navigate to NowPlayingFragment
@@ -250,15 +253,25 @@ public class MediaListFragment extends Fragment {
 
     private void observeViewModel() {
         this.mediaViewModel.getCurrentMedia().observe(getViewLifecycleOwner(), item -> {
-            if (mediaBrowser != null) {
-                if (item.mediaId.equals(PLAYLIST_ID)) {
+            if (mediaBrowser == null || item == null) {
+                return;
+            }
+
+            // Ignore stale playlist-folder state when this observer re-attaches after back navigation.
+            if (firstCurrentMediaEmission) {
+                firstCurrentMediaEmission = false;
+                if (PLAYLIST_ID.equals(item.mediaId)) {
+                    return;
+                }
+            }
+
+            if (item.mediaId.equals(PLAYLIST_ID)) {
                     NavHostFragment.findNavController(this)
                             .navigate(R.id.action_mediaList_toPlaylists);
-                } else if (Boolean.TRUE.equals(item.mediaMetadata.isBrowsable)) {
-                    pushPathStack(item);
-                } else if (Boolean.TRUE.equals(item.mediaMetadata.isPlayable)) {
-                    handlePlay(item);
-                }
+            } else if (Boolean.TRUE.equals(item.mediaMetadata.isBrowsable)) {
+                pushPathStack(item);
+            } else if (Boolean.TRUE.equals(item.mediaMetadata.isPlayable)) {
+                handlePlay(item);
             }
         });
     }

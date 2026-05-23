@@ -1,11 +1,14 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.data.repositories;
 
+import androidx.annotation.NonNull;
+
 import com.alexanderbiehl.apps.zephirmediaplayer.data.datasources.ArtistDataSource;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.models.Artist;
+import com.alexanderbiehl.apps.zephirmediaplayer.domain.ArtistRepositoryGateway;
 
 import java.util.List;
 
-public class ArtistRepository {
+public class ArtistRepository implements ArtistRepositoryGateway {
 
     private final ArtistDataSource localArtistDataSource;
 
@@ -13,11 +16,11 @@ public class ArtistRepository {
         this.localArtistDataSource = localArtistDataSource;
     }
 
-    public Artist getAlbumsByArtistId(String mediaId) {
+    public Artist getAlbumsByArtistId(@NonNull String mediaId) {
         return localArtistDataSource.getArtistAlbumsByMediaId(mediaId);
     }
 
-    public Artist getById(String mediaId) {
+    public Artist getById(@NonNull String mediaId) {
         return localArtistDataSource.getById(mediaId);
     }
 

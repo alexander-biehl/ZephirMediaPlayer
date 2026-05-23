@@ -12,13 +12,10 @@ import androidx.media3.common.MediaItem.LocalConfiguration;
 import androidx.media3.common.util.UnstableApi;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.data.models.Artist;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.AlbumRepository;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.ArtistRepository;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.PlaylistRepository;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.SongRepository;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.AlbumEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.PlaylistEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.SongEntity;
+import com.alexanderbiehl.apps.zephirmediaplayer.domain.playlists.PlaylistRepositoryGateway;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,16 +34,16 @@ public class MediaItemUseCase {
     private final MediaItem albumsFolder;
     private final MediaItem playlistsFolder;
 
-    private final PlaylistRepository playlistRepository;
-    private final SongRepository songRepository;
-    private final AlbumRepository albumRepository;
-    private final ArtistRepository artistRepository;
+    private final PlaylistRepositoryGateway playlistRepository;
+    private final SongRepositoryGateway songRepository;
+    private final AlbumRepositoryGateway albumRepository;
+    private final ArtistRepositoryGateway artistRepository;
 
     public MediaItemUseCase(
-            PlaylistRepository playlistRepository,
-            SongRepository songRepository,
-            AlbumRepository albumRepository,
-            ArtistRepository artistRepository
+            PlaylistRepositoryGateway playlistRepository,
+            SongRepositoryGateway songRepository,
+            AlbumRepositoryGateway albumRepository,
+            ArtistRepositoryGateway artistRepository
     ) {
         this.playlistRepository = playlistRepository;
         this.songRepository = songRepository;

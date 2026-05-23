@@ -36,6 +36,9 @@ android {
         dataBinding true
         viewBinding true
     }
+    testOptions {
+        unitTests.includeAndroidResources = true
+    }
     namespace 'com.alexanderbiehl.apps.zephirmediaplayer'
 }
 
@@ -72,6 +75,7 @@ dependencies {
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'androidx.test:core:1.6.1'
+    testImplementation 'androidx.arch.core:core-testing:2.2.0'
     androidTestImplementation 'androidx.test:core:1.6.1'
 
     debugImplementation 'androidx.fragment:fragment-testing-manifest:1.8.8'

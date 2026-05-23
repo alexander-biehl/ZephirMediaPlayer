@@ -3,13 +3,12 @@ package com.alexanderbiehl.apps.zephirmediaplayer.domain.playlists;
 import androidx.annotation.NonNull;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.common.RepositoryCallback;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.PlaylistRepository;
 
 public class DeletePlaylistUseCase {
 
-    private final PlaylistRepository playlistRepository;
+    private final PlaylistRepositoryGateway playlistRepository;
 
-    public DeletePlaylistUseCase(@NonNull PlaylistRepository playlistRepository) {
+    public DeletePlaylistUseCase(@NonNull PlaylistRepositoryGateway playlistRepository) {
         this.playlistRepository = playlistRepository;
     }
 
