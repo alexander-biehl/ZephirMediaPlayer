@@ -2,7 +2,6 @@ package com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.fragments;
 
 import static androidx.media3.common.Player.EVENT_MEDIA_METADATA_CHANGED;
 
-import android.content.ComponentName;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,7 +11,6 @@ import android.view.ViewGroup;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.OptIn;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -20,13 +18,12 @@ import androidx.media3.common.MediaMetadata;
 import androidx.media3.common.Player;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.session.MediaController;
-import androidx.media3.session.SessionToken;
 import androidx.media3.ui.PlayerView;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.alexanderbiehl.apps.zephirmediaplayer.MainApp;
 import com.alexanderbiehl.apps.zephirmediaplayer.R;
 import com.alexanderbiehl.apps.zephirmediaplayer.databinding.FragmentNowPlayingBinding;
-import com.alexanderbiehl.apps.zephirmediaplayer.service.Media3Service;
 import com.google.common.util.concurrent.ListenableFuture;
 
 public class NowPlayingFragment extends Fragment {
@@ -60,7 +57,9 @@ public class NowPlayingFragment extends Fragment {
 
     @Override
     public void onStop() {
-        MediaController.releaseFuture(controllerFuture);
+        if (controllerFuture != null) {
+            MediaController.releaseFuture(controllerFuture);
+        }
         if (mediaController != null) {
             mediaController.release();
             mediaController = null;
@@ -106,23 +105,19 @@ public class NowPlayingFragment extends Fragment {
     }
 
     public void initializeController() {
-        controllerFuture = new MediaController.Builder(
-                requireContext(),
-                new SessionToken(
-                        requireContext(),
-                        new ComponentName(
-                                requireActivity(),
-                                Media3Service.class
-                        )
-                )
-        ).buildAsync();
+        controllerFuture = ((MainApp) requireActivity().getApplication())
+                .getAppContainer()
+                .getMediaConnectionFactory()
+                .createController(requireContext());
         controllerFuture.addListener(() -> {
             if (controllerFuture.isDone()) {
                 try {
                     setController(controllerFuture.get());
                 } catch (Exception e) {
                     Log.e(TAG, "Exception when getting the controller: " + e);
-                    throw new RuntimeException(e);
+                    if (isAdded() && binding != null) {
+                        updateMediaMetadataUI();
+                    }
                 }
             }
         }, ContextCompat.getMainExecutor(requireContext()));

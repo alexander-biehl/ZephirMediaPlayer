@@ -24,7 +24,7 @@ public class Media3Service extends MediaLibraryService {
         mediaLibrarySession = new MediaLibrarySession.Builder(
                 this,
                 player,
-                new MediaLibraryCallback(this, (MainApp) getApplication())
+                new MediaLibraryCallback((MainApp) getApplication())
         ).build();
     }
 

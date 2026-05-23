@@ -40,11 +40,18 @@ public class SongEntity extends EntityBase {
         if (entity == null) {
             return null;
         }
+        Integer track = null;
+        try {
+            track = Integer.valueOf(entity.trackNumber);
+        } catch (Exception ignored) {
+        }
         return new MediaItem.Builder()
                 .setMediaId(entity.mediaId)
+                .setUri(entity.sourceUri)
                 .setMediaMetadata(
                         new MediaMetadata.Builder()
                                 .setTitle(entity.title)
+                                .setTrackNumber(track)
                                 .setIsBrowsable(false)
                                 .setIsPlayable(true)
                                 .setMediaType(MediaMetadata.MEDIA_TYPE_MUSIC)

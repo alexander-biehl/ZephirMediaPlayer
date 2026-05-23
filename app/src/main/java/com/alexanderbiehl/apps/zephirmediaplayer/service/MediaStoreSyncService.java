@@ -20,10 +20,11 @@ public class MediaStoreSyncService extends LifecycleService {
     @Override
     public void onCreate() {
         super.onCreate();
-        AppDatabase db = AppDatabase.getDatabase(this);
+        MainApp app = (MainApp) getApplication();
+        AppDatabase db = app.getAppContainer().getDatabase();
         this.observer = new MediaStoreContentObserver(
                 new Handler(),
-                ((MainApp) getApplication()).getExec(),
+                app.getExec(),
                 db,
                 this
         );
@@ -33,7 +34,7 @@ public class MediaStoreSyncService extends LifecycleService {
                 observer
         );
         // execute first time sync
-        this.observer.executeSync(result -> ((MainApp) getApplication()).setStoreIsSynced(true));
+        this.observer.executeSync(result -> app.setStoreIsSynced(true));
     }
 
     @Override

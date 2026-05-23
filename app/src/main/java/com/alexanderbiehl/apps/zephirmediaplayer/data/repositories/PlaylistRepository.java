@@ -7,9 +7,11 @@ import androidx.media3.common.MediaItem;
 import com.alexanderbiehl.apps.zephirmediaplayer.common.RepositoryCallback;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.datasources.impl.PlaylistDbDataSource;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.PlaylistEntity;
+import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.SongEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.rel.PlaylistSongs;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PlaylistRepository {
 
@@ -70,10 +72,14 @@ public class PlaylistRepository {
     }
 
     public List<MediaItem> getSongsByPlaylistId(String mediaId) {
-        return List.of();
+        PlaylistSongs playlistSongs = dataSource.getPlaylistSongsByMediaId(mediaId);
+        if (playlistSongs == null || playlistSongs.songEntities == null) {
+            return List.of();
+        }
+        return playlistSongs.songEntities.stream().map(SongEntity::toItem).collect(Collectors.toList());
     }
 
     public MediaItem getById(String mediaId) {
-        return null;
+        return PlaylistEntity.toItem(dataSource.getByMediaId(mediaId));
     }
 }

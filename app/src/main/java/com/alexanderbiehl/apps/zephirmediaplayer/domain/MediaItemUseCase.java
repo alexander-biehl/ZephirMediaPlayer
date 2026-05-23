@@ -8,6 +8,7 @@ import static com.alexanderbiehl.apps.zephirmediaplayer.database.entity.util.Ent
 import androidx.annotation.OptIn;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.MediaMetadata;
+import androidx.media3.common.MediaItem.LocalConfiguration;
 import androidx.media3.common.util.UnstableApi;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.data.models.Artist;
@@ -16,12 +17,10 @@ import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.ArtistReposit
 import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.PlaylistRepository;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.SongRepository;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.AlbumEntity;
-import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.ArtistEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.PlaylistEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.SongEntity;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,7 +28,6 @@ import java.util.stream.Collectors;
 public class MediaItemUseCase {
 
     public static final String PLAYLIST_ID = "[playlistID]";
-    private static final String TAG = MediaItemUseCase.class.getSimpleName();
     private static final String ROOT_ID = "[rootID]";
     private static final String ALBUM_ID = "[albumID]";
     private static final String ARTIST_ID = "[artistID]";
@@ -119,36 +117,47 @@ public class MediaItemUseCase {
                     .stream()
                     .map(PlaylistEntity::toItem)
                     .collect(Collectors.toList());
-            //default -> handleGetChildren(mediaId);
-            default -> throw new IllegalStateException("Unexpected value: " + mediaId);
+            default -> handleGetChildren(mediaId);
         };
     }
 
-    /*
-    TODO need to refactor this and getItem. If MediaItemUseCase is handling
-    the usecase of getting internal elements as MediaItems, each of the underlying
-    repositories should return their own record types and this should handle the conversion
-    Need to come up with a better way of deciding to query for songs, albums, artists or playlists
-    in getItem.
-     */
-//    private List<MediaItem> handleGetChildren(String mediaId) {
-//        Optional<MediaItem> parentOption = getItem(mediaId);
-//        return parentOption.map(parent -> {
-//            return switch (parent.mediaMetadata.mediaType) {
-//                case MediaMetadata.MEDIA_TYPE_FOLDER_ARTISTS -> 
-//                        artistRepository.getAlbumsByArtistId(mediaId)
-//                                .albums
-//                                .stream()
-//                                .map(AlbumEntity::asItem)
-//                                .collect(Collectors.toList());
-//                case MediaMetadata.MEDIA_TYPE_FOLDER_ALBUMS ->
-//                        albumRepository.getSongsByAlbumId(mediaId);
-//                case MediaMetadata.MEDIA_TYPE_FOLDER_PLAYLISTS ->
-//                        playlistRepository.getSongsByPlaylistId(mediaId);
-//                default -> new ArrayList<MediaItem>();
-//            };
-//        }).orElseGet(ArrayList::new);
-//    }
+    private List<MediaItem> handleGetChildren(final String mediaId) {
+        Optional<MediaItem> parentOption = getItem(mediaId);
+        if (parentOption.isEmpty()) {
+            return new ArrayList<>();
+        }
+        MediaItem parent = parentOption.get();
+        Integer parentType = parent.mediaMetadata.mediaType;
+        if (parentType == null) {
+            return new ArrayList<>();
+        }
+        return switch (parentType) {
+            case MediaMetadata.MEDIA_TYPE_ARTIST -> {
+                Artist artist = artistRepository.getAlbumsByArtistId(mediaId);
+                if (artist == null || artist.albums == null) {
+                    yield new ArrayList<>();
+                }
+                yield artist.albums.stream().map(album ->
+                                new MediaItem.Builder()
+                                        .setMediaId(album.mediaId)
+                                        .setMediaMetadata(new MediaMetadata.Builder()
+                                                .setTitle(album.title)
+                                                .setArtist(artist.title)
+                                                .setIsBrowsable(true)
+                                                .setIsPlayable(true)
+                                                .setMediaType(MediaMetadata.MEDIA_TYPE_ALBUM)
+                                                .build())
+                                        .build())
+                        .collect(Collectors.toList());
+            }
+            case MediaMetadata.MEDIA_TYPE_ALBUM -> albumRepository.getSongsByAlbumId(mediaId)
+                    .stream()
+                    .map(SongEntity::toItem)
+                    .collect(Collectors.toList());
+            case MediaMetadata.MEDIA_TYPE_PLAYLIST -> playlistRepository.getSongsByPlaylistId(mediaId);
+            default -> new ArrayList<>();
+        };
+    }
 
     public Optional<MediaItem> getItem(final String mediaId) {
         if (mediaId == null || mediaId.isEmpty()) {
@@ -160,26 +169,10 @@ public class MediaItemUseCase {
         } else if (mediaId.startsWith(ALBUM_PREFIX)) {
             return Optional.of(AlbumEntity.asItem(albumRepository.getById(mediaId)));
         } else if (mediaId.startsWith(ARTIST_PREFIX)) {
-            //return Optional.of(ArtistEntity.asItem(artistRepository.getById(mediaId)));
-            return Optional.empty();
+            return Optional.ofNullable(artistRepository.getById(mediaId)).map(Artist::asItem);
         } else if (mediaId.startsWith(PLAYLIST_PREFIX)) {
             return Optional.of(PlaylistEntity.toItem(playlistRepository.getByMediaId(mediaId)));
         }
-//        MediaItem item = artistRepository.getById(mediaId);
-//        if (item == null) {
-//            item = albumRepository.getById(mediaId);
-//            if (item == null) {
-//                item = playlistRepository.getById(mediaId);
-//                if (item == null) {
-//                    item = songRepository.getById(mediaId);
-//                    if (item == null) {
-//                        // If no item found, return an empty Optional
-//                        return Optional.empty();
-//                    }
-//                }
-//            }
-//        }
-//        return Optional.of(item);
         return Optional.empty();
     }
 
@@ -198,12 +191,16 @@ public class MediaItemUseCase {
             return Optional.empty();
         }
         MediaItem foundLocalItem = localItem.get();
+        LocalConfiguration localConfiguration = foundLocalItem.localConfiguration;
+        if (localConfiguration == null) {
+            return Optional.empty();
+        }
         MediaMetadata metadata = foundLocalItem.mediaMetadata.buildUpon()
                 .populate(remoteItem.mediaMetadata).build();
         return Optional.of(
                 remoteItem.buildUpon()
                         .setMediaMetadata(metadata)
-                        .setUri(foundLocalItem.localConfiguration.uri)
+                        .setUri(localConfiguration.uri)
                         .build()
         );
     }

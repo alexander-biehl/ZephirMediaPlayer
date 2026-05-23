@@ -1,6 +1,8 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.fragments;
 
-import android.content.ComponentName;
+import static com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.MediaItemRepository.PLAYLIST_ID;
+import static com.alexanderbiehl.apps.zephirmediaplayer.database.entity.util.EntityExtractor.PLAYLIST_PREFIX;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -24,16 +26,15 @@ import androidx.media3.common.MediaItem;
 import androidx.media3.common.MediaMetadata;
 import androidx.media3.session.LibraryResult;
 import androidx.media3.session.MediaBrowser;
-import androidx.media3.session.SessionToken;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.alexanderbiehl.apps.zephirmediaplayer.MainApp;
 import com.alexanderbiehl.apps.zephirmediaplayer.R;
 import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.viewmodel.MediaViewModel;
 import com.alexanderbiehl.apps.zephirmediaplayer.common.OnClickHandler;
 import com.alexanderbiehl.apps.zephirmediaplayer.databinding.FragmentPlaylistsBinding;
-import com.alexanderbiehl.apps.zephirmediaplayer.service.Media3Service;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -143,7 +144,9 @@ public class PlaylistsFragment extends Fragment {
             mediaBrowser.release();
             mediaBrowser = null;
         }
-        MediaBrowser.releaseFuture(browserFuture);
+        if (browserFuture != null) {
+            MediaBrowser.releaseFuture(browserFuture);
+        }
         super.onStop();
     }
 
@@ -154,16 +157,10 @@ public class PlaylistsFragment extends Fragment {
     }
 
     private void initializeBrowser() {
-        SessionToken sessionToken =
-                new SessionToken(
-                        requireContext(),
-                        new ComponentName(
-                                requireActivity(),
-                                Media3Service.class
-                        )
-                );
-        browserFuture =
-                new MediaBrowser.Builder(requireActivity(), sessionToken).buildAsync();
+        browserFuture = ((MainApp) requireActivity().getApplication())
+                .getAppContainer()
+                .getMediaConnectionFactory()
+                .createBrowser(requireContext());
         browserFuture.addListener(() -> {
             if (browserFuture.isDone()) {
                 try {
@@ -172,7 +169,9 @@ public class PlaylistsFragment extends Fragment {
                     loadPlaylists();
                 } catch (Exception e) {
                     Log.e(TAG, "Error getting media browser: " + e.getMessage());
-                    throw new RuntimeException(e);
+                    if (binding != null) {
+                        Snackbar.make(binding.getRoot(), "Unable to connect to media service", Snackbar.LENGTH_SHORT).show();
+                    }
                 }
             }
         }, ContextCompat.getMainExecutor(requireActivity()));
@@ -217,28 +216,29 @@ public class PlaylistsFragment extends Fragment {
     }
 
     private void loadPlaylists() {
-        // In a real implementation, you would load actual playlists from your media service
-        // For demonstration, I'll create dummy playlists similar to your app's approach
-
-        playlists.clear();
-        for (int i = 0; i < 5; i++) {
-            MediaMetadata metadata = new MediaMetadata.Builder()
-                    .setTitle("Playlist " + (i + 1))
-                    .setArtist(i + 10 + " songs")
-                    .setAlbumTitle("Total: " + (i * 10 + 30) + " min")
-                    .setIsBrowsable(true)
-                    .setIsPlayable(true)
-                    .build();
-
-            MediaItem playlist = new MediaItem.Builder()
-                    .setMediaId("playlist_" + i)
-                    .setMediaMetadata(metadata)
-                    .build();
-
-            playlists.add(playlist);
+        if (mediaBrowser == null) {
+            return;
         }
 
-        playlistsAdapter.notifyDataSetChanged();
+        ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> childrenFuture =
+                mediaBrowser.getChildren(PLAYLIST_ID, 0, Integer.MAX_VALUE, null);
+
+        childrenFuture.addListener(() -> {
+            try {
+                if (!childrenFuture.isDone()) {
+                    return;
+                }
+                LibraryResult<ImmutableList<MediaItem>> result = childrenFuture.get();
+                playlists.clear();
+                if (result != null && result.value != null) {
+                    playlists.addAll(result.value);
+                }
+                playlistsAdapter.notifyDataSetChanged();
+            } catch (Exception e) {
+                Log.e(TAG, "Error loading playlists", e);
+                Snackbar.make(binding.getRoot(), "Unable to load playlists", Snackbar.LENGTH_SHORT).show();
+            }
+        }, ContextCompat.getMainExecutor(requireActivity()));
     }
 
     private void observerViewModel() {
@@ -247,7 +247,9 @@ public class PlaylistsFragment extends Fragment {
                 Log.d(TAG, "Current media changed: " + currentMedia);
             }
             if (mediaBrowser != null) {
-                if (currentMedia != null) {
+                if (currentMedia != null &&
+                        currentMedia.mediaId != null &&
+                        currentMedia.mediaId.startsWith(PLAYLIST_PREFIX)) {
                     playPlaylist(currentMedia);
                     Log.d(TAG, "Current media: " + currentMedia.mediaMetadata.title);
                 } else {

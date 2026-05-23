@@ -1,6 +1,5 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.service.callback;
 
-import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -14,11 +13,7 @@ import androidx.media3.session.MediaSession;
 import androidx.media3.session.SessionError;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.MainApp;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.datasources.impl.PlaylistDbDataSource;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.CompositeMediaRepository;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.MediaItemRepository;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.PlaylistRepository;
-import com.alexanderbiehl.apps.zephirmediaplayer.database.AppDatabase;
+import com.alexanderbiehl.apps.zephirmediaplayer.domain.MediaItemUseCase;
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -32,23 +27,12 @@ public class MediaLibraryCallback
 
     private static final String TAG = MediaLibraryCallback.class.getSimpleName();
     private final MainApp mainApp;
-    private final MediaItemRepository repository;
+    private final MediaItemUseCase useCase;
 
 
-    public MediaLibraryCallback(@NonNull final Context context, @NonNull final MainApp mainApp) {
+    public MediaLibraryCallback(@NonNull final MainApp mainApp) {
         this.mainApp = mainApp;
-        final AppDatabase INSTANCE = AppDatabase.getDatabase(context);
-        this.repository = new MediaItemRepository(
-                new CompositeMediaRepository(
-                        INSTANCE,
-                        new PlaylistRepository(
-                                new PlaylistDbDataSource(
-                                        INSTANCE.playlistDao(),
-                                        mainApp.getExec()
-                                )
-                        )
-                )
-        );
+        this.useCase = mainApp.getAppContainer().getMediaItemUseCase();
     }
 
 
@@ -66,7 +50,7 @@ public class MediaLibraryCallback
                     "\nparams: " + params);
         }
         return Futures.submit(() ->
-                LibraryResult.ofItem(repository.getRoot(), params), this.mainApp.getExec());
+                LibraryResult.ofItem(useCase.getRoot(), params), this.mainApp.getExec());
     }
 
     @NonNull
@@ -84,7 +68,7 @@ public class MediaLibraryCallback
                     "\nmediaID: " + mediaId);
         }
         return Futures.submit(() -> {
-            Optional<MediaItem> optItem = repository.getItem(mediaId);
+            Optional<MediaItem> optItem = useCase.getItem(mediaId);
             return optItem.map(mediaItem ->
                             LibraryResult.ofItem(mediaItem, null))
                     .orElseGet(() ->
@@ -110,7 +94,7 @@ public class MediaLibraryCallback
                     "\nparentId: " + parentId);
         }
         return Futures.submit(() -> {
-            List<MediaItem> optChildren = repository.getChildren(parentId);
+            List<MediaItem> optChildren = useCase.getChildren(parentId);
             return optChildren.isEmpty() ?
                     LibraryResult.ofError(SessionError.ERROR_BAD_VALUE) :
                     LibraryResult.ofItemList(optChildren, params);
@@ -130,7 +114,7 @@ public class MediaLibraryCallback
     private List<MediaItem> resolveMediaItems(List<MediaItem> mediaItems) {
         List<MediaItem> playlist = new ArrayList<>();
         for (MediaItem mediaItem : mediaItems) {
-            repository.expandItem(mediaItem).ifPresent(playlist::add);
+            useCase.expandItem(mediaItem).ifPresent(playlist::add);
         }
         return playlist;
     }

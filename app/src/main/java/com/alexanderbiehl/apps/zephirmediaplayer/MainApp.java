@@ -4,6 +4,8 @@ import android.app.Application;
 
 import androidx.databinding.ObservableBoolean;
 
+import com.alexanderbiehl.apps.zephirmediaplayer.di.AppContainer;
+
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -19,10 +21,12 @@ public class MainApp extends Application {
     private final ExecutorService executorService = Executors.newFixedThreadPool(NUMBER_OF_CORES);
 
     private final ObservableBoolean storeIsSynced = new ObservableBoolean(false);
+    private AppContainer appContainer;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        appContainer = new AppContainer(getApplicationContext(), executorService);
     }
 
     @Override
@@ -40,6 +44,13 @@ public class MainApp extends Application {
 
     public synchronized ObservableBoolean getStoreIsSynced() {
         return storeIsSynced;
+    }
+
+    public synchronized AppContainer getAppContainer() {
+        if (appContainer == null) {
+            appContainer = new AppContainer(getApplicationContext(), executorService);
+        }
+        return appContainer;
     }
 
     public void setStoreIsSynced(boolean isSynced) {

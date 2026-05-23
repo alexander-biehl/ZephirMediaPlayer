@@ -7,8 +7,7 @@ import androidx.media3.common.MediaItem;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import kotlin.jvm.Synchronized;
+import java.util.Objects;
 
 public class MediaViewModel extends ViewModel {
 
@@ -36,62 +35,56 @@ public class MediaViewModel extends ViewModel {
         this.currentMedia.setValue(item);
     }
 
-    @Synchronized
-    public void addToQueue(final MediaItem item) {
+    public synchronized void addToQueue(final MediaItem item) {
+        List<MediaItem> updated = new ArrayList<>();
         List<MediaItem> current = currentQueue.getValue();
         if (current != null) {
-            // TODO need to update this to be synchronized
-            current.add(current.size(), item);
-        } else {
-            current = new ArrayList<>();
-            current.add(item);
+            updated.addAll(current);
         }
-        this.currentQueue.setValue(current);
+        updated.add(item);
+        this.currentQueue.setValue(updated);
     }
 
-    @Synchronized
-    public void addToQueue(final List<MediaItem> items) {
+    public synchronized void addToQueue(final List<MediaItem> items) {
+        List<MediaItem> updated = new ArrayList<>();
         List<MediaItem> current = currentQueue.getValue();
         if (current != null) {
-            current.addAll(current.size(), items);
-        } else {
-            current = new ArrayList<>(items);
+            updated.addAll(current);
         }
-        this.currentQueue.setValue(current);
+        updated.addAll(items);
+        this.currentQueue.setValue(updated);
     }
 
-    @Synchronized
-    public void removeFromQueue(final MediaItem item) {
+    public synchronized void removeFromQueue(final MediaItem item) {
+        List<MediaItem> updated = new ArrayList<>();
         List<MediaItem> current = currentQueue.getValue();
         if (current != null) {
-            for (int i = 0; i < current.size(); i++) {
-                if (current.get(i) == item) {
-                    current.remove(i);
+            updated.addAll(current);
+            for (int i = 0; i < updated.size(); i++) {
+                if (Objects.equals(updated.get(i).mediaId, item.mediaId)) {
+                    updated.remove(i);
                     break;
                 }
             }
-        } else {
-            current = new ArrayList<>();
         }
-        this.currentQueue.setValue(current);
+        this.currentQueue.setValue(updated);
     }
 
-    @Synchronized
-    public void removeRangeFromQueue(int start, int end) {
+    public synchronized void removeRangeFromQueue(int start, int end) {
         if (end < start || start < 0) {
             return;
         }
+        List<MediaItem> updated = new ArrayList<>();
         List<MediaItem> current = this.currentQueue.getValue();
         if (current != null) {
-            if (start < current.size() && end <= current.size() - 1) {
+            updated.addAll(current);
+            if (start < updated.size() && end <= updated.size() - 1) {
                 // reverse iterate down the list, removing items
-                for (int i = end; i > 0 && i >= start; i--) {
-                    current.remove(i);
+                for (int i = end; i >= start; i--) {
+                    updated.remove(i);
                 }
             }
-        } else {
-            current = new ArrayList<>();
         }
-        this.currentQueue.setValue(current);
+        this.currentQueue.setValue(updated);
     }
 }

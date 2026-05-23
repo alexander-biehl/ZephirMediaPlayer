@@ -2,7 +2,6 @@ package com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.fragments;
 
 import static com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.MediaItemRepository.PLAYLIST_ID;
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,19 +27,18 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.MediaItem;
 import androidx.media3.session.LibraryResult;
 import androidx.media3.session.MediaBrowser;
-import androidx.media3.session.SessionToken;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.alexanderbiehl.apps.zephirmediaplayer.MainApp;
 import com.alexanderbiehl.apps.zephirmediaplayer.R;
 import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.adapters.MediaListRecyclerViewAdapter;
 import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.viewmodel.MediaViewModel;
 import com.alexanderbiehl.apps.zephirmediaplayer.common.OnClickHandler;
 import com.alexanderbiehl.apps.zephirmediaplayer.common.wrappers.MediaBrowserWrapper;
 import com.alexanderbiehl.apps.zephirmediaplayer.common.wrappers.MediaBrowserWrapperImpl;
-import com.alexanderbiehl.apps.zephirmediaplayer.service.Media3Service;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -116,7 +114,9 @@ public class MediaListFragment extends Fragment {
 
     @Override
     public void onStop() {
-        MediaBrowser.releaseFuture(browserFuture);
+        if (browserFuture != null) {
+            MediaBrowser.releaseFuture(browserFuture);
+        }
         if (this.mediaBrowser != null) {
             this.mediaBrowser.release();
             this.mediaBrowser = null;
@@ -220,23 +220,20 @@ public class MediaListFragment extends Fragment {
 
 
     private void initializeBrowser() {
-        SessionToken sessionToken =
-                new SessionToken(
-                        requireContext(),
-                        new ComponentName(
-                                requireActivity(),
-                                Media3Service.class
-                        )
-                );
-        browserFuture =
-                new MediaBrowser.Builder(requireActivity(), sessionToken).buildAsync();
+        browserFuture = ((MainApp) requireActivity().getApplication())
+                .getAppContainer()
+                .getMediaConnectionFactory()
+                .createBrowser(requireContext());
         browserFuture.addListener(() -> {
             if (browserFuture.isDone()) {
                 try {
                     mediaBrowser = new MediaBrowserWrapperImpl(browserFuture.get());
                     observeViewModel();
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    Log.e(TAG, "Failed to initialize media browser", e);
+                    if (isAdded()) {
+                        Toast.makeText(requireContext(), "Unable to connect to media service", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         }, ContextCompat.getMainExecutor(requireActivity()));
@@ -259,7 +256,7 @@ public class MediaListFragment extends Fragment {
 
     public void handlePlay(MediaItem item) {
         int position = subMediaList.indexOf(item);
-        List<MediaItem> playQueue = subMediaList.subList(position, subMediaList.size());
+        List<MediaItem> playQueue = new ArrayList<>(subMediaList.subList(position, subMediaList.size()));
         mediaBrowser.addMediaItems(playQueue);
         mediaBrowser.prepare();
         mediaBrowser.play();
@@ -304,7 +301,10 @@ public class MediaListFragment extends Fragment {
                     Log.d(TAG, "Got media list of " + subMediaList.size() + " items.");
                 }
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                Log.e(TAG, "Failed to load folder children", e);
+                if (isAdded()) {
+                    Toast.makeText(requireContext(), "Unable to open folder", Toast.LENGTH_SHORT).show();
+                }
             }
         }, ContextCompat.getMainExecutor(requireActivity()));
     }
@@ -328,7 +328,10 @@ public class MediaListFragment extends Fragment {
                         mediaViewModel.addToQueue(sortedItems);
                     }
                 } catch (ExecutionException | InterruptedException e) {
-                    throw new RuntimeException(e);
+                    Log.e(TAG, "Failed to add child items to queue", e);
+                    if (isAdded()) {
+                        Toast.makeText(requireContext(), "Unable to add items to queue", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
 
@@ -361,6 +364,10 @@ public class MediaListFragment extends Fragment {
     }
 
     public void popPathStack() {
+        if (treeBackStack.isEmpty()) {
+            requireActivity().finish();
+            return;
+        }
         treeBackStack.pop();
         if (treeBackStack.isEmpty()) {
             requireActivity().finish();

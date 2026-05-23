@@ -1,6 +1,5 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.fragments;
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,21 +18,21 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.MediaItem;
 import androidx.media3.session.MediaController;
-import androidx.media3.session.SessionToken;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.alexanderbiehl.apps.zephirmediaplayer.MainApp;
 import com.alexanderbiehl.apps.zephirmediaplayer.R;
 import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.adapters.MyQueueRecyclerViewAdapter;
 import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.viewmodel.MediaViewModel;
 import com.alexanderbiehl.apps.zephirmediaplayer.common.OnClickHandler;
-import com.alexanderbiehl.apps.zephirmediaplayer.service.Media3Service;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A fragment representing a list of Items.
@@ -63,7 +62,9 @@ public class QueueFragment extends Fragment {
 
     @Override
     public void onStop() {
-        MediaController.releaseFuture(controllerFuture);
+        if (controllerFuture != null) {
+            MediaController.releaseFuture(controllerFuture);
+        }
         if (mediaController != null) {
             mediaController.release();
             mediaController = null;
@@ -130,7 +131,7 @@ public class QueueFragment extends Fragment {
             Log.d(TAG, "Remove from Queue clicked");
             MediaItem toRemove = queueAdapter.getContextMenuItem();
             for (int i = 0; i < mediaController.getMediaItemCount(); i++) {
-                if (toRemove == mediaController.getMediaItemAt(i)) {
+                if (Objects.equals(toRemove.mediaId, mediaController.getMediaItemAt(i).mediaId)) {
                     mediaController.removeMediaItem(i);
                     updateQueue();
                     break;
@@ -144,23 +145,17 @@ public class QueueFragment extends Fragment {
     }
 
     private void initializeController() {
-        controllerFuture = new MediaController.Builder(
-                requireContext(),
-                new SessionToken(
-                        requireContext(),
-                        new ComponentName(
-                                requireActivity(),
-                                Media3Service.class
-                        )
-                )
-        ).buildAsync();
+        controllerFuture = ((MainApp) requireActivity().getApplication())
+                .getAppContainer()
+                .getMediaConnectionFactory()
+                .createController(requireContext());
 
         controllerFuture.addListener(() -> {
             if (controllerFuture.isDone()) {
                 try {
                     setController(controllerFuture.get());
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    Log.e(TAG, "Failed to initialize media controller", e);
                 }
             }
         }, ContextCompat.getMainExecutor(requireContext()));

@@ -1,6 +1,5 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.activities;
 
-import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -17,7 +16,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.MediaItem;
 import androidx.media3.session.LibraryResult;
 import androidx.media3.session.MediaBrowser;
-import androidx.media3.session.SessionToken;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -27,7 +25,6 @@ import com.alexanderbiehl.apps.zephirmediaplayer.MainApp;
 import com.alexanderbiehl.apps.zephirmediaplayer.R;
 import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.viewmodel.MediaViewModel;
 import com.alexanderbiehl.apps.zephirmediaplayer.databinding.ActivityMainBinding;
-import com.alexanderbiehl.apps.zephirmediaplayer.service.Media3Service;
 import com.alexanderbiehl.apps.zephirmediaplayer.service.MediaStoreSyncService;
 import com.alexanderbiehl.apps.zephirmediaplayer.utilities.StorageUtilities;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -81,11 +78,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initiateBrowserConnection() {
-        SessionToken sessionToken =
-                new SessionToken(this,
-                        new ComponentName(this, Media3Service.class));
-        browserFuture =
-                new MediaBrowser.Builder(this, sessionToken).buildAsync();
+        browserFuture = ((MainApp) getApplication())
+                .getAppContainer()
+                .getMediaConnectionFactory()
+                .createBrowser(this);
         browserFuture.addListener(() -> {
             if (browserFuture.isDone()) {
                 try {
@@ -95,7 +91,8 @@ public class MainActivity extends AppCompatActivity {
                         getRoot();
                     }
                 } catch (Exception ex) {
-                    throw new RuntimeException(ex);
+                    Log.e(TAG, "Failed to connect media browser", ex);
+                    finish();
                 }
             }
         }, ContextCompat.getMainExecutor(this));
@@ -130,7 +127,8 @@ public class MainActivity extends AppCompatActivity {
                     MediaItem root = result.value;
                     displayResult(root);
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    Log.e(TAG, "Failed to load media library root", e);
+                    finish();
                 }
             }
         }, ContextCompat.getMainExecutor(this));
