@@ -10,6 +10,11 @@ import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.PlaylistRepos
 import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.SongRepository;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.AppDatabase;
 import com.alexanderbiehl.apps.zephirmediaplayer.domain.MediaItemUseCase;
+import com.alexanderbiehl.apps.zephirmediaplayer.domain.playlists.AddMediaItemsToPlaylistUseCase;
+import com.alexanderbiehl.apps.zephirmediaplayer.domain.playlists.CreatePlaylistUseCase;
+import com.alexanderbiehl.apps.zephirmediaplayer.domain.playlists.DeletePlaylistUseCase;
+import com.alexanderbiehl.apps.zephirmediaplayer.domain.playlists.GetPlaylistsUseCase;
+import com.alexanderbiehl.apps.zephirmediaplayer.domain.playlists.RenamePlaylistUseCase;
 
 import java.util.concurrent.Executor;
 
@@ -25,6 +30,11 @@ public class AppContainer {
     private ArtistRepository artistRepository;
     private MediaItemUseCase mediaItemUseCase;
     private MediaConnectionFactory mediaConnectionFactory;
+    private GetPlaylistsUseCase getPlaylistsUseCase;
+    private CreatePlaylistUseCase createPlaylistUseCase;
+    private RenamePlaylistUseCase renamePlaylistUseCase;
+    private DeletePlaylistUseCase deletePlaylistUseCase;
+    private AddMediaItemsToPlaylistUseCase addMediaItemsToPlaylistUseCase;
 
     public AppContainer(Context appContext, Executor executor) {
         this.appContext = appContext;
@@ -41,7 +51,7 @@ public class AppContainer {
     public synchronized PlaylistRepository getPlaylistRepository() {
         if (playlistRepository == null) {
             playlistRepository = new PlaylistRepository(
-                    new PlaylistDbDataSource(getDatabase().playlistDao(), executor)
+                    new PlaylistDbDataSource(getDatabase().playlistDao(), getDatabase().songDao(), executor)
             );
         }
         return playlistRepository;
@@ -87,6 +97,41 @@ public class AppContainer {
             mediaConnectionFactory = new Media3ConnectionFactory();
         }
         return mediaConnectionFactory;
+    }
+
+    public synchronized GetPlaylistsUseCase getGetPlaylistsUseCase() {
+        if (getPlaylistsUseCase == null) {
+            getPlaylistsUseCase = new GetPlaylistsUseCase(getPlaylistRepository());
+        }
+        return getPlaylistsUseCase;
+    }
+
+    public synchronized CreatePlaylistUseCase getCreatePlaylistUseCase() {
+        if (createPlaylistUseCase == null) {
+            createPlaylistUseCase = new CreatePlaylistUseCase(getPlaylistRepository());
+        }
+        return createPlaylistUseCase;
+    }
+
+    public synchronized RenamePlaylistUseCase getRenamePlaylistUseCase() {
+        if (renamePlaylistUseCase == null) {
+            renamePlaylistUseCase = new RenamePlaylistUseCase(getPlaylistRepository());
+        }
+        return renamePlaylistUseCase;
+    }
+
+    public synchronized DeletePlaylistUseCase getDeletePlaylistUseCase() {
+        if (deletePlaylistUseCase == null) {
+            deletePlaylistUseCase = new DeletePlaylistUseCase(getPlaylistRepository());
+        }
+        return deletePlaylistUseCase;
+    }
+
+    public synchronized AddMediaItemsToPlaylistUseCase getAddMediaItemsToPlaylistUseCase() {
+        if (addMediaItemsToPlaylistUseCase == null) {
+            addMediaItemsToPlaylistUseCase = new AddMediaItemsToPlaylistUseCase(getPlaylistRepository());
+        }
+        return addMediaItemsToPlaylistUseCase;
     }
 }
 

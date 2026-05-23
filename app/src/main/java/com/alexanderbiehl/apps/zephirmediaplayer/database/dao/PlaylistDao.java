@@ -2,11 +2,13 @@ package com.alexanderbiehl.apps.zephirmediaplayer.database.dao;
 
 import androidx.room.Dao;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Transaction;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.database.dao.base.DoaBase;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.PlaylistEntity;
+import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.SongEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.rel.PlaylistSongs;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.rel.m2m.PlaylistSongM2M;
 
@@ -24,12 +26,22 @@ public interface PlaylistDao extends DoaBase<PlaylistEntity> {
     PlaylistSongs getPlaylistSongsByMediaId(final String mediaId);
 
     @Transaction
-    @Insert
-    long[] insertPlaylistSongs(PlaylistSongM2M... pls);
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    void insertPlaylistSongs(PlaylistSongM2M... pls);
+
+    @Query("SELECT songs.* FROM songs " +
+            "INNER JOIN playlist_song_m2m ON songs.id = playlist_song_m2m.songId " +
+            "INNER JOIN playlists ON playlists.id = playlist_song_m2m.playlistId " +
+            "WHERE playlists.media_id = :mediaId " +
+            "ORDER BY playlist_song_m2m.`order` ASC")
+    SongEntity[] getSongsByPlaylistMediaId(final String mediaId);
 
     @Query("SELECT * FROM playlists")
     List<PlaylistEntity> getAllPlaylists();
 
     @Query("SELECT * FROM playlists WHERE media_id = :mediaId")
     PlaylistEntity getByMediaId(final String mediaId);
+
+    @Query("DELETE FROM playlist_song_m2m WHERE playlistId = :playlistId")
+    void deletePlaylistSongMappings(final long playlistId);
 }

@@ -1,26 +1,25 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.fragments;
 
-import static com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.MediaItemRepository.PLAYLIST_ID;
 import static com.alexanderbiehl.apps.zephirmediaplayer.database.entity.util.EntityExtractor.PLAYLIST_PREFIX;
+import static com.alexanderbiehl.apps.zephirmediaplayer.domain.MediaItemUseCase.PLAYLIST_ID;
 
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.text.InputType;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.MediaMetadata;
@@ -32,9 +31,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.MainApp;
 import com.alexanderbiehl.apps.zephirmediaplayer.R;
+import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.viewmodel.PlaylistsViewModel;
 import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.viewmodel.MediaViewModel;
 import com.alexanderbiehl.apps.zephirmediaplayer.common.OnClickHandler;
 import com.alexanderbiehl.apps.zephirmediaplayer.databinding.FragmentPlaylistsBinding;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -51,12 +52,15 @@ public class PlaylistsFragment extends Fragment {
     private MediaBrowser mediaBrowser;
     private ListenableFuture<MediaBrowser> browserFuture;
     private MediaViewModel mediaViewModel;
+    private PlaylistsViewModel playlistsViewModel;
+    private long lastHandledMessageId = -1L;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         this.mediaViewModel = new ViewModelProvider(requireActivity()).get(MediaViewModel.class);
+        this.playlistsViewModel = new ViewModelProvider(this).get(PlaylistsViewModel.class);
     }
 
     @Override
@@ -74,7 +78,8 @@ public class PlaylistsFragment extends Fragment {
         playlists = new ArrayList<>();
 
         setupRecyclerView();
-        setupOptionsMenu();
+        observePlaylistsState();
+        playlistsViewModel.loadPlaylists();
         initializeBrowser();
 
         // Set FAB click listener to create a new playlist
@@ -120,18 +125,13 @@ public class PlaylistsFragment extends Fragment {
         }
 
         if (id == R.id.action_play_playlist) {
-            // TODO: Play the selected playlist
             playPlaylist(playlist);
             return true;
         } else if (id == R.id.action_rename_playlist) {
-            // TODO: Rename the selected playlist
-            Snackbar.make(binding.getRoot(), "Rename playlist: " + playlist.mediaMetadata.title,
-                    Snackbar.LENGTH_SHORT).show();
+            showRenamePlaylistDialog(playlist);
             return true;
         } else if (id == R.id.action_delete_playlist) {
-            // TODO: Delete the selected playlist
-            Snackbar.make(binding.getRoot(), "Delete playlist: " + playlist.mediaMetadata.title,
-                    Snackbar.LENGTH_SHORT).show();
+            showDeletePlaylistDialog(playlist);
             return true;
         }
 
@@ -166,7 +166,6 @@ public class PlaylistsFragment extends Fragment {
                 try {
                     mediaBrowser = browserFuture.get();
                     observerViewModel();
-                    loadPlaylists();
                 } catch (Exception e) {
                     Log.e(TAG, "Error getting media browser: " + e.getMessage());
                     if (binding != null) {
@@ -177,26 +176,6 @@ public class PlaylistsFragment extends Fragment {
         }, ContextCompat.getMainExecutor(requireActivity()));
     }
 
-    private void setupOptionsMenu() {
-        requireActivity().addMenuProvider(new MenuProvider() {
-            @Override
-            public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
-                menuInflater.inflate(R.menu.menu_playlists, menu);
-            }
-
-            @Override
-            public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
-                int id = menuItem.getItemId();
-
-                if (id == R.id.action_sort_playlists) {
-                    // TODO: Show sort options dialog
-                    Snackbar.make(binding.getRoot(), "Sort playlists", Snackbar.LENGTH_SHORT).show();
-                    return true;
-                }
-                return false;
-            }
-        }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
-    }
 
     private void setupRecyclerView() {
         RecyclerView recyclerView = binding.playlistsRecyclerView;
@@ -215,30 +194,25 @@ public class PlaylistsFragment extends Fragment {
         registerForContextMenu(recyclerView);
     }
 
-    private void loadPlaylists() {
-        if (mediaBrowser == null) {
-            return;
-        }
-
-        ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> childrenFuture =
-                mediaBrowser.getChildren(PLAYLIST_ID, 0, Integer.MAX_VALUE, null);
-
-        childrenFuture.addListener(() -> {
-            try {
-                if (!childrenFuture.isDone()) {
-                    return;
-                }
-                LibraryResult<ImmutableList<MediaItem>> result = childrenFuture.get();
-                playlists.clear();
-                if (result != null && result.value != null) {
-                    playlists.addAll(result.value);
-                }
-                playlistsAdapter.notifyDataSetChanged();
-            } catch (Exception e) {
-                Log.e(TAG, "Error loading playlists", e);
-                Snackbar.make(binding.getRoot(), "Unable to load playlists", Snackbar.LENGTH_SHORT).show();
+    private void observePlaylistsState() {
+        playlistsViewModel.getPlaylists().observe(getViewLifecycleOwner(), items -> {
+            playlists.clear();
+            if (items != null) {
+                playlists.addAll(items);
             }
-        }, ContextCompat.getMainExecutor(requireActivity()));
+            playlistsAdapter.notifyDataSetChanged();
+        });
+
+        playlistsViewModel.getUiMessages().observe(getViewLifecycleOwner(), message -> {
+            if (message == null || message.id == lastHandledMessageId || binding == null) {
+                return;
+            }
+            lastHandledMessageId = message.id;
+            String text = message.formatArg == null
+                    ? getString(message.resId)
+                    : getString(message.resId, message.formatArg);
+            Snackbar.make(binding.getRoot(), text, Snackbar.LENGTH_SHORT).show();
+        });
     }
 
     private void observerViewModel() {
@@ -248,7 +222,6 @@ public class PlaylistsFragment extends Fragment {
             }
             if (mediaBrowser != null) {
                 if (currentMedia != null &&
-                        currentMedia.mediaId != null &&
                         currentMedia.mediaId.startsWith(PLAYLIST_PREFIX)) {
                     playPlaylist(currentMedia);
                     Log.d(TAG, "Current media: " + currentMedia.mediaMetadata.title);
@@ -260,8 +233,87 @@ public class PlaylistsFragment extends Fragment {
     }
 
     private void createNewPlaylist() {
-        // TODO: Show dialog to create a new playlist
-        Snackbar.make(binding.getRoot(), "Create new playlist", Snackbar.LENGTH_SHORT).show();
+        if (binding == null) {
+            return;
+        }
+
+        final EditText input = new EditText(requireContext());
+        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        input.setHint(R.string.playlist_name_hint);
+
+        final androidx.appcompat.app.AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.create_new_playlist)
+                .setView(input)
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(R.string.action_create, null)
+                .create();
+
+        dialog.setOnShowListener(d -> dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)
+                .setOnClickListener(v -> {
+                    String title = input.getText() == null ? "" : input.getText().toString().trim();
+                    if (title.isEmpty()) {
+                        input.setError(getString(R.string.playlist_name_required));
+                        return;
+                    }
+                    createPlaylist(title, dialog);
+                }));
+
+        dialog.show();
+    }
+
+    private void createPlaylist(@NonNull String title, @NonNull androidx.appcompat.app.AlertDialog dialog) {
+        playlistsViewModel.createPlaylist(title);
+        dialog.dismiss();
+    }
+
+    private void showRenamePlaylistDialog(@NonNull MediaItem playlistItem) {
+        final EditText input = new EditText(requireContext());
+        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        CharSequence currentTitle = playlistItem.mediaMetadata.title;
+        input.setText(currentTitle == null ? "" : currentTitle.toString());
+        input.setHint(R.string.playlist_name_hint);
+
+        final androidx.appcompat.app.AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.action_rename)
+                .setView(input)
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(R.string.action_save, null)
+                .create();
+
+        dialog.setOnShowListener(d -> dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)
+                .setOnClickListener(v -> {
+                    String newTitle = input.getText() == null ? "" : input.getText().toString().trim();
+                    if (newTitle.isEmpty()) {
+                        input.setError(getString(R.string.playlist_name_required));
+                        return;
+                    }
+                    renamePlaylist(playlistItem.mediaId, newTitle, dialog);
+                }));
+        dialog.show();
+    }
+
+    private void renamePlaylist(
+            @NonNull String mediaId,
+            @NonNull String newTitle,
+            @NonNull androidx.appcompat.app.AlertDialog dialog
+    ) {
+        playlistsViewModel.renamePlaylist(mediaId, newTitle);
+        dialog.dismiss();
+    }
+
+    private void showDeletePlaylistDialog(@NonNull MediaItem playlistItem) {
+        CharSequence title = playlistItem.mediaMetadata.title;
+        String playlistTitle = title == null ? getString(R.string.playlists_fragment_title) : title.toString();
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.action_delete)
+                .setMessage(getString(R.string.delete_playlist_confirmation, playlistTitle))
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(R.string.action_delete, (dialog, which) -> deletePlaylist(playlistItem.mediaId, playlistTitle))
+                .show();
+    }
+
+    private void deletePlaylist(@NonNull String mediaId, @NonNull String playlistTitle) {
+        playlistsViewModel.deletePlaylist(mediaId, playlistTitle);
     }
 
     private void playPlaylist(MediaItem playlist) {
@@ -331,7 +383,13 @@ public class PlaylistsFragment extends Fragment {
             MediaMetadata metadata = playlist.mediaMetadata;
 
             holder.nameTextView.setText(metadata.title);
-            holder.detailsTextView.setText(metadata.artist + " · " + metadata.albumTitle);
+            String artist = metadata.artist == null ? "" : metadata.artist.toString();
+            String album = metadata.albumTitle == null ? "" : metadata.albumTitle.toString();
+            holder.detailsTextView.setText(holder.itemView.getContext().getString(
+                    R.string.playlist_details_format,
+                    artist,
+                    album
+            ));
 
             holder.itemView.setOnClickListener(v -> {
                 if (clickHandler != null) {

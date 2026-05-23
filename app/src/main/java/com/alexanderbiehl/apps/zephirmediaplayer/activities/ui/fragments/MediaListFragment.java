@@ -1,6 +1,7 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.fragments;
 
-import static com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.MediaItemRepository.PLAYLIST_ID;
+
+import static com.alexanderbiehl.apps.zephirmediaplayer.domain.MediaItemUseCase.PLAYLIST_ID;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -37,16 +38,24 @@ import com.alexanderbiehl.apps.zephirmediaplayer.R;
 import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.adapters.MediaListRecyclerViewAdapter;
 import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.viewmodel.MediaViewModel;
 import com.alexanderbiehl.apps.zephirmediaplayer.common.OnClickHandler;
+import com.alexanderbiehl.apps.zephirmediaplayer.common.Result;
 import com.alexanderbiehl.apps.zephirmediaplayer.common.wrappers.MediaBrowserWrapper;
 import com.alexanderbiehl.apps.zephirmediaplayer.common.wrappers.MediaBrowserWrapperImpl;
+import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.PlaylistEntity;
+import com.alexanderbiehl.apps.zephirmediaplayer.domain.playlists.AddMediaItemsToPlaylistUseCase;
+import com.alexanderbiehl.apps.zephirmediaplayer.domain.playlists.GetPlaylistsUseCase;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * A fragment representing a list of Items.
@@ -358,9 +367,106 @@ public class MediaListFragment extends Fragment {
     }
 
     public void addMediaItemToPlaylist(@NonNull MediaItem item) {
-        //TODO need to open UI to select which playlist to add to
-        // perhaps add a new fragment for the playlists, have it
-        // return its result (the selected playlist) and then populate
+        if (mediaBrowser == null) {
+            Toast.makeText(requireContext(), "Unable to add to playlist right now", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        resolvePlaylistMediaItems(item, mediaItems -> loadPlaylistsAndShowPicker(mediaItems));
+    }
+
+    private void resolvePlaylistMediaItems(@NonNull MediaItem sourceItem, @NonNull Consumer<List<MediaItem>> onResolved) {
+        if (Boolean.TRUE.equals(sourceItem.mediaMetadata.isBrowsable) &&
+                Boolean.TRUE.equals(sourceItem.mediaMetadata.isPlayable)) {
+            ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> childrenFuture =
+                    mediaBrowser.getChildren(sourceItem.mediaId, 0, Integer.MAX_VALUE, null);
+            childrenFuture.addListener(() -> {
+                try {
+                    if (!childrenFuture.isDone()) {
+                        return;
+                    }
+                    List<MediaItem> items = childrenFuture.get().value;
+                    onResolved.accept(items == null ? Collections.emptyList() : new ArrayList<>(items));
+                } catch (Exception e) {
+                    Log.e(TAG, "Unable to resolve playlist items", e);
+                    if (isAdded()) {
+                        Toast.makeText(requireContext(), "Unable to load items to add", Toast.LENGTH_SHORT).show();
+                    }
+                    onResolved.accept(Collections.emptyList());
+                }
+            }, ContextCompat.getMainExecutor(requireActivity()));
+        } else {
+            onResolved.accept(Collections.singletonList(sourceItem));
+        }
+    }
+
+    private void loadPlaylistsAndShowPicker(@NonNull List<MediaItem> mediaItems) {
+        MainApp app = (MainApp) requireActivity().getApplication();
+        GetPlaylistsUseCase getPlaylistsUseCase = app.getAppContainer().getGetPlaylistsUseCase();
+        AddMediaItemsToPlaylistUseCase addMediaItemsToPlaylistUseCase =
+                app.getAppContainer().getAddMediaItemsToPlaylistUseCase();
+
+        getPlaylistsUseCase.execute(result -> requireActivity().runOnUiThread(() -> {
+            if (!(result instanceof Result.Success<?> success) || success.data == null) {
+                Toast.makeText(requireContext(), getString(R.string.no_playlists_available), Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            @SuppressWarnings("unchecked")
+            List<MediaItem> playlistItems = (List<MediaItem>) success.data;
+            List<PlaylistEntity> playlists = playlistItems.stream().map(item -> {
+                PlaylistEntity entity = new PlaylistEntity();
+                entity.mediaId = item.mediaId;
+                entity.title = item.mediaMetadata.title == null ? "" : item.mediaMetadata.title.toString();
+                return entity;
+            }).collect(Collectors.toList());
+            if (playlists.isEmpty()) {
+                Toast.makeText(requireContext(), getString(R.string.no_playlists_available), Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            showPlaylistPickerDialog(addMediaItemsToPlaylistUseCase, playlists, mediaItems);
+        }));
+    }
+
+    private void showPlaylistPickerDialog(
+            @NonNull AddMediaItemsToPlaylistUseCase addMediaItemsToPlaylistUseCase,
+            @NonNull List<PlaylistEntity> playlists,
+            @NonNull List<MediaItem> mediaItems
+    ) {
+        CharSequence[] playlistTitles = playlists.stream()
+                .map(playlist -> playlist.title)
+                .toArray(CharSequence[]::new);
+        final int[] selectedIndex = {0};
+
+        new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.choose_playlist)
+                .setSingleChoiceItems(playlistTitles, 0, (dialog, which) -> selectedIndex[0] = which)
+                .setPositiveButton(R.string.action_add, (dialog, which) -> {
+                    PlaylistEntity selectedPlaylist = playlists.get(selectedIndex[0]);
+                    addItemsToPlaylist(addMediaItemsToPlaylistUseCase, selectedPlaylist, mediaItems);
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private void addItemsToPlaylist(
+            @NonNull AddMediaItemsToPlaylistUseCase addMediaItemsToPlaylistUseCase,
+            @NonNull PlaylistEntity selectedPlaylist,
+            @NonNull List<MediaItem> mediaItems
+    ) {
+        addMediaItemsToPlaylistUseCase.execute(selectedPlaylist, mediaItems, result ->
+                requireActivity().runOnUiThread(() -> {
+                    if (result instanceof Result.Success<?>) {
+                        Toast.makeText(requireContext(),
+                                getString(R.string.added_to_playlist, selectedPlaylist.title),
+                                Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(requireContext(),
+                                getString(R.string.failed_to_add_to_playlist),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                }));
     }
 
     public void popPathStack() {
