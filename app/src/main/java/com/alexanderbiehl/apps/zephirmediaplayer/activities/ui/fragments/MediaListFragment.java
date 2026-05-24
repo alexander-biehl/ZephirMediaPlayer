@@ -29,6 +29,7 @@ import androidx.media3.common.MediaItem;
 import androidx.media3.session.LibraryResult;
 import androidx.media3.session.MediaBrowser;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -144,6 +145,13 @@ public class MediaListFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
+
+            // Add dividers between items
+            DividerItemDecoration itemDecoration = new DividerItemDecoration(
+                    context,
+                    LinearLayoutManager.VERTICAL
+            );
+            recyclerView.addItemDecoration(itemDecoration);
 
             mediaAdapter = new MediaListRecyclerViewAdapter(subMediaList, new MediaListViewClickHandler());
             recyclerView.setAdapter(mediaAdapter);
