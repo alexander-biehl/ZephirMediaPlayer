@@ -26,6 +26,7 @@ import androidx.media3.common.MediaItem;
 import androidx.media3.common.MediaMetadata;
 import androidx.media3.session.LibraryResult;
 import androidx.media3.session.MediaBrowser;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -341,9 +342,12 @@ public class PlaylistsFragment extends Fragment {
                             // add items to MediaViewModel queue for tracking in QueueFragment
                             mediaViewModel.setQueue(items);
 
+
                             Snackbar.make(binding.getRoot(),
                                     "Playing playlist: " + playlist.mediaMetadata.title,
                                     Snackbar.LENGTH_SHORT).show();
+                            NavHostFragment.findNavController(this)
+                                    .navigate(R.id.action_PlaylistsFragment_to_NowPlayingFragment);
                         } else {
                             Snackbar.make(binding.getRoot(), "Playlist is empty",
                                     Snackbar.LENGTH_SHORT).show();
