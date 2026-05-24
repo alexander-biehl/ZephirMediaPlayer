@@ -406,7 +406,7 @@ public class MediaListFragment extends Fragment {
             return;
         }
 
-        resolvePlaylistMediaItems(item, mediaItems -> loadPlaylistsAndShowPicker(mediaItems));
+        resolvePlaylistMediaItems(item, this::loadPlaylistsAndShowPicker);
     }
 
     private void resolvePlaylistMediaItems(@NonNull MediaItem sourceItem, @NonNull Consumer<List<MediaItem>> onResolved) {
