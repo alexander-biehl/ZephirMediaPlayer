@@ -9,6 +9,7 @@ import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.ArtistReposit
 import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.PlaylistRepository;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.SongRepository;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.AppDatabase;
+import com.alexanderbiehl.apps.zephirmediaplayer.datastore.ZephirDataStore;
 import com.alexanderbiehl.apps.zephirmediaplayer.domain.MediaItemUseCase;
 import com.alexanderbiehl.apps.zephirmediaplayer.domain.playlists.AddMediaItemsToPlaylistUseCase;
 import com.alexanderbiehl.apps.zephirmediaplayer.domain.playlists.CreatePlaylistUseCase;
@@ -35,6 +36,8 @@ public class AppContainer {
     private RenamePlaylistUseCase renamePlaylistUseCase;
     private DeletePlaylistUseCase deletePlaylistUseCase;
     private AddMediaItemsToPlaylistUseCase addMediaItemsToPlaylistUseCase;
+
+    private ZephirDataStore dataStore;
 
     public AppContainer(Context appContext, Executor executor) {
         this.appContext = appContext;
@@ -132,6 +135,13 @@ public class AppContainer {
             addMediaItemsToPlaylistUseCase = new AddMediaItemsToPlaylistUseCase(getPlaylistRepository());
         }
         return addMediaItemsToPlaylistUseCase;
+    }
+
+    public synchronized ZephirDataStore getDataStore() {
+        if (dataStore == null) {
+            dataStore = new ZephirDataStore(appContext);
+        }
+        return dataStore;
     }
 }
 

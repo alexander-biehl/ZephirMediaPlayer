@@ -69,7 +69,8 @@ public class MainActivity extends AppCompatActivity {
         Intent mediaObserverServiceIntent = new Intent(this, MediaStoreSyncService.class);
         startService(mediaObserverServiceIntent);
         MainApp application = (MainApp) getApplication();
-        if (application.getStoreIsSynced().get()) {
+        if (application.getStoreIsSynced().get() ||
+            application.getAppContainer().getDataStore().isLibrarySynced()) {
             initiateBrowserConnection();
         } else {
             observerCallback = new ObserverCallback();

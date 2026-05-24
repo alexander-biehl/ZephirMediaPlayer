@@ -55,6 +55,7 @@ public class MainApp extends Application {
 
     public void setStoreIsSynced(boolean isSynced) {
         synchronized (storeIsSynced) {
+            appContainer.getDataStore().setLibrarySynced(isSynced);
             storeIsSynced.set(isSynced);
             storeIsSynced.notifyChange();
         }

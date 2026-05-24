@@ -33,8 +33,12 @@ public class MediaStoreSyncService extends LifecycleService {
                 true,
                 observer
         );
-        // execute first time sync
-        this.observer.executeSync(result -> app.setStoreIsSynced(true));
+        // only execute first time sync if library is not synced yet, otherwise we would execute an unnecessary sync on every app start
+        if (!app.getAppContainer().getDataStore().isLibrarySynced()) {
+            this.observer.executeSync(result -> app.setStoreIsSynced(true));
+        } else {
+            app.setStoreIsSynced(true);
+        }
     }
 
     @Override
