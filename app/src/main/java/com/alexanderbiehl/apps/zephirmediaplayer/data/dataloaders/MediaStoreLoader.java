@@ -26,7 +26,8 @@ public class MediaStoreLoader {
             MediaStore.Audio.AudioColumns.ALBUM,
             MediaStore.Audio.AudioColumns.ARTIST,
             MediaStore.Audio.AudioColumns.CD_TRACK_NUMBER,
-            MediaStore.Audio.AudioColumns.ALBUM_ID
+            MediaStore.Audio.AudioColumns.ALBUM_ID,
+            MediaStore.Audio.Media.DURATION
     };
     private static final String BASE_SELECTION = String.format("%s = ?",
             MediaStore.Audio.AudioColumns.IS_MUSIC);
@@ -64,6 +65,7 @@ public class MediaStoreLoader {
                 int titleColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.TITLE);
                 int orderColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.CD_TRACK_NUMBER);
                 int albumIdColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ALBUM_ID);
+                int durationColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION);
 
                 do {
                     final long id = cursor.getLong(mediaIdColumn);
@@ -78,13 +80,15 @@ public class MediaStoreLoader {
                     final String albumID = cursor.getString(albumIdColumn);
                     // this will fail when api >= 29
                     Uri albumArtUri = getAlbumArt(ctx, albumID);
+                    final Long durationMs = cursor.getLong(durationColumn);
 
                     try {
                         MediaMetadata.Builder builder = new MediaMetadata.Builder()
                                 .setTitle(title)
                                 .setArtist(artist)
                                 .setAlbumTitle(album)
-                                .setTrackNumber(order);
+                                .setTrackNumber(order)
+                                .setDurationMs(durationMs);
                         // for api > 29, the album art is directly decoded from the URI
                         builder.setArtworkUri(Objects.requireNonNullElse(albumArtUri, uri));
                         media.add(
@@ -143,4 +147,30 @@ public class MediaStoreLoader {
         }
         return null;
     }
+
+//    public Long getTrackDurationMs(@NonNull Context context, String mediaId) {
+//        ContentResolver resolver = context.getContentResolver();
+//        final String[] selectionArgs = new String[]{
+//                mediaId
+//        };
+//        try (Cursor cursor = resolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+//                new String[]{MediaStore.Audio.AudioColumns.DURATION},
+//                String.format("%s = ?", MediaStore.Audio.AudioColumns._ID),
+//                selectionArgs,
+//                null)) {
+//            if (cursor == null) {
+//                Log.d(TAG, "Cursor returned null");
+//            } else if (!cursor.moveToNext()) {
+//                Log.d(TAG, "No media found for mediaId: " + mediaId);
+//            } else {
+//                return cursor.getLong(
+//                        cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.DURATION)
+//                );
+//            }
+//        } catch (Exception e) {
+//            Log.e(TAG, "Exception: " + e);
+//            throw new RuntimeException(e);
+//        }
+//        return 0L;
+//    }
 }
