@@ -18,6 +18,7 @@ import android.text.InputType;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -241,14 +242,14 @@ public class PlaylistsFragment extends Fragment {
         input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
         input.setHint(R.string.playlist_name_hint);
 
-        final androidx.appcompat.app.AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
+        final AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.create_new_playlist)
                 .setView(input)
                 .setNegativeButton(android.R.string.cancel, null)
                 .setPositiveButton(R.string.action_create, null)
                 .create();
 
-        dialog.setOnShowListener(d -> dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)
+        dialog.setOnShowListener(d -> dialog.getButton(AlertDialog.BUTTON_POSITIVE)
                 .setOnClickListener(v -> {
                     String title = input.getText() == null ? "" : input.getText().toString().trim();
                     if (title.isEmpty()) {
@@ -261,7 +262,7 @@ public class PlaylistsFragment extends Fragment {
         dialog.show();
     }
 
-    private void createPlaylist(@NonNull String title, @NonNull androidx.appcompat.app.AlertDialog dialog) {
+    private void createPlaylist(@NonNull String title, @NonNull AlertDialog dialog) {
         playlistsViewModel.createPlaylist(title);
         dialog.dismiss();
     }
@@ -273,14 +274,14 @@ public class PlaylistsFragment extends Fragment {
         input.setText(currentTitle == null ? "" : currentTitle.toString());
         input.setHint(R.string.playlist_name_hint);
 
-        final androidx.appcompat.app.AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
+        final AlertDialog dialog = new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.action_rename)
                 .setView(input)
                 .setNegativeButton(android.R.string.cancel, null)
                 .setPositiveButton(R.string.action_save, null)
                 .create();
 
-        dialog.setOnShowListener(d -> dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)
+        dialog.setOnShowListener(d -> dialog.getButton(AlertDialog.BUTTON_POSITIVE)
                 .setOnClickListener(v -> {
                     String newTitle = input.getText() == null ? "" : input.getText().toString().trim();
                     if (newTitle.isEmpty()) {

@@ -44,8 +44,8 @@ import com.alexanderbiehl.apps.zephirmediaplayer.common.wrappers.MediaBrowserWra
 import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.PlaylistEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.domain.playlists.AddMediaItemsToPlaylistUseCase;
 import com.alexanderbiehl.apps.zephirmediaplayer.domain.playlists.GetPlaylistsUseCase;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.ListenableFuture;
 
@@ -266,8 +266,21 @@ public class MediaListFragment extends Fragment {
             }
 
             if (item.mediaId.equals(PLAYLIST_ID)) {
-                    NavHostFragment.findNavController(this)
-                            .navigate(R.id.action_mediaList_toPlaylists);
+                // Guard against duplicate/late emissions navigating form the wrong destination.
+                final var navController = NavHostFragment.findNavController(this);
+                final var currentDestination = navController.getCurrentDestination();
+                if (currentDestination != null &&
+                        currentDestination.getId() == R.id.MediaListFragment &&
+                        currentDestination.getAction(R.id.action_mediaList_toPlaylists) != null) {
+                    navController.navigate(R.id.action_mediaList_toPlaylists);
+                } else {
+                    if (Log.isLoggable(TAG, Log.DEBUG)) {
+                        Log.d(TAG, "Not navigating to playlists because current destination is " +
+                                (currentDestination != null ? currentDestination.getId() : "null") +
+                                " and action is " +
+                                (currentDestination != null ? currentDestination.getAction(R.id.action_mediaList_toPlaylists) : "null"));
+                    }
+                }
             } else if (Boolean.TRUE.equals(item.mediaMetadata.isBrowsable)) {
                 pushPathStack(item);
             } else if (Boolean.TRUE.equals(item.mediaMetadata.isPlayable)) {

@@ -164,7 +164,11 @@ public class PlaylistDbDataSource {
                 }
 
                 PlaylistSongs existing = dao.getPlaylistSongsByMediaId(playlist.mediaId);
-                int nextOrder = existing != null && existing.songEntities != null
+                if (existing == null || existing.playlistEntity == null) {
+                    callback.onComplete(new Result.Error<>("Playlist not found"));
+                    return;
+                }
+                int nextOrder = existing.songEntities != null
                         ? existing.songEntities.size()
                         : 0;
                 AtomicInteger orderCounter = new AtomicInteger(nextOrder);
@@ -174,7 +178,8 @@ public class PlaylistDbDataSource {
                         .filter(Objects::nonNull)
                         .map(song -> {
                             PlaylistSongM2M link = new PlaylistSongM2M();
-                            link.playlistId = playlist.id;
+                            // link.playlistId = playlist.id;
+                            link.playlistId = existing.playlistEntity.id;
                             link.songId = song.id;
                             link.order = orderCounter.getAndIncrement();
                             return link;
