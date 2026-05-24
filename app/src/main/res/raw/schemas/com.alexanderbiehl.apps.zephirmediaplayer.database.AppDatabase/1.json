@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "5421e379a57e25fa532612dde8561f14",
+    "identityHash": "7b5defef2d8fef05123276aaefb6ff0a",
     "entities": [
       {
         "tableName": "songs",
@@ -115,12 +115,17 @@
       },
       {
         "tableName": "playlists",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`title` TEXT, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `media_id` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`title` TEXT, `numTracks` INTEGER, `id` INTEGER PRIMARY KEY AUTOINCREMENT, `media_id` TEXT)",
         "fields": [
           {
             "fieldPath": "title",
             "columnName": "title",
             "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "numTracks",
+            "columnName": "numTracks",
+            "affinity": "INTEGER"
           },
           {
             "fieldPath": "id",
@@ -218,7 +223,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5421e379a57e25fa532612dde8561f14')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7b5defef2d8fef05123276aaefb6ff0a')"
     ]
   }
 }

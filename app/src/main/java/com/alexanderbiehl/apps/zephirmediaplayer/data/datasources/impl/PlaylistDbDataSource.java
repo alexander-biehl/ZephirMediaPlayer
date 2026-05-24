@@ -191,7 +191,10 @@ public class PlaylistDbDataSource {
                     return;
                 }
 
+                existing.playlistEntity.numTracks += links.length;
+
                 dao.insertPlaylistSongs(links);
+                dao.update(existing.playlistEntity);
                 callback.onComplete(new Result.Success<>());
             } catch (Exception e) {
                 callback.onComplete(new Result.Error<>(e));

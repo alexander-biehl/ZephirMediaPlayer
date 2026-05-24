@@ -11,6 +11,7 @@ import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.PlaylistEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.SongEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.domain.playlists.PlaylistRepositoryGateway;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -77,7 +78,7 @@ public class PlaylistRepository implements PlaylistRepositoryGateway {
         if (songs == null || songs.length == 0) {
             return List.of();
         }
-        return java.util.Arrays.stream(songs).map(SongEntity::toItem).collect(Collectors.toList());
+        return Arrays.stream(songs).map(SongEntity::toItem).collect(Collectors.toList());
     }
 
     public MediaItem getById(String mediaId) {

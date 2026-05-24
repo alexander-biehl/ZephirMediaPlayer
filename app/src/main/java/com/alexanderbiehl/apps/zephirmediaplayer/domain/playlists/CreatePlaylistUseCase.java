@@ -28,6 +28,7 @@ public class CreatePlaylistUseCase {
         PlaylistEntity entity = new PlaylistEntity();
         entity.title = normalizedTitle;
         entity.mediaId = PLAYLIST_PREFIX + UUID.randomUUID();
+        entity.numTracks = 0;
         playlistRepository.create(entity, callback);
     }
 }
