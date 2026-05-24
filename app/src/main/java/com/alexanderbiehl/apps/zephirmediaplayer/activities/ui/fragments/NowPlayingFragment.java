@@ -49,7 +49,7 @@ public class NowPlayingFragment extends Fragment {
             @Override
             public void handleOnBackPressed() {
                 NavHostFragment.findNavController(NowPlayingFragment.this)
-                        .navigate(R.id.action_SecondFragment_to_FirstFragment);
+                        .popBackStack();
             }
         });
         initializeController();
