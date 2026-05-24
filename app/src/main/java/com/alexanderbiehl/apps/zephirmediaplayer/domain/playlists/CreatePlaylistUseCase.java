@@ -12,9 +12,9 @@ import java.util.UUID;
 
 public class CreatePlaylistUseCase {
 
-    private final PlaylistRepositoryGateway playlistRepository;
+    private final PlaylistRepository playlistRepository;
 
-    public CreatePlaylistUseCase(@NonNull PlaylistRepositoryGateway playlistRepository) {
+    public CreatePlaylistUseCase(@NonNull PlaylistRepository playlistRepository) {
         this.playlistRepository = playlistRepository;
     }
 

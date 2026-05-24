@@ -6,9 +6,9 @@ import com.alexanderbiehl.apps.zephirmediaplayer.common.RepositoryCallback;
 
 public class DeletePlaylistUseCase {
 
-    private final PlaylistRepositoryGateway playlistRepository;
+    private final PlaylistRepository playlistRepository;
 
-    public DeletePlaylistUseCase(@NonNull PlaylistRepositoryGateway playlistRepository) {
+    public DeletePlaylistUseCase(@NonNull PlaylistRepository playlistRepository) {
         this.playlistRepository = playlistRepository;
     }
 

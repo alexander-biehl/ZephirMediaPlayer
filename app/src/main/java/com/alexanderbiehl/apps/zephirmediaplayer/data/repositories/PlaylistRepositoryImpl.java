@@ -9,18 +9,18 @@ import com.alexanderbiehl.apps.zephirmediaplayer.common.RepositoryCallback;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.datasources.impl.PlaylistDbDataSource;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.PlaylistEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.SongEntity;
-import com.alexanderbiehl.apps.zephirmediaplayer.domain.playlists.PlaylistRepositoryGateway;
+import com.alexanderbiehl.apps.zephirmediaplayer.domain.playlists.PlaylistRepository;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class PlaylistRepository implements PlaylistRepositoryGateway {
+public class PlaylistRepositoryImpl implements PlaylistRepository {
 
-    private static final String TAG = PlaylistRepository.class.getSimpleName();
+    private static final String TAG = PlaylistRepositoryImpl.class.getSimpleName();
     private final PlaylistDbDataSource dataSource;
 
-    public PlaylistRepository(final PlaylistDbDataSource dataSource) {
+    public PlaylistRepositoryImpl(final PlaylistDbDataSource dataSource) {
         this.dataSource = dataSource;
     }
 

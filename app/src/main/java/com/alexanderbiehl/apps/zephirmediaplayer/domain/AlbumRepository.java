@@ -7,7 +7,7 @@ import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.SongEntity;
 
 import java.util.List;
 
-public interface AlbumRepositoryGateway {
+public interface AlbumRepository {
 
     List<SongEntity> getSongsByAlbumId(@NonNull String mediaId);
 

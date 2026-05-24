@@ -21,11 +21,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class PlaylistUseCaseTests {
 
-    private FakePlaylistGateway gateway;
+    private FakePlaylist gateway;
 
     @Before
     public void setUp() {
-        gateway = new FakePlaylistGateway();
+        gateway = new FakePlaylist();
     }
 
     @Test
@@ -146,7 +146,7 @@ public class PlaylistUseCaseTests {
         assertEquals("song-1", gateway.lastAddedItems.get(0).mediaId);
     }
 
-    private static class FakePlaylistGateway implements PlaylistRepositoryGateway {
+    private static class FakePlaylist implements PlaylistRepository {
 
         final List<PlaylistEntity> createdEntities = new ArrayList<>();
         List<PlaylistEntity> playlistsToReturn = new ArrayList<>();

@@ -6,7 +6,7 @@ import com.alexanderbiehl.apps.zephirmediaplayer.data.models.Artist;
 
 import java.util.List;
 
-public interface ArtistRepositoryGateway {
+public interface ArtistRepository {
 
     Artist getAlbumsByArtistId(@NonNull String mediaId);
 

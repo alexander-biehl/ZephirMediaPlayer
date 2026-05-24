@@ -6,17 +6,17 @@ import com.alexanderbiehl.apps.zephirmediaplayer.database.dao.AlbumDao;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.AlbumEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.SongEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.rel.AlbumSongs;
-import com.alexanderbiehl.apps.zephirmediaplayer.domain.AlbumRepositoryGateway;
+import com.alexanderbiehl.apps.zephirmediaplayer.domain.AlbumRepository;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class AlbumRepository implements AlbumRepositoryGateway {
+public class AlbumRepositoryImpl implements AlbumRepository {
 
     private final AlbumDao albumDao;
 
-    public AlbumRepository(AlbumDao albumDao) {
+    public AlbumRepositoryImpl(AlbumDao albumDao) {
         this.albumDao = albumDao;
     }
 

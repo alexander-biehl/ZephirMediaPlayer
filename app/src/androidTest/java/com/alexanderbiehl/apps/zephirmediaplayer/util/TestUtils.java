@@ -22,6 +22,7 @@ public class TestUtils {
         s.mediaId = songOneMediaId;
         s.title = "SongEntity One";
         s.trackNumber = "1";
+        s.durationMs = 300000L;
         return s;
     }
 
@@ -30,6 +31,7 @@ public class TestUtils {
         s.mediaId = songTwoMediaId;
         s.title = "SongEntity Two";
         s.trackNumber = "2";
+        s.durationMs = 200000L;
         return s;
     }
 

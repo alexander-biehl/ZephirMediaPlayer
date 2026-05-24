@@ -7,9 +7,9 @@ import com.alexanderbiehl.apps.zephirmediaplayer.common.Result;
 
 public class RenamePlaylistUseCase {
 
-    private final PlaylistRepositoryGateway playlistRepository;
+    private final PlaylistRepository playlistRepository;
 
-    public RenamePlaylistUseCase(@NonNull PlaylistRepositoryGateway playlistRepository) {
+    public RenamePlaylistUseCase(@NonNull PlaylistRepository playlistRepository) {
         this.playlistRepository = playlistRepository;
     }
 

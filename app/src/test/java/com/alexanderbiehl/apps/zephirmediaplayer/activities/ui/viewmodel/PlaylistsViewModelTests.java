@@ -17,7 +17,7 @@ import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.PlaylistEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.domain.playlists.CreatePlaylistUseCase;
 import com.alexanderbiehl.apps.zephirmediaplayer.domain.playlists.DeletePlaylistUseCase;
 import com.alexanderbiehl.apps.zephirmediaplayer.domain.playlists.GetPlaylistsUseCase;
-import com.alexanderbiehl.apps.zephirmediaplayer.domain.playlists.PlaylistRepositoryGateway;
+import com.alexanderbiehl.apps.zephirmediaplayer.domain.playlists.PlaylistRepository;
 import com.alexanderbiehl.apps.zephirmediaplayer.domain.playlists.RenamePlaylistUseCase;
 
 import org.junit.Before;
@@ -60,12 +60,12 @@ public class PlaylistsViewModelTests {
         }
     };
 
-    private FakePlaylistGateway gateway;
+    private FakePlaylistRepository gateway;
     private PlaylistsViewModel viewModel;
 
     @Before
     public void setUp() {
-        gateway = new FakePlaylistGateway();
+        gateway = new FakePlaylistRepository();
         Application application = new Application();
         viewModel = new PlaylistsViewModel(
                 application,
@@ -130,7 +130,7 @@ public class PlaylistsViewModelTests {
         assertEquals("Road Trip", viewModel.getUiMessages().getValue().formatArg);
     }
 
-    private static class FakePlaylistGateway implements PlaylistRepositoryGateway {
+    private static class FakePlaylistRepository implements PlaylistRepository {
 
         final List<PlaylistEntity> playlists = new ArrayList<>();
         PlaylistEntity lastCreatedPlaylist;

@@ -77,6 +77,8 @@ public class PlaylistDbDataSourceTests {
         PlaylistEntity playlist = new PlaylistEntity();
         playlist.mediaId = "[playlistEntity]add-items";
         playlist.title = "Target Playlist";
+        playlist.durationMs = 0L;
+        playlist.numTracks = 0;
         long playlistRowId = playlistDao.insert(playlist);
         PlaylistEntity persistedPlaylist = playlistDao.getByMediaId(playlist.mediaId);
         assertNotNull(persistedPlaylist);

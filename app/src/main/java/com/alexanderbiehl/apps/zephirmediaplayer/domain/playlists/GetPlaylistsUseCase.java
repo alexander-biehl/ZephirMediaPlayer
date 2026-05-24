@@ -12,9 +12,9 @@ import java.util.stream.Collectors;
 
 public class GetPlaylistsUseCase {
 
-    private final PlaylistRepositoryGateway playlistRepository;
+    private final PlaylistRepository playlistRepository;
 
-    public GetPlaylistsUseCase(@NonNull PlaylistRepositoryGateway playlistRepository) {
+    public GetPlaylistsUseCase(@NonNull PlaylistRepository playlistRepository) {
         this.playlistRepository = playlistRepository;
     }
 

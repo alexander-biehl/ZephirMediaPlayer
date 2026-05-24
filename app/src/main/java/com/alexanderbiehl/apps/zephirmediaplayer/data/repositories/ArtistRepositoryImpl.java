@@ -4,15 +4,15 @@ import androidx.annotation.NonNull;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.data.datasources.ArtistDataSource;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.models.Artist;
-import com.alexanderbiehl.apps.zephirmediaplayer.domain.ArtistRepositoryGateway;
+import com.alexanderbiehl.apps.zephirmediaplayer.domain.ArtistRepository;
 
 import java.util.List;
 
-public class ArtistRepository implements ArtistRepositoryGateway {
+public class ArtistRepositoryImpl implements ArtistRepository {
 
     private final ArtistDataSource localArtistDataSource;
 
-    public ArtistRepository(ArtistDataSource localArtistDataSource) {
+    public ArtistRepositoryImpl(ArtistDataSource localArtistDataSource) {
         this.localArtistDataSource = localArtistDataSource;
     }
 

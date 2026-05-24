@@ -4,17 +4,21 @@ import android.content.Context;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.data.datasources.impl.ArtistDbDataSource;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.datasources.impl.PlaylistDbDataSource;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.AlbumRepository;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.ArtistRepository;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.PlaylistRepository;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.SongRepository;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.AlbumRepositoryImpl;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.ArtistRepositoryImpl;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.PlaylistRepositoryImpl;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.repositories.SongRepositoryImpl;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.AppDatabase;
 import com.alexanderbiehl.apps.zephirmediaplayer.datastore.ZephirDataStore;
+import com.alexanderbiehl.apps.zephirmediaplayer.domain.AlbumRepository;
+import com.alexanderbiehl.apps.zephirmediaplayer.domain.ArtistRepository;
 import com.alexanderbiehl.apps.zephirmediaplayer.domain.MediaItemUseCase;
+import com.alexanderbiehl.apps.zephirmediaplayer.domain.SongRepository;
 import com.alexanderbiehl.apps.zephirmediaplayer.domain.playlists.AddMediaItemsToPlaylistUseCase;
 import com.alexanderbiehl.apps.zephirmediaplayer.domain.playlists.CreatePlaylistUseCase;
 import com.alexanderbiehl.apps.zephirmediaplayer.domain.playlists.DeletePlaylistUseCase;
 import com.alexanderbiehl.apps.zephirmediaplayer.domain.playlists.GetPlaylistsUseCase;
+import com.alexanderbiehl.apps.zephirmediaplayer.domain.playlists.PlaylistRepository;
 import com.alexanderbiehl.apps.zephirmediaplayer.domain.playlists.RenamePlaylistUseCase;
 
 import java.util.concurrent.Executor;
@@ -53,7 +57,7 @@ public class AppContainer {
 
     public synchronized PlaylistRepository getPlaylistRepository() {
         if (playlistRepository == null) {
-            playlistRepository = new PlaylistRepository(
+            playlistRepository = new PlaylistRepositoryImpl(
                     new PlaylistDbDataSource(getDatabase().playlistDao(), getDatabase().songDao(), executor)
             );
         }
@@ -62,21 +66,21 @@ public class AppContainer {
 
     public synchronized SongRepository getSongRepository() {
         if (songRepository == null) {
-            songRepository = new SongRepository(getDatabase().songDao());
+            songRepository = new SongRepositoryImpl(getDatabase().songDao());
         }
         return songRepository;
     }
 
     public synchronized AlbumRepository getAlbumRepository() {
         if (albumRepository == null) {
-            albumRepository = new AlbumRepository(getDatabase().albumDao());
+            albumRepository = new AlbumRepositoryImpl(getDatabase().albumDao());
         }
         return albumRepository;
     }
 
     public synchronized ArtistRepository getArtistRepository() {
         if (artistRepository == null) {
-            artistRepository = new ArtistRepository(
+            artistRepository = new ArtistRepositoryImpl(
                     new ArtistDbDataSource(getDatabase().artistDao())
             );
         }

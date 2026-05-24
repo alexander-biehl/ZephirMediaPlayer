@@ -8,7 +8,7 @@ import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.PlaylistEntity;
 
 import java.util.List;
 
-public interface PlaylistRepositoryGateway {
+public interface PlaylistRepository {
 
     void create(@NonNull PlaylistEntity entity, @NonNull RepositoryCallback<Void> callback);
 

@@ -18,7 +18,7 @@ import com.alexanderbiehl.apps.zephirmediaplayer.data.models.Artist;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.AlbumEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.PlaylistEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.SongEntity;
-import com.alexanderbiehl.apps.zephirmediaplayer.domain.playlists.PlaylistRepositoryGateway;
+import com.alexanderbiehl.apps.zephirmediaplayer.domain.playlists.PlaylistRepository;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -29,17 +29,17 @@ import java.util.Optional;
 
 public class MediaItemUseCaseTests {
 
-    private FakePlaylistGateway playlistGateway;
-    private FakeAlbumGateway albumGateway;
-    private FakeArtistGateway artistGateway;
+    private FakePlaylistRepository playlistGateway;
+    private FakeAlbumRepository albumGateway;
+    private FakeArtistRepository artistGateway;
     private MediaItemUseCase useCase;
 
     @Before
     public void setUp() {
-        playlistGateway = new FakePlaylistGateway();
-        FakeSongGateway songGateway = new FakeSongGateway();
-        albumGateway = new FakeAlbumGateway();
-        artistGateway = new FakeArtistGateway();
+        playlistGateway = new FakePlaylistRepository();
+        FakeSongRepository songGateway = new FakeSongRepository();
+        albumGateway = new FakeAlbumRepository();
+        artistGateway = new FakeArtistRepository();
         useCase = new MediaItemUseCase(playlistGateway, songGateway, albumGateway, artistGateway);
     }
 
@@ -145,7 +145,7 @@ public class MediaItemUseCaseTests {
         assertTrue(expanded.isEmpty());
     }
 
-    private static class FakePlaylistGateway implements PlaylistRepositoryGateway {
+    private static class FakePlaylistRepository implements PlaylistRepository {
         List<PlaylistEntity> playlists = new ArrayList<>();
         PlaylistEntity playlist;
 
@@ -186,7 +186,7 @@ public class MediaItemUseCaseTests {
         }
     }
 
-    private static class FakeSongGateway implements SongRepositoryGateway {
+    private static class FakeSongRepository implements SongRepository {
         SongEntity song;
 
         @Override
@@ -195,7 +195,7 @@ public class MediaItemUseCaseTests {
         }
     }
 
-    private static class FakeAlbumGateway implements AlbumRepositoryGateway {
+    private static class FakeAlbumRepository implements AlbumRepository {
         List<SongEntity> songsForAlbum = new ArrayList<>();
         AlbumEntity album;
 
@@ -220,7 +220,7 @@ public class MediaItemUseCaseTests {
         }
     }
 
-    private static class FakeArtistGateway implements ArtistRepositoryGateway {
+    private static class FakeArtistRepository implements ArtistRepository {
         Artist artist;
         Artist artistWithAlbums;
 

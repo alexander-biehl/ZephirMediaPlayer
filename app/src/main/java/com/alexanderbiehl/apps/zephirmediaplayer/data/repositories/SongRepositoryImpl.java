@@ -4,13 +4,13 @@ import androidx.annotation.NonNull;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.database.dao.SongDao;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.SongEntity;
-import com.alexanderbiehl.apps.zephirmediaplayer.domain.SongRepositoryGateway;
+import com.alexanderbiehl.apps.zephirmediaplayer.domain.SongRepository;
 
-public class SongRepository implements SongRepositoryGateway {
+public class SongRepositoryImpl implements SongRepository {
 
     private final SongDao songDao;
 
-    public SongRepository(SongDao songDao) {
+    public SongRepositoryImpl(SongDao songDao) {
         this.songDao = songDao;
     }
 

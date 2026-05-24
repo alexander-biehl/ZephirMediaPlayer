@@ -11,9 +11,9 @@ import java.util.List;
 
 public class AddMediaItemsToPlaylistUseCase {
 
-    private final PlaylistRepositoryGateway playlistRepository;
+    private final PlaylistRepository playlistRepository;
 
-    public AddMediaItemsToPlaylistUseCase(@NonNull PlaylistRepositoryGateway playlistRepository) {
+    public AddMediaItemsToPlaylistUseCase(@NonNull PlaylistRepository playlistRepository) {
         this.playlistRepository = playlistRepository;
     }
 
