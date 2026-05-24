@@ -389,7 +389,6 @@ public class PlaylistsFragment extends Fragment {
 
             holder.nameTextView.setText(metadata.title);
             Integer numTracks = metadata.totalTrackCount;
-            String artist = metadata.artist == null ? "" : metadata.artist.toString();
             String album = metadata.albumTitle == null ? "" : metadata.albumTitle.toString();
             holder.detailsTextView.setText(holder.itemView.getContext().getString(
                     R.string.playlist_details_format,

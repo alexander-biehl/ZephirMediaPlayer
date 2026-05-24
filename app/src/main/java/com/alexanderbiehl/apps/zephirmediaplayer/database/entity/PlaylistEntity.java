@@ -13,6 +13,8 @@ public class PlaylistEntity extends EntityBase {
 
     public Integer numTracks;
 
+    public Long durationMs;
+
     public static MediaItem toItem(PlaylistEntity entity) {
         if (entity == null) {
             return null;
@@ -25,6 +27,7 @@ public class PlaylistEntity extends EntityBase {
                                 .setIsBrowsable(true)
                                 .setIsPlayable(true)
                                 .setTotalTrackCount(entity.numTracks)
+                                .setDurationMs(entity.durationMs)
                                 .setMediaType(MediaMetadata.MEDIA_TYPE_PLAYLIST)
                                 .build())
                 .build();
