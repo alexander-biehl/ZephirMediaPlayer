@@ -32,7 +32,8 @@
     <string name="playlist_deleted">Deleted playlist: %1$s</string>
     <string name="playlist_delete_failed">Could not delete playlist</string>
     <string name="delete_playlist_confirmation">Delete playlist "%1$s"?</string>
-    <string name="playlist_details_format">%1$x · %2$s</string>
+    <string name="playlist_details_format">%1$x songs · %2$02d hour(s) %3$02d minutes</string>
+    <string name="playlist_details_format_minutes">%1$x songs · %2$02d minutes</string>
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>

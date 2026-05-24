@@ -20,13 +20,14 @@ public class SongEntity extends EntityBase {
 
     public long songArtistId;
     public long songAlbumId;
+    public long durationMs;
 
     public SongEntity() {
         super();
     }
 
     @Ignore
-    public SongEntity(String title, String mediaId, String trackNumber, String sourceUri, Long artistId, Long albumId) {
+    public SongEntity(String title, String mediaId, String trackNumber, String sourceUri, Long artistId, Long albumId, Long durationMs) {
         super();
         this.title = title;
         this.trackNumber = trackNumber;
@@ -34,6 +35,7 @@ public class SongEntity extends EntityBase {
         this.songArtistId = artistId;
         this.songAlbumId = albumId;
         this.mediaId = mediaId;
+        this.durationMs = durationMs;
     }
 
     public static MediaItem toItem(SongEntity entity) {
@@ -52,6 +54,7 @@ public class SongEntity extends EntityBase {
                         new MediaMetadata.Builder()
                                 .setTitle(entity.title)
                                 .setTrackNumber(track)
+                                .setDurationMs(entity.durationMs)
                                 .setIsBrowsable(false)
                                 .setIsPlayable(true)
                                 .setMediaType(MediaMetadata.MEDIA_TYPE_MUSIC)

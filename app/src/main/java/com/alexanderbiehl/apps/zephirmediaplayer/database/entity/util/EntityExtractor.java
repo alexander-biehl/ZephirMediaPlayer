@@ -71,7 +71,8 @@ public class EntityExtractor {
                                 Long.parseLong(e.mediaId)
                         ).toString(),
                         artistIdMap.get(e.mediaMetadata.artist.toString()),
-                        albumIdMap.get(e.mediaMetadata.albumTitle.toString() + "-" + e.mediaMetadata.artist)
+                        albumIdMap.get(e.mediaMetadata.albumTitle.toString() + "-" + e.mediaMetadata.artist),
+                        e.mediaMetadata.durationMs
                 ))
                 .collect(Collectors.toList());
     }

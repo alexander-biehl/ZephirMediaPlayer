@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class PlaylistDbDataSource {
 
@@ -172,6 +173,7 @@ public class PlaylistDbDataSource {
                         ? existing.songEntities.size()
                         : 0;
                 AtomicInteger orderCounter = new AtomicInteger(nextOrder);
+                AtomicLong durationCounter = new AtomicLong(existing.playlistEntity.durationMs);
 
                 PlaylistSongM2M[] links = mediaItems.stream()
                         .map(item -> songDao.getByMediaId(item.mediaId))
@@ -181,6 +183,7 @@ public class PlaylistDbDataSource {
                             link.playlistId = existing.playlistEntity.id;
                             link.songId = song.id;
                             link.order = orderCounter.getAndIncrement();
+                            durationCounter.getAndAdd(song.durationMs);
                             return link;
                         })
                         .toArray(PlaylistSongM2M[]::new);
@@ -190,7 +193,9 @@ public class PlaylistDbDataSource {
                     return;
                 }
 
+                // update playlist length and duration
                 existing.playlistEntity.numTracks += links.length;
+                existing.playlistEntity.durationMs = durationCounter.get();
 
                 dao.insertPlaylistSongs(links);
                 dao.update(existing.playlistEntity);

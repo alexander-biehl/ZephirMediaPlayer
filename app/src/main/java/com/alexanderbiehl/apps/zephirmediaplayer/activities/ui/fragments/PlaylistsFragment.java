@@ -44,6 +44,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class PlaylistsFragment extends Fragment {
 
@@ -389,12 +390,25 @@ public class PlaylistsFragment extends Fragment {
 
             holder.nameTextView.setText(metadata.title);
             Integer numTracks = metadata.totalTrackCount;
-            String album = metadata.albumTitle == null ? "" : metadata.albumTitle.toString();
-            holder.detailsTextView.setText(holder.itemView.getContext().getString(
-                    R.string.playlist_details_format,
-                    numTracks,
-                    album
-            ));
+
+            long durationMs = metadata.durationMs != null ? metadata.durationMs : 0L;
+            long hours = durationMs / 1000 / 60 / 60;
+            long minutes = (durationMs - (hours * 60 * 60 * 1000)) / 1000 / 60;
+
+            if (hours == 0L) {
+                holder.detailsTextView.setText(holder.itemView.getContext().getString(
+                        R.string.playlist_details_format_minutes,
+                        numTracks,
+                        minutes
+                ));
+            } else {
+                holder.detailsTextView.setText(holder.itemView.getContext().getString(
+                        R.string.playlist_details_format,
+                        numTracks,
+                        hours,
+                        minutes
+                ));
+            }
 
             holder.itemView.setOnClickListener(v -> {
                 if (clickHandler != null) {
