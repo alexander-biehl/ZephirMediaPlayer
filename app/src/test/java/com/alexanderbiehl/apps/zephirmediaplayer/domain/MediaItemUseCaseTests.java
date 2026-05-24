@@ -11,6 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.MediaMetadata;
 
+import com.alexanderbiehl.apps.zephirmediaplayer.common.RepositoryCallback;
+import com.alexanderbiehl.apps.zephirmediaplayer.common.Result;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.models.Album;
 import com.alexanderbiehl.apps.zephirmediaplayer.data.models.Artist;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.AlbumEntity;
@@ -28,7 +30,6 @@ import java.util.Optional;
 public class MediaItemUseCaseTests {
 
     private FakePlaylistGateway playlistGateway;
-    private FakeSongGateway songGateway;
     private FakeAlbumGateway albumGateway;
     private FakeArtistGateway artistGateway;
     private MediaItemUseCase useCase;
@@ -36,7 +37,7 @@ public class MediaItemUseCaseTests {
     @Before
     public void setUp() {
         playlistGateway = new FakePlaylistGateway();
-        songGateway = new FakeSongGateway();
+        FakeSongGateway songGateway = new FakeSongGateway();
         albumGateway = new FakeAlbumGateway();
         artistGateway = new FakeArtistGateway();
         useCase = new MediaItemUseCase(playlistGateway, songGateway, albumGateway, artistGateway);
@@ -149,20 +150,20 @@ public class MediaItemUseCaseTests {
         PlaylistEntity playlist;
 
         @Override
-        public void create(@NonNull PlaylistEntity entity, @NonNull com.alexanderbiehl.apps.zephirmediaplayer.common.RepositoryCallback<Void> callback) {
+        public void create(@NonNull PlaylistEntity entity, @NonNull RepositoryCallback<Void> callback) {
         }
 
         @Override
-        public void rename(@NonNull String mediaId, @NonNull String newTitle, @NonNull com.alexanderbiehl.apps.zephirmediaplayer.common.RepositoryCallback<Void> callback) {
+        public void rename(@NonNull String mediaId, @NonNull String newTitle, @NonNull RepositoryCallback<Void> callback) {
         }
 
         @Override
-        public void delete(@NonNull String mediaId, @NonNull com.alexanderbiehl.apps.zephirmediaplayer.common.RepositoryCallback<Void> callback) {
+        public void delete(@NonNull String mediaId, @NonNull RepositoryCallback<Void> callback) {
         }
 
         @Override
-        public void getAll(@NonNull com.alexanderbiehl.apps.zephirmediaplayer.common.RepositoryCallback<List<PlaylistEntity>> callback) {
-            callback.onComplete(new com.alexanderbiehl.apps.zephirmediaplayer.common.Result.Success<>(playlists));
+        public void getAll(@NonNull RepositoryCallback<List<PlaylistEntity>> callback) {
+            callback.onComplete(new Result.Success<>(playlists));
         }
 
         @Override
@@ -176,7 +177,7 @@ public class MediaItemUseCaseTests {
         }
 
         @Override
-        public void addMediaItemsToPlaylist(@NonNull PlaylistEntity playlist, @NonNull List<MediaItem> mediaItems, @NonNull com.alexanderbiehl.apps.zephirmediaplayer.common.RepositoryCallback<Void> callback) {
+        public void addMediaItemsToPlaylist(@NonNull PlaylistEntity playlist, @NonNull List<MediaItem> mediaItems, @NonNull RepositoryCallback<Void> callback) {
         }
 
         @Override
