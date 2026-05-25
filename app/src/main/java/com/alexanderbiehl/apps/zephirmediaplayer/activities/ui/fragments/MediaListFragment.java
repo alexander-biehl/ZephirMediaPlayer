@@ -5,6 +5,7 @@ import static com.alexanderbiehl.apps.zephirmediaplayer.domain.MediaItemUseCase.
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -74,6 +75,7 @@ public class MediaListFragment extends Fragment {
     public FloatingActionButton fab;
     private ListenableFuture<MediaBrowser> browserFuture;
     private MediaListRecyclerViewAdapter mediaAdapter;
+    private RecyclerView recyclerView;
     private int mColumnCount = 1;
     private boolean firstCurrentMediaEmission = true;
 
@@ -134,7 +136,7 @@ public class MediaListFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_media_item_list, container, false);
 
-        RecyclerView recyclerView = view.findViewById(R.id.list);
+        recyclerView = view.findViewById(R.id.list);
 
         // Set the adapter
         if (recyclerView != null) {
@@ -238,7 +240,6 @@ public class MediaListFragment extends Fragment {
         }
     }
 
-
     private void initializeBrowser() {
         browserFuture = ((MainApp) requireActivity().getApplication())
                 .getAppContainer()
@@ -309,7 +310,7 @@ public class MediaListFragment extends Fragment {
                 .navigate(R.id.action_FirstFragment_to_SecondFragment);
     }
 
-    public void openSubFolder(MediaItem item) {
+    public void openSubFolder(MediaItem item, @Nullable MediaItem lastItem) {
         ActionBar supportActionBar =
                 ((AppCompatActivity) requireActivity()).getSupportActionBar();
         if (supportActionBar != null) {
@@ -340,7 +341,14 @@ public class MediaListFragment extends Fragment {
                     subMediaList.sort(this::sortMediaItems);
                     // mediaAdapter.notifyItemRangeChanged(0, items.size());
                     // keep this for now since itemRangeChanged causes an exception
+
                     mediaAdapter.notifyDataSetChanged();
+                    if (lastItem != null) {
+                        int position = subMediaList.indexOf(lastItem);
+                        if (position != -1) {
+                            recyclerView.scrollToPosition(position);
+                        }
+                    }
                     Log.d(TAG, "Got media list of " + subMediaList.size() + " items.");
                 }
             } catch (Exception e) {
@@ -508,12 +516,12 @@ public class MediaListFragment extends Fragment {
             requireActivity().finish();
             return;
         }
-        treeBackStack.pop();
+        MediaItem lastItem = treeBackStack.pop();
         if (treeBackStack.isEmpty()) {
             requireActivity().finish();
             return;
         }
-        openSubFolder(treeBackStack.peek());
+        openSubFolder(treeBackStack.peek(), lastItem);
     }
 
     public void pushPathStack(final MediaItem item) {
@@ -521,7 +529,7 @@ public class MediaListFragment extends Fragment {
                 !treeBackStack.peek().mediaId.equals(item.mediaId)) {
             treeBackStack.push(item);
         }
-        openSubFolder(item);
+        openSubFolder(item, null);
     }
 
     public int sortMediaItems(MediaItem a, MediaItem b) {
