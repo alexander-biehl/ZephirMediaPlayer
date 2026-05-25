@@ -349,7 +349,9 @@ public class MediaListFragment extends Fragment {
                             recyclerView.scrollToPosition(position);
                         }
                     }
-                    Log.d(TAG, "Got media list of " + subMediaList.size() + " items.");
+                    if (Log.isLoggable(TAG, Log.DEBUG)) {
+                        Log.d(TAG, "Got media list of " + subMediaList.size() + " items.");
+                    }
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Failed to load folder children", e);
