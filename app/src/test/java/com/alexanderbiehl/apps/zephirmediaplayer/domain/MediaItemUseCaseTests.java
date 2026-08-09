@@ -24,6 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -155,6 +156,52 @@ public class MediaItemUseCaseTests {
     }
 
     @Test
+    public void getChildren_forPlaylistMediaIdReturnsPlaylistSongs() {
+        PlaylistEntity playlist = new PlaylistEntity();
+        playlist.mediaId = PLAYLIST_PREFIX + "playlist-1";
+        playlist.title = "Road Trip";
+        playlistGateway.playlist = playlist;
+
+        MediaItem songItem1 = new MediaItem.Builder()
+                .setMediaId("song-1")
+                .setMediaMetadata(new MediaMetadata.Builder()
+                        .setTitle("Song One")
+                        .build())
+                .build();
+
+        MediaItem songItem2 = new MediaItem.Builder()
+                .setMediaId("song-2")
+                .setMediaMetadata(new MediaMetadata.Builder()
+                        .setTitle("Song Two")
+                        .build())
+                .build();
+
+        playlistGateway.playlistSongs = List.of(songItem1, songItem2);
+
+        List<MediaItem> children = useCase.getChildren(PLAYLIST_PREFIX + "playlist-1");
+
+        assertEquals(2, children.size());
+        assertEquals("song-1", children.get(0).mediaId);
+        assertEquals("Song One", String.valueOf(children.get(0).mediaMetadata.title));
+        assertEquals("song-2", children.get(1).mediaId);
+        assertEquals("Song Two", String.valueOf(children.get(1).mediaMetadata.title));
+    }
+
+    @Test
+    public void getItem_returnsEmptyForUnknownMediaId() {
+        Optional<MediaItem> item = useCase.getItem("unknown-media-id");
+
+        assertTrue(item.isEmpty());
+    }
+
+    @Test
+    public void getItem_returnsEmptyForNullMediaId() {
+        Optional<MediaItem> item = useCase.getItem(null);
+
+        assertTrue(item.isEmpty());
+    }
+
+    @Test
     public void getItem_mapsAlbumArtistAndPlaylistPrefixes() {
         AlbumEntity album = new AlbumEntity();
         album.mediaId = ALBUM_PREFIX + "album-1";
@@ -203,6 +250,8 @@ public class MediaItemUseCaseTests {
         List<PlaylistEntity> playlists = new ArrayList<>();
         PlaylistEntity playlist;
 
+        List<MediaItem> playlistSongs = new ArrayList<>();
+
         @Override
         public void create(@NonNull PlaylistEntity entity, @NonNull RepositoryCallback<Void> callback) {
         }
@@ -227,7 +276,7 @@ public class MediaItemUseCaseTests {
 
         @Override
         public List<MediaItem> getSongsByPlaylistId(@NonNull String mediaId) {
-            return List.of();
+            return playlistSongs;
         }
 
         @Override
