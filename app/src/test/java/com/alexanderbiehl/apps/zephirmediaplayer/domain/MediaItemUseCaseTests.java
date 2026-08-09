@@ -44,6 +44,16 @@ public class MediaItemUseCaseTests {
     }
 
     @Test
+    public void getRoot_returnsRootMediaItem() {
+        MediaItem root = useCase.getRoot();
+
+        assertEquals("[rootID]", root.mediaId);
+        assertEquals("Root Folder", String.valueOf(root.mediaMetadata.title));
+        assertTrue(root.mediaMetadata.isBrowsable);
+        assertEquals(Integer.valueOf(MediaMetadata.MEDIA_TYPE_FOLDER_MIXED), root.mediaMetadata.mediaType);
+    }
+
+    @Test
     public void getChildren_forRootReturnsTopLevelFolders() {
         List<MediaItem> children = useCase.getChildren("[rootID]");
 
@@ -54,6 +64,50 @@ public class MediaItemUseCaseTests {
         assertEquals(Integer.valueOf(MediaMetadata.MEDIA_TYPE_FOLDER_ALBUMS), children.get(1).mediaMetadata.mediaType);
         assertEquals(PLAYLIST_ID, children.get(2).mediaId);
         assertEquals(Integer.valueOf(MediaMetadata.MEDIA_TYPE_FOLDER_PLAYLISTS), children.get(2).mediaMetadata.mediaType);
+    }
+
+    @Test
+    public void getChildren_getArtistsReturnsArtists() {
+        artistGateway.artist = new Artist(ARTIST_PREFIX + "artist-1", "Artist One");
+
+        List<MediaItem> children = useCase.getChildren("[artistID]");
+
+        assertEquals(1, children.size());
+        assertEquals(ARTIST_PREFIX + "artist-1", children.get(0).mediaId);
+        assertEquals("Artist One", String.valueOf(children.get(0).mediaMetadata.title));
+        assertEquals(Integer.valueOf(MediaMetadata.MEDIA_TYPE_ARTIST), children.get(0).mediaMetadata.mediaType);
+    }
+
+    @Test
+    public void getChildren_getArtistsReturnsEmptyListWhenNoArtistsExist() {
+        artistGateway.artist = null;
+
+        List<MediaItem> children = useCase.getChildren("[artistID]");
+
+        assertEquals(0, children.size());
+    }
+
+    @Test
+    public void getChildren_getAlbumsReturnsAlbums() {
+        albumGateway.album = new AlbumEntity();
+        albumGateway.album.mediaId = ALBUM_PREFIX + "album-1";
+        albumGateway.album.title = "Album One";
+
+        List<MediaItem> children = useCase.getChildren("[albumID]");
+
+        assertEquals(1, children.size());
+        assertEquals(ALBUM_PREFIX + "album-1", children.get(0).mediaId);
+        assertEquals("Album One", String.valueOf(children.get(0).mediaMetadata.title));
+        assertEquals(Integer.valueOf(MediaMetadata.MEDIA_TYPE_ALBUM), children.get(0).mediaMetadata.mediaType);
+    }
+
+    @Test
+    public void getChildren_getAlbumsReturnsEmptyListWhenNoAlbumsExist() {
+        albumGateway.album = null;
+
+        List<MediaItem> children = useCase.getChildren("[albumID]");
+
+        assertEquals(0, children.size());
     }
 
     @Test
