@@ -89,3 +89,5 @@ lint/tmp/
 
 # for mac
 .DS_Store
+
+htmlReport/
