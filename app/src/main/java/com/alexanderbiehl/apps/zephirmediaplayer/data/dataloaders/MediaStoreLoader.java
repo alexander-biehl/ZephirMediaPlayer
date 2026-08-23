@@ -5,16 +5,18 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.MediaMetadata;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class MediaStoreLoader {
 
@@ -78,7 +80,6 @@ public class MediaStoreLoader {
                     );
                     final int order = cursor.getInt(orderColumn);
                     final String albumID = cursor.getString(albumIdColumn);
-                    // this will fail when api >= 29
                     Uri albumArtUri = getAlbumArt(ctx, albumID);
                     final Long durationMs = cursor.getLong(durationColumn);
 
@@ -89,8 +90,12 @@ public class MediaStoreLoader {
                                 .setAlbumTitle(album)
                                 .setTrackNumber(order)
                                 .setDurationMs(durationMs);
-                        // for api > 29, the album art is directly decoded from the URI
-                        builder.setArtworkUri(Objects.requireNonNullElse(albumArtUri, uri));
+                        // Only point artwork at an actual image. Falling back to the
+                        // track's own audio URI here previously made players try to
+                        // decode an audio file as artwork.
+                        if (albumArtUri != null) {
+                            builder.setArtworkUri(albumArtUri);
+                        }
                         media.add(
                                 new MediaItem.Builder()
                                         .setMediaId(String.valueOf(id))
@@ -110,7 +115,19 @@ public class MediaStoreLoader {
         return media;
     }
 
+    /**
+     * MediaStore.Audio.Albums.ALBUM_ART is a filesystem path, not a numeric id, and
+     * scoped storage (API 29+) stops populating it for most apps - so this lookup is
+     * only attempted on pre-Q devices. On API 29+ this returns null; resolving artwork
+     * there requires ContentResolver#loadThumbnail(trackUri, ...) at display time
+     * instead of a storable Uri.
+     */
+    @Nullable
     public Uri getAlbumArt(@NonNull Context context, String albumID) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            return null;
+        }
+
         ContentResolver resolver = context.getContentResolver();
 
         final String[] selectionArgs = new String[]{
@@ -132,18 +149,14 @@ public class MediaStoreLoader {
 
                 if (path == null) {
                     if (Log.isLoggable(TAG, Log.DEBUG)) {
-                        Log.d(TAG, "Album art URI for " + albumID + " was null");
+                        Log.d(TAG, "Album art path for " + albumID + " was null");
                     }
                     return null;
                 }
-                return ContentUris.withAppendedId(
-                        MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                        Long.parseLong(path)
-                );
+                return Uri.fromFile(new File(path));
             }
         } catch (Exception e) {
-            Log.e(TAG, "Exception: " + e);
-            throw new RuntimeException(e);
+            Log.e(TAG, "Exception loading album art for albumID " + albumID + ": " + e);
         }
         return null;
     }
