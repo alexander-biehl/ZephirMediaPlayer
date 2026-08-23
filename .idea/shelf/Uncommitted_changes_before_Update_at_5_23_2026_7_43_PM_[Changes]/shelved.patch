@@ -1,0 +1,23 @@
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><project version=\"4\">\r\n  <component name=\"DesignSurface\">\r\n    <option name=\"filePathToZoomLevelMap\">\r\n      <map>\r\n        <entry key=\"../../../../../../layout/custom_preview.xml\" value=\"0.1\" />\r\n        <entry key=\"..\\:/dev/workspace/Android/ZephirMediaPlayer/app/src/main/res/layout/activity_main.xml\" value=\"0.20896656534954408\" />\r\n        <entry key=\"..\\:/dev/workspace/Android/ZephirMediaPlayer/app/src/main/res/layout/activity_media_player.xml\" value=\"0.3\" />\r\n        <entry key=\"..\\:/dev/workspace/Android/ZephirMediaPlayer/app/src/main/res/layout/content_media_player.xml\" value=\"0.2953125\" />\r\n        <entry key=\"..\\:/dev/workspace/Android/ZephirMediaPlayer/app/src/main/res/layout/fragment_first.xml\" value=\"0.3\" />\r\n        <entry key=\"app/src/main/res/drawable/btn_forward.xml\" value=\"0.2682291666666667\" />\r\n        <entry key=\"app/src/main/res/layout/activity_main.xml\" value=\"0.19384057971014493\" />\r\n        <entry key=\"app/src/main/res/layout/activity_media_player.xml\" value=\"0.19384057971014493\" />\r\n        <entry key=\"app/src/main/res/layout/activity_song_list.xml\" value=\"0.2296195652173913\" />\r\n        <entry key=\"app/src/main/res/layout/bg_player_header.xml\" value=\"0.18931159420289856\" />\r\n        <entry key=\"app/src/main/res/layout/content_main.xml\" value=\"0.19384057971014493\" />\r\n        <entry key=\"app/src/main/res/layout/content_media_player.xml\" value=\"0.19384057971014493\" />\r\n        <entry key=\"app/src/main/res/layout/fragment_media.xml\" value=\"0.2296195652173913\" />\r\n        <entry key=\"app/src/main/res/layout/fragment_media_list.xml\" value=\"0.2296195652173913\" />\r\n        <entry key=\"app/src/main/res/layout/fragment_now_playing.xml\" value=\"0.2296195652173913\" />\r\n        <entry key=\"app/src/main/res/layout/fragment_song_list.xml\" value=\"0.1743659420289855\" />\r\n        <entry key=\"app/src/main/res/layout/fragment_splash.xml\" value=\"0.12259371833839919\" />\r\n        <entry key=\"app/src/main/res/layout/player.xml\" value=\"0.22146739130434784\" />\r\n        <entry key=\"app/src/main/res/layout/playlist.xml\" value=\"0.22146739130434784\" />\r\n        <entry key=\"app/src/main/res/layout/song_recyclerview_item.xml\" value=\"0.1743659420289855\" />\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"ProjectRootManager\" version=\"2\" languageLevel=\"JDK_21\" default=\"true\" project-jdk-name=\"jbr-21\" project-jdk-type=\"JavaSDK\">\r\n    <output url=\"file://$PROJECT_DIR$/build/classes\" />\r\n  </component>\r\n  <component name=\"ProjectType\">\r\n    <option name=\"id\" value=\"Android\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+--- a/.idea/misc.xml	(revision e6d31e9acf8bcf99b176abb4f7bbc3499518ddd6)
++++ b/.idea/misc.xml	(date 1779579822516)
+@@ -1,3 +1,4 @@
++<?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+   <component name="DesignSurface">
+     <option name="filePathToZoomLevelMap">
+@@ -25,6 +26,7 @@
+       </map>
+     </option>
+   </component>
++  <component name="ExternalStorageConfigurationManager" enabled="true" />
+   <component name="ProjectRootManager" version="2" languageLevel="JDK_21" default="true" project-jdk-name="jbr-21" project-jdk-type="JavaSDK">
+     <output url="file://$PROJECT_DIR$/build/classes" />
+   </component>

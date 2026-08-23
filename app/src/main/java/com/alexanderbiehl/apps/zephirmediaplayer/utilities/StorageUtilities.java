@@ -5,20 +5,30 @@ import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Build;
 
-import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-@RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
 public class StorageUtilities {
 
     // Storage Permissions
     public static final int REQUEST_CODE = 1;
-    private static final String[] PERMISSIONS_STORAGE = {
-            // Manifest.permission.READ_EXTERNAL_STORAGE,
+
+    // index 0 must always be the "read storage" permission - callers key off of
+    // grantResults[0] to decide whether the user granted library access.
+    private static final String[] PERMISSIONS_STORAGE_TIRAMISU_PLUS = {
             Manifest.permission.READ_MEDIA_AUDIO,
             Manifest.permission.POST_NOTIFICATIONS
     };
+
+    private static final String[] PERMISSIONS_STORAGE_LEGACY = {
+            Manifest.permission.READ_EXTERNAL_STORAGE
+    };
+
+    private static String[] getRequiredPermissions() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                ? PERMISSIONS_STORAGE_TIRAMISU_PLUS
+                : PERMISSIONS_STORAGE_LEGACY;
+    }
 
     /**
      * Checks to see if the read storage permission has been given to our app,
@@ -26,17 +36,18 @@ public class StorageUtilities {
      *
      * @param activity
      */
-    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     public static boolean verifyStoragePermission(Activity activity) {
-        // check if we have read permission
-        int permission = ContextCompat.checkSelfPermission(activity,
-                Manifest.permission.READ_MEDIA_AUDIO);
+        String readPermission = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                ? Manifest.permission.READ_MEDIA_AUDIO
+                : Manifest.permission.READ_EXTERNAL_STORAGE;
+
+        int permission = ContextCompat.checkSelfPermission(activity, readPermission);
 
         if (permission != PackageManager.PERMISSION_GRANTED) {
             // Permission has not been granted so we need to ask the user
             ActivityCompat.requestPermissions(
                     activity,
-                    PERMISSIONS_STORAGE,
+                    getRequiredPermissions(),
                     REQUEST_CODE
             );
             return false;
