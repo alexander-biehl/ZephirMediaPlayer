@@ -12,10 +12,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
 public class AlbumRepositoryImpl implements AlbumRepository {
 
     private final AlbumDao albumDao;
 
+    @Inject
     public AlbumRepositoryImpl(AlbumDao albumDao) {
         this.albumDao = albumDao;
     }

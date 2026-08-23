@@ -15,11 +15,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
 public class PlaylistRepositoryImpl implements PlaylistRepository {
 
     private static final String TAG = PlaylistRepositoryImpl.class.getSimpleName();
     private final PlaylistDbDataSource dataSource;
 
+    @Inject
     public PlaylistRepositoryImpl(final PlaylistDbDataSource dataSource) {
         this.dataSource = dataSource;
     }

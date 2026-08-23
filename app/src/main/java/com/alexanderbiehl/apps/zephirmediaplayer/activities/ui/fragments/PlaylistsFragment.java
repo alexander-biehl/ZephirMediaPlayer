@@ -31,12 +31,12 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.alexanderbiehl.apps.zephirmediaplayer.MainApp;
 import com.alexanderbiehl.apps.zephirmediaplayer.R;
 import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.viewmodel.PlaylistsViewModel;
 import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.viewmodel.MediaViewModel;
 import com.alexanderbiehl.apps.zephirmediaplayer.common.OnClickHandler;
 import com.alexanderbiehl.apps.zephirmediaplayer.databinding.FragmentPlaylistsBinding;
+import com.alexanderbiehl.apps.zephirmediaplayer.di.MediaConnectionFactory;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.common.collect.ImmutableList;
@@ -46,6 +46,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class PlaylistsFragment extends Fragment {
 
     private static final String TAG = PlaylistsFragment.class.getSimpleName();
@@ -57,6 +62,9 @@ public class PlaylistsFragment extends Fragment {
     private MediaViewModel mediaViewModel;
     private PlaylistsViewModel playlistsViewModel;
     private long lastHandledMessageId = -1L;
+
+    @Inject
+    MediaConnectionFactory mediaConnectionFactory;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -160,10 +168,7 @@ public class PlaylistsFragment extends Fragment {
     }
 
     private void initializeBrowser() {
-        browserFuture = ((MainApp) requireActivity().getApplication())
-                .getAppContainer()
-                .getMediaConnectionFactory()
-                .createBrowser(requireContext());
+        browserFuture = mediaConnectionFactory.createBrowser(requireContext());
         browserFuture.addListener(() -> {
             if (browserFuture.isDone()) {
                 try {

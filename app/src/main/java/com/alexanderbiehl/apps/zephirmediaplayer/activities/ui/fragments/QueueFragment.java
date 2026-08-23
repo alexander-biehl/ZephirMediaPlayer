@@ -23,16 +23,18 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.alexanderbiehl.apps.zephirmediaplayer.MainApp;
 import com.alexanderbiehl.apps.zephirmediaplayer.R;
 import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.adapters.MyQueueRecyclerViewAdapter;
 import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.viewmodel.MediaViewModel;
 import com.alexanderbiehl.apps.zephirmediaplayer.common.OnClickHandler;
+import com.alexanderbiehl.apps.zephirmediaplayer.di.FragmentEntryPoint;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import dagger.hilt.android.EntryPointAccessors;
 
 /**
  * A fragment representing a list of Items.
@@ -145,10 +147,9 @@ public class QueueFragment extends Fragment {
     }
 
     private void initializeController() {
-        controllerFuture = ((MainApp) requireActivity().getApplication())
-                .getAppContainer()
-                .getMediaConnectionFactory()
-                .createController(requireContext());
+        FragmentEntryPoint entryPoint = EntryPointAccessors.fromApplication(
+                requireContext().getApplicationContext(), FragmentEntryPoint.class);
+        controllerFuture = entryPoint.mediaConnectionFactory().createController(requireContext());
 
         controllerFuture.addListener(() -> {
             if (controllerFuture.isDone()) {

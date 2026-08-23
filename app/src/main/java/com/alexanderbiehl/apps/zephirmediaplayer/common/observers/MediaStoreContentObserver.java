@@ -1,6 +1,5 @@
 package com.alexanderbiehl.apps.zephirmediaplayer.common.observers;
 
-import android.content.Context;
 import android.database.ContentObserver;
 import android.os.Handler;
 import android.util.Log;
@@ -9,8 +8,7 @@ import androidx.media3.common.MediaItem;
 
 import com.alexanderbiehl.apps.zephirmediaplayer.common.RepositoryCallback;
 import com.alexanderbiehl.apps.zephirmediaplayer.common.Result;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.dataloaders.MediaStoreLoader;
-import com.alexanderbiehl.apps.zephirmediaplayer.data.datasources.impl.MediaLocalDataSource;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.datasources.MediaDataSource;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.AppDatabase;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.AlbumEntity;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.ArtistEntity;
@@ -29,18 +27,18 @@ public class MediaStoreContentObserver extends ContentObserver {
 
     private final AppDatabase db;
     private final Executor executorService;
-    private final Context context;
+    private final MediaDataSource mediaDataSource;
 
 
     public MediaStoreContentObserver(
             Handler handler,
             Executor executorService,
             AppDatabase db,
-            Context context) {
+            MediaDataSource mediaDataSource) {
         super(handler);
         this.db = db;
         this.executorService = executorService;
-        this.context = context;
+        this.mediaDataSource = mediaDataSource;
     }
 
     @Override
@@ -118,13 +116,8 @@ public class MediaStoreContentObserver extends ContentObserver {
     }
 
     private List<MediaItem> getMediaItems() {
-        MediaLocalDataSource ds = new MediaLocalDataSource(
-                new MediaStoreLoader(),
-                context
-        );
-
         // want to make a synchronous call here because we are already running on a background thread
-        return ds.getMedia();
+        return mediaDataSource.getMedia();
     }
 
 }

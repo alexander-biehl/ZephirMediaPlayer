@@ -9,6 +9,12 @@ import com.alexanderbiehl.apps.zephirmediaplayer.data.datasources.MediaDataSourc
 
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
+@Singleton
 public class MediaLocalDataSource implements MediaDataSource {
 
     private static final String TAG = MediaLocalDataSource.class.getSimpleName();
@@ -16,16 +22,10 @@ public class MediaLocalDataSource implements MediaDataSource {
     private final MediaStoreLoader mediaStoreLoader;
     private final Context context;
 
-    /**
-     * Constructor taking in the object that will load our data
-     * and an executor that will execute the work on a backend thread
-     *
-     * @param mediaStoreLoader
-     * @param context
-     */
+    @Inject
     public MediaLocalDataSource(
             final MediaStoreLoader mediaStoreLoader,
-            final Context context
+            @ApplicationContext final Context context
     ) {
         this.mediaStoreLoader = mediaStoreLoader;
         this.context = context;

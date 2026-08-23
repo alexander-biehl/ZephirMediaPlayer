@@ -9,10 +9,17 @@ import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.session.MediaLibraryService;
 import androidx.media3.session.MediaSession;
 
-import com.alexanderbiehl.apps.zephirmediaplayer.MainApp;
 import com.alexanderbiehl.apps.zephirmediaplayer.service.callback.MediaLibraryCallback;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class Media3Service extends MediaLibraryService {
+
+    @Inject
+    MediaLibraryCallback mediaLibraryCallback;
 
     private MediaLibrarySession mediaLibrarySession;
 
@@ -24,7 +31,7 @@ public class Media3Service extends MediaLibraryService {
         mediaLibrarySession = new MediaLibrarySession.Builder(
                 this,
                 player,
-                new MediaLibraryCallback((MainApp) getApplication())
+                mediaLibraryCallback
         ).build();
     }
 

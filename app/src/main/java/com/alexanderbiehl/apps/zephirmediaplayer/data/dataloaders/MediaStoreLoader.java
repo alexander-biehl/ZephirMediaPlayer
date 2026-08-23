@@ -18,9 +18,15 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class MediaStoreLoader {
 
     private static final String TAG = MediaStoreLoader.class.getSimpleName();
+
+    @Inject
+    public MediaStoreLoader() {
+    }
 
     private static final String[] PROJECTION = {
             MediaStore.Audio.AudioColumns._ID,

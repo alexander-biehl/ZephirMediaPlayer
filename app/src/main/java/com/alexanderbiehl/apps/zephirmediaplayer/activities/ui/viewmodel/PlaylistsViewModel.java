@@ -9,7 +9,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.media3.common.MediaItem;
 
-import com.alexanderbiehl.apps.zephirmediaplayer.MainApp;
 import com.alexanderbiehl.apps.zephirmediaplayer.R;
 import com.alexanderbiehl.apps.zephirmediaplayer.common.Result;
 import com.alexanderbiehl.apps.zephirmediaplayer.domain.playlists.CreatePlaylistUseCase;
@@ -21,6 +20,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.lifecycle.HiltViewModel;
+
+@HiltViewModel
 public class PlaylistsViewModel extends AndroidViewModel {
 
     private final GetPlaylistsUseCase getPlaylistsUseCase;
@@ -31,19 +35,8 @@ public class PlaylistsViewModel extends AndroidViewModel {
     private final MutableLiveData<UiMessage> uiMessages;
     private final AtomicLong messageId;
 
-    public PlaylistsViewModel(@NonNull Application application) {
-        super(application);
-        MainApp app = (MainApp) application;
-        this.getPlaylistsUseCase = app.getAppContainer().getGetPlaylistsUseCase();
-        this.createPlaylistUseCase = app.getAppContainer().getCreatePlaylistUseCase();
-        this.renamePlaylistUseCase = app.getAppContainer().getRenamePlaylistUseCase();
-        this.deletePlaylistUseCase = app.getAppContainer().getDeletePlaylistUseCase();
-        this.playlists = new MutableLiveData<>(new ArrayList<>());
-        this.uiMessages = new MutableLiveData<>();
-        this.messageId = new AtomicLong(0);
-    }
-
-    PlaylistsViewModel(
+    @Inject
+    public PlaylistsViewModel(
             @NonNull Application application,
             @NonNull GetPlaylistsUseCase getPlaylistsUseCase,
             @NonNull CreatePlaylistUseCase createPlaylistUseCase,

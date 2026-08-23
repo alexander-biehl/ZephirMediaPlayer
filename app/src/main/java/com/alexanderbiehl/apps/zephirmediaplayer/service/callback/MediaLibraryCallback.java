@@ -12,7 +12,6 @@ import androidx.media3.session.MediaLibraryService;
 import androidx.media3.session.MediaSession;
 import androidx.media3.session.SessionError;
 
-import com.alexanderbiehl.apps.zephirmediaplayer.MainApp;
 import com.alexanderbiehl.apps.zephirmediaplayer.domain.MediaItemUseCase;
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.Futures;
@@ -21,18 +20,21 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Executor;
+
+import javax.inject.Inject;
 
 public class MediaLibraryCallback
         implements MediaLibraryService.MediaLibrarySession.Callback {
 
     private static final String TAG = MediaLibraryCallback.class.getSimpleName();
-    private final MainApp mainApp;
     private final MediaItemUseCase useCase;
+    private final Executor executor;
 
-
-    public MediaLibraryCallback(@NonNull final MainApp mainApp) {
-        this.mainApp = mainApp;
-        this.useCase = mainApp.getAppContainer().getMediaItemUseCase();
+    @Inject
+    public MediaLibraryCallback(@NonNull final MediaItemUseCase useCase, @NonNull final Executor executor) {
+        this.useCase = useCase;
+        this.executor = executor;
     }
 
 
@@ -50,7 +52,7 @@ public class MediaLibraryCallback
                     "\nparams: " + params);
         }
         return Futures.submit(() ->
-                LibraryResult.ofItem(useCase.getRoot(), params), this.mainApp.getExec());
+                LibraryResult.ofItem(useCase.getRoot(), params), this.executor);
     }
 
     @NonNull
@@ -73,7 +75,7 @@ public class MediaLibraryCallback
                             LibraryResult.ofItem(mediaItem, null))
                     .orElseGet(() ->
                             LibraryResult.ofError(SessionError.ERROR_BAD_VALUE));
-        }, this.mainApp.getExec());
+        }, this.executor);
     }
 
     @NonNull
@@ -98,7 +100,7 @@ public class MediaLibraryCallback
             return optChildren.isEmpty() ?
                     LibraryResult.ofError(SessionError.ERROR_BAD_VALUE) :
                     LibraryResult.ofItemList(optChildren, params);
-        }, this.mainApp.getExec());
+        }, this.executor);
     }
 
     @NonNull
@@ -108,7 +110,7 @@ public class MediaLibraryCallback
             @NonNull MediaSession.ControllerInfo controller,
             @NonNull List<MediaItem> mediaItems
     ) {
-        return Futures.submit(() -> resolveMediaItems(mediaItems), this.mainApp.getExec());
+        return Futures.submit(() -> resolveMediaItems(mediaItems), this.executor);
     }
 
     private List<MediaItem> resolveMediaItems(List<MediaItem> mediaItems) {

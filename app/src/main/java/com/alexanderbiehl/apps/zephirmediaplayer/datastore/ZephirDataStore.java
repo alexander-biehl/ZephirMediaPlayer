@@ -5,6 +5,12 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
+@Singleton
 public class ZephirDataStore {
 
     private static final String PREFERENCES_NAME = "zephir_preferences";
@@ -15,7 +21,8 @@ public class ZephirDataStore {
 
     private final SharedPreferences.Editor editor;
 
-    public ZephirDataStore(@NonNull Context context) {
+    @Inject
+    public ZephirDataStore(@ApplicationContext @NonNull Context context) {
         this.sharedPreferences = context.getApplicationContext().getSharedPreferences(
                 PREFERENCES_NAME,
                 Context.MODE_PRIVATE

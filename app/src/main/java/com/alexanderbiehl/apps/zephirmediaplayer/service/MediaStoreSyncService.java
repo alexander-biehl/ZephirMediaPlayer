@@ -9,24 +9,42 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LifecycleService;
 
-import com.alexanderbiehl.apps.zephirmediaplayer.MainApp;
 import com.alexanderbiehl.apps.zephirmediaplayer.common.observers.MediaStoreContentObserver;
+import com.alexanderbiehl.apps.zephirmediaplayer.data.datasources.MediaDataSource;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.AppDatabase;
+import com.alexanderbiehl.apps.zephirmediaplayer.datastore.LibrarySyncState;
 
+import java.util.concurrent.Executor;
+
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class MediaStoreSyncService extends LifecycleService {
+
+    @Inject
+    AppDatabase db;
+
+    @Inject
+    Executor executor;
+
+    @Inject
+    MediaDataSource mediaDataSource;
+
+    @Inject
+    LibrarySyncState librarySyncState;
 
     private MediaStoreContentObserver observer;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        MainApp app = (MainApp) getApplication();
-        AppDatabase db = app.getAppContainer().getDatabase();
         this.observer = new MediaStoreContentObserver(
                 new Handler(),
-                app.getExec(),
+                executor,
                 db,
-                this
+                mediaDataSource
         );
         getContentResolver().registerContentObserver(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
@@ -34,10 +52,10 @@ public class MediaStoreSyncService extends LifecycleService {
                 observer
         );
         // only execute first time sync if library is not synced yet, otherwise we would execute an unnecessary sync on every app start
-        if (!app.getAppContainer().getDataStore().isLibrarySynced()) {
-            this.observer.executeSync(result -> app.setStoreIsSynced(true));
+        if (!librarySyncState.isLibrarySynced()) {
+            this.observer.executeSync(result -> librarySyncState.setSynced(true));
         } else {
-            app.setStoreIsSynced(true);
+            librarySyncState.setSynced(true);
         }
     }
 
