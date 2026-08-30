@@ -21,10 +21,12 @@ import androidx.media3.session.MediaController;
 import androidx.media3.ui.PlayerView;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.alexanderbiehl.apps.zephirmediaplayer.MainApp;
 import com.alexanderbiehl.apps.zephirmediaplayer.R;
 import com.alexanderbiehl.apps.zephirmediaplayer.databinding.FragmentNowPlayingBinding;
+import com.alexanderbiehl.apps.zephirmediaplayer.di.FragmentEntryPoint;
 import com.google.common.util.concurrent.ListenableFuture;
+
+import dagger.hilt.android.EntryPointAccessors;
 
 public class NowPlayingFragment extends Fragment {
 
@@ -105,10 +107,9 @@ public class NowPlayingFragment extends Fragment {
     }
 
     public void initializeController() {
-        controllerFuture = ((MainApp) requireActivity().getApplication())
-                .getAppContainer()
-                .getMediaConnectionFactory()
-                .createController(requireContext());
+        FragmentEntryPoint entryPoint = EntryPointAccessors.fromApplication(
+                requireContext().getApplicationContext(), FragmentEntryPoint.class);
+        controllerFuture = entryPoint.mediaConnectionFactory().createController(requireContext());
         controllerFuture.addListener(() -> {
             if (controllerFuture.isDone()) {
                 try {

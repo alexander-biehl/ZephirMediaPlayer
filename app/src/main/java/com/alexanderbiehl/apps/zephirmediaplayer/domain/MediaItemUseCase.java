@@ -22,6 +22,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
 public class MediaItemUseCase {
 
     public static final String PLAYLIST_ID = "[playlistID]";
@@ -39,6 +43,7 @@ public class MediaItemUseCase {
     private final AlbumRepository albumRepository;
     private final ArtistRepository artistRepository;
 
+    @Inject
     public MediaItemUseCase(
             PlaylistRepository playlistRepository,
             SongRepository songRepository,

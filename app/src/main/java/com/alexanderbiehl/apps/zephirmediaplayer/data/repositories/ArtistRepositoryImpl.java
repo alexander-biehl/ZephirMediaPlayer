@@ -8,10 +8,15 @@ import com.alexanderbiehl.apps.zephirmediaplayer.domain.ArtistRepository;
 
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
 public class ArtistRepositoryImpl implements ArtistRepository {
 
     private final ArtistDataSource localArtistDataSource;
 
+    @Inject
     public ArtistRepositoryImpl(ArtistDataSource localArtistDataSource) {
         this.localArtistDataSource = localArtistDataSource;
     }

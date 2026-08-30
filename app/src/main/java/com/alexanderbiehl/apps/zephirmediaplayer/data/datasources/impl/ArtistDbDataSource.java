@@ -9,10 +9,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
 public class ArtistDbDataSource implements ArtistDataSource {
 
     private final ArtistDao artistDao;
 
+    @Inject
     public ArtistDbDataSource(ArtistDao artistDao) {
         this.artistDao = artistDao;
     }

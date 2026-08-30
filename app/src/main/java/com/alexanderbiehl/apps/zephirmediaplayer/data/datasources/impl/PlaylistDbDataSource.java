@@ -19,6 +19,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
+import javax.inject.Inject;
+
 public class PlaylistDbDataSource {
 
     private static final String TAG = PlaylistDbDataSource.class.getSimpleName();
@@ -27,6 +29,7 @@ public class PlaylistDbDataSource {
     private final SongDao songDao;
     private final Executor executor;
 
+    @Inject
     public PlaylistDbDataSource(
             PlaylistDao playlistDao,
             SongDao songDao,

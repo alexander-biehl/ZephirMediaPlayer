@@ -35,7 +35,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.alexanderbiehl.apps.zephirmediaplayer.MainApp;
 import com.alexanderbiehl.apps.zephirmediaplayer.R;
 import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.adapters.MediaListRecyclerViewAdapter;
 import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.viewmodel.MediaViewModel;
@@ -44,6 +43,7 @@ import com.alexanderbiehl.apps.zephirmediaplayer.common.Result;
 import com.alexanderbiehl.apps.zephirmediaplayer.common.wrappers.MediaBrowserWrapper;
 import com.alexanderbiehl.apps.zephirmediaplayer.common.wrappers.MediaBrowserWrapperImpl;
 import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.PlaylistEntity;
+import com.alexanderbiehl.apps.zephirmediaplayer.di.FragmentEntryPoint;
 import com.alexanderbiehl.apps.zephirmediaplayer.domain.playlists.AddMediaItemsToPlaylistUseCase;
 import com.alexanderbiehl.apps.zephirmediaplayer.domain.playlists.GetPlaylistsUseCase;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -58,6 +58,8 @@ import java.util.Stack;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import dagger.hilt.android.EntryPointAccessors;
 
 /**
  * A fragment representing a list of Items.
@@ -240,11 +242,13 @@ public class MediaListFragment extends Fragment {
         }
     }
 
+    private FragmentEntryPoint getEntryPoint() {
+        return EntryPointAccessors.fromApplication(
+                requireContext().getApplicationContext(), FragmentEntryPoint.class);
+    }
+
     private void initializeBrowser() {
-        browserFuture = ((MainApp) requireActivity().getApplication())
-                .getAppContainer()
-                .getMediaConnectionFactory()
-                .createBrowser(requireContext());
+        browserFuture = getEntryPoint().mediaConnectionFactory().createBrowser(requireContext());
         browserFuture.addListener(() -> {
             if (browserFuture.isDone()) {
                 try {
@@ -445,10 +449,10 @@ public class MediaListFragment extends Fragment {
     }
 
     private void loadPlaylistsAndShowPicker(@NonNull List<MediaItem> mediaItems) {
-        MainApp app = (MainApp) requireActivity().getApplication();
-        GetPlaylistsUseCase getPlaylistsUseCase = app.getAppContainer().getGetPlaylistsUseCase();
+        FragmentEntryPoint entryPoint = getEntryPoint();
+        GetPlaylistsUseCase getPlaylistsUseCase = entryPoint.getPlaylistsUseCase();
         AddMediaItemsToPlaylistUseCase addMediaItemsToPlaylistUseCase =
-                app.getAppContainer().getAddMediaItemsToPlaylistUseCase();
+                entryPoint.addMediaItemsToPlaylistUseCase();
 
         getPlaylistsUseCase.execute(result -> requireActivity().runOnUiThread(() -> {
             if (!(result instanceof Result.Success<?> success) || success.data == null) {

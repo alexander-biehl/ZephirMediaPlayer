@@ -5,10 +5,13 @@ import androidx.annotation.NonNull;
 import com.alexanderbiehl.apps.zephirmediaplayer.common.RepositoryCallback;
 import com.alexanderbiehl.apps.zephirmediaplayer.common.Result;
 
+import javax.inject.Inject;
+
 public class RenamePlaylistUseCase {
 
     private final PlaylistRepository playlistRepository;
 
+    @Inject
     public RenamePlaylistUseCase(@NonNull PlaylistRepository playlistRepository) {
         this.playlistRepository = playlistRepository;
     }

@@ -10,10 +10,13 @@ import com.alexanderbiehl.apps.zephirmediaplayer.database.entity.PlaylistEntity;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 public class GetPlaylistsUseCase {
 
     private final PlaylistRepository playlistRepository;
 
+    @Inject
     public GetPlaylistsUseCase(@NonNull PlaylistRepository playlistRepository) {
         this.playlistRepository = playlistRepository;
     }

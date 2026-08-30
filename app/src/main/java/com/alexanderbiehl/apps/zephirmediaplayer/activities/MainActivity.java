@@ -20,14 +20,20 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.alexanderbiehl.apps.zephirmediaplayer.MainApp;
 import com.alexanderbiehl.apps.zephirmediaplayer.R;
 import com.alexanderbiehl.apps.zephirmediaplayer.activities.ui.viewmodel.MediaViewModel;
 import com.alexanderbiehl.apps.zephirmediaplayer.databinding.ActivityMainBinding;
+import com.alexanderbiehl.apps.zephirmediaplayer.datastore.LibrarySyncState;
+import com.alexanderbiehl.apps.zephirmediaplayer.di.MediaConnectionFactory;
 import com.alexanderbiehl.apps.zephirmediaplayer.service.MediaStoreSyncService;
 import com.alexanderbiehl.apps.zephirmediaplayer.utilities.StorageUtilities;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -36,6 +42,12 @@ public class MainActivity extends AppCompatActivity {
     private MediaBrowser mediaBrowser;
     private ListenableFuture<MediaBrowser> browserFuture;
     private ObserverCallback observerCallback;
+
+    @Inject
+    MediaConnectionFactory mediaConnectionFactory;
+
+    @Inject
+    LibrarySyncState librarySyncState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,21 +77,16 @@ public class MainActivity extends AppCompatActivity {
         // start service to ensure we are in sync
         Intent mediaObserverServiceIntent = new Intent(this, MediaStoreSyncService.class);
         startService(mediaObserverServiceIntent);
-        MainApp application = (MainApp) getApplication();
-        if (application.getStoreIsSynced().get() ||
-            application.getAppContainer().getDataStore().isLibrarySynced()) {
+        if (librarySyncState.getIsSynced().get() || librarySyncState.isLibrarySynced()) {
             initiateBrowserConnection();
         } else {
             observerCallback = new ObserverCallback();
-            application.getStoreIsSynced().addOnPropertyChangedCallback(observerCallback);
+            librarySyncState.getIsSynced().addOnPropertyChangedCallback(observerCallback);
         }
     }
 
     private void initiateBrowserConnection() {
-        browserFuture = ((MainApp) getApplication())
-                .getAppContainer()
-                .getMediaConnectionFactory()
-                .createBrowser(this);
+        browserFuture = mediaConnectionFactory.createBrowser(this);
         browserFuture.addListener(() -> {
             if (browserFuture.isDone()) {
                 try {
@@ -172,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
                 initiateBrowserConnection();
 
                 // after we want to remove the callback so it is not repeatedly called.
-                ((MainApp) getApplication()).getStoreIsSynced().removeOnPropertyChangedCallback(observerCallback);
+                librarySyncState.getIsSynced().removeOnPropertyChangedCallback(observerCallback);
                 observerCallback = null;
             } else {
                 Log.d(TAG, "Sender was false");
