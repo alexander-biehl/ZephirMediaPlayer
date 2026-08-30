@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    compileSdkVersion 36
+    compileSdk 37
     defaultConfig {
         applicationId "com.alexanderbiehl.apps.zephirmediaplayer"
         minSdkVersion 26

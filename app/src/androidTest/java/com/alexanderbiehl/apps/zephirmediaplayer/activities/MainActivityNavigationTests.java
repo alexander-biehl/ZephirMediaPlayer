@@ -8,8 +8,8 @@ import android.Manifest;
 
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.Espresso;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.GrantPermissionRule;
 
@@ -28,55 +28,56 @@ public class MainActivityNavigationTests {
             Manifest.permission.POST_NOTIFICATIONS
     );
 
+    @Rule
+    public final ActivityScenarioRule<MainActivity> rule = new ActivityScenarioRule<>(MainActivity.class);
+
     @Test
     public void backFromPlaylists_returnsToMediaList() {
-        try (ActivityScenario<MainActivity> scenario = ActivityScenario.launch(MainActivity.class)) {
-            scenario.onActivity(activity -> {
-                NavController navController = Navigation.findNavController(
-                        activity,
-                        R.id.nav_host_fragment_content_main
-                );
+        rule.getScenario().onActivity(activity -> {
+            NavController navController = Navigation.findNavController(
+                    activity,
+                    R.id.nav_host_fragment_content_main
+            );
 
-                for (int i = 0; i < 3; i++) {
-                    if (navController.getCurrentDestination() != null
-                            && navController.getCurrentDestination().getId() == R.id.MediaListFragment) {
-                        break;
-                    }
-
-                    if (navController.getCurrentDestination() != null
-                            && navController.getCurrentDestination().getId() == R.id.SplashFragment) {
-                        navController.navigate(R.id.action_SplashFragment_to_MediaListFragment);
-                    } else {
-                        navController.navigate(R.id.MediaListFragment);
-                    }
-                    activity.getSupportFragmentManager().executePendingTransactions();
+            for (int i = 0; i < 3; i++) {
+                if (navController.getCurrentDestination() != null
+                        && navController.getCurrentDestination().getId() == R.id.MediaListFragment) {
+                    break;
                 }
 
-                assertNotNull(navController.getCurrentDestination());
-                assumeTrue(
-                        "Could not navigate from Splash to MediaList in current device startup state",
-                        navController.getCurrentDestination().getId() == R.id.MediaListFragment
-                );
-                assertEquals(R.id.MediaListFragment, navController.getCurrentDestination().getId());
-
-                navController.navigate(R.id.PlaylistsFragment);
+                if (navController.getCurrentDestination() != null
+                        && navController.getCurrentDestination().getId() == R.id.SplashFragment) {
+                    navController.navigate(R.id.action_SplashFragment_to_MediaListFragment);
+                } else {
+                    navController.navigate(R.id.MediaListFragment);
+                }
                 activity.getSupportFragmentManager().executePendingTransactions();
+            }
 
-                assertNotNull(navController.getCurrentDestination());
-                assertEquals(R.id.PlaylistsFragment, navController.getCurrentDestination().getId());
-            });
+            assertNotNull(navController.getCurrentDestination());
+            assumeTrue(
+                    "Could not navigate from Splash to MediaList in current device startup state",
+                    navController.getCurrentDestination().getId() == R.id.MediaListFragment
+            );
+            assertEquals(R.id.MediaListFragment, navController.getCurrentDestination().getId());
 
-            Espresso.pressBackUnconditionally();
+            navController.navigate(R.id.PlaylistsFragment);
+            activity.getSupportFragmentManager().executePendingTransactions();
 
-            scenario.onActivity(activity -> {
-                NavController navController = Navigation.findNavController(
-                        activity,
-                        R.id.nav_host_fragment_content_main
-                );
-                assertNotNull(navController.getCurrentDestination());
-                assertEquals(R.id.MediaListFragment, navController.getCurrentDestination().getId());
-            });
-        }
+            assertNotNull(navController.getCurrentDestination());
+            assertEquals(R.id.PlaylistsFragment, navController.getCurrentDestination().getId());
+        });
+
+        Espresso.pressBackUnconditionally();
+
+        rule.getScenario().onActivity(activity -> {
+            NavController navController = Navigation.findNavController(
+                    activity,
+                    R.id.nav_host_fragment_content_main
+            );
+            assertNotNull(navController.getCurrentDestination());
+            assertEquals(R.id.MediaListFragment, navController.getCurrentDestination().getId());
+        });
     }
 }
 
