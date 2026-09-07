@@ -5,7 +5,6 @@ import static com.alexanderbiehl.apps.zephirmediaplayer.domain.MediaItemUseCase.
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
